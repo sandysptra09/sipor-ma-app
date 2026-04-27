@@ -35,6 +35,7 @@ enum Role {
 // 2. Report: Jantung SIPOR-MA
 model Report {
   id              String    @id @default(uuid())
+  reportNumber    String    @unique // TAMBAHAN BARU: Buat nyimpen kode laporan kayak "#SPM-2026-001" -> fungsi khusus untuk generate
   title           String    // Nama fasilitas (e.g. Proyektor)
   description     String    @db.Text
   location        String    // Gedung/Lantai
