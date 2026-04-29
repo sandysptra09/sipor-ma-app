@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  image         String?
+  nim_nip       String?       @unique
+  role          Role          @default(STUDENT)
+  reports       Report[]
+  assignments   Report[]      @relation("AdminAssignment")
+  shifts        Shift[]
+  chatSessions  ChatSession[]
+  createdAt     DateTime      @default(now())
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model Report {
+  id            String     @id @default(uuid())
+  reportNumber  String     @unique
+  title         String
+  description   String     @db.Text
+  location      String
+  roomCode      String
+  category      String
+  imageBefore   String
+  imageAfter    String?
+  status        Status     @default(PENDING)
+  priority      Priority   @default(MEDIUM)
+  isVerified    Boolean    @default(false)
+
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+  adminId       String?
+  admin         User?      @relation("AdminAssignment", fields: [adminId], references: [id])
+  logs          AuditLog[]
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  reportId  String
+  report    Report   @relation(fields: [reportId], references: [id])
+  status    String
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id       String @id @default(cuid())
+  code     String @unique
+  name     String
+  building String
+}
+
+model Shift {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  day       String
+}
+
+model ChatSession {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id])
+  role      MessageRole
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
