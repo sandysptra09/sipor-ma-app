@@ -1,3 +1,25 @@
+"use client";
+
+import React from "react";
+import { AppSidebar } from "@/components/layout/admin/app-sidebar"
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { Bell } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
 export default function AdminLayout({
     children,
 }: {
@@ -6,10 +28,72 @@ export default function AdminLayout({
 
     console.log('Ini layouth untuk halaman admin');
 
+    const pathname = usePathname();
+    const pathnames = pathname ? pathname.split('/').filter((x) => x) : [];
+    const formatString = (str: string) => {
+        return str
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
 
     return (
-        <main>
-            {children}
-        </main>
+        <>
+            <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                    <header className="sticky top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 ">
+                        <a href="#" className="text-primary">
+                            <Bell size={18} />
+                        </a>
+                        <div className="w-fit flex gap-2 items-center">
+                            <div className="text-right">
+                                <p className="text-sm font-semibold text-black">Admin</p>
+                                <p className="text-xs text-gray-500">SIPOR-MA Admin</p>
+                            </div>
+                            <div className=" bg-gray-600 h-[35px] w-[35px] rounded-full">
+
+                            </div>
+                        </div>
+                    </header>
+                    <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm">
+                        <div className="flex gap-2 items-center" >
+                            <SidebarTrigger className="-ml-1" />
+                            <Separator
+                                orientation="vertical"
+                                className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+                            />
+                            <Breadcrumb>
+                                <BreadcrumbList>
+                                    {pathnames.length > 0 && pathnames.map((value, index) => {
+                                        const href = `/${pathnames.slice(0, index + 1).join('/')}`;
+
+                                        const isLast = index === pathnames.length - 1;
+
+                                        const label = value.toLowerCase() === 'admin' ? 'Admin Dashboard' : formatString(value);
+
+                                        return (
+                                            <React.Fragment key={href}>
+                                                {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+
+                                                <BreadcrumbItem>
+                                                    {isLast ? (
+                                                        <BreadcrumbPage>{label}</BreadcrumbPage>
+                                                    ) : (
+                                                        <BreadcrumbLink asChild>
+                                                            <Link href={href}>{label}</Link>
+                                                        </BreadcrumbLink>
+                                                    )}
+                                                </BreadcrumbItem>
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </BreadcrumbList>
+                            </Breadcrumb>
+                        </div>
+                        {children}
+                    </div>
+                </SidebarInset>
+            </SidebarProvider>
+        </>
     );
 }

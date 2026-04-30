@@ -1,7 +1,9 @@
-import React from 'react'
+import AdminLayout from "./layout";
 
-export default function AdminDashboardPage() {
+export default function Page() {
     return (
-        <div>Ini halaman Dashboard Admin</div>
+        <>
+            test
+        </>
     )
 }
