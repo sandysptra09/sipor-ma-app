@@ -33,24 +33,24 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin-dashboard",
+      url: "/admin/dashboard",
       icon: LayoutDashboard
     },
     {
       title: "Laporan",
-      url: "/admin-dashboard/report-management",
+      url: "/admin/report-management",
       icon: ChartColumnIncreasing
     },
   ],
   navPersonal: [
     {
       title: "Notifikasi",
-      url: "/admin-dashboard/notifications",
+      url: "/admin/notifications",
       icon: Bell
     },
     {
       title: "Profile",
-      url: "/admin-dashboard/profile",
+      url: "/admin/profile",
       icon: User
     },
   ]
@@ -72,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroupLabel className="mt-3 uppercase">reports</SidebarGroupLabel>
         <SidebarMenu>
           {data.navMain.map((item) => {
-            const isActive = item.url === '/admin-dashboard'
+            const isActive = item.url === '/admin/dashboard'
               ? pathname === item.url
               : pathname?.startsWith(item.url);
             return (
@@ -89,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
           <SidebarGroupLabel className="mt-3 uppercase">preferences</SidebarGroupLabel>
           {data.navPersonal.map((item) => {
-            const isActive = item.url === '/admin-dashboard'
+            const isActive = item.url === '/admin/dashboard'
               ? pathname === item.url
               : pathname?.startsWith(item.url);
             return (
