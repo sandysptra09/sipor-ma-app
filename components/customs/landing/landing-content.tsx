@@ -1,7 +1,9 @@
-import React from 'react'
+import HeroSection from "./sections/hero-section"
 
 export default function LandingContent() {
     return (
-        <div>landing-content</div>
+        <div className='flex flex-col w-full'>
+            <HeroSection />
+        </div>
     )
 }
