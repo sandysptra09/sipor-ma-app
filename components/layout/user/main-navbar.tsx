@@ -92,7 +92,7 @@ export default function MainNavbar() {
 
                     <Button
                         variant='primary'
-                        onClick={() => router.push('/sign-up')}
+                        onClick={() => router.push('/login')}
                         className='hidden rounded-md bg-primary px-6 font-semibold text-white md:flex'
                     >
                         Lapor Sekarang
