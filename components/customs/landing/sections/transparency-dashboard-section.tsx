@@ -15,7 +15,7 @@ export default function TransparencyDashboardSection() {
                     <div className='mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
 
                         <div className='max-w-2xl'>
-                            <h2 className='font-heading text-3xl font-extrabold tracking-tight text-[#181C1C] md:text-4xl'>
+                            <h2 className='font-heading text-3xl font-extrabold text-[#181C1C] md:text-4xl'>
                                 Dashboard Transparansi
                             </h2>
                             <p className='mt-4 text-sm font-normal leading-relaxed text-foreground md:text-base'>
