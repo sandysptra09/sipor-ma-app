@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import { Card } from '@heroui/react';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import FeatureModal from '../modals/feature-modal';
+
+interface ModalStep {
+    title: string;
+    description: string;
+}
 
 interface FeatureCardProps {
     icon: React.ReactNode;
@@ -11,9 +16,13 @@ interface FeatureCardProps {
     description: string;
     href: string;
     delay?: number;
+    modalSubtitle: string;
+    modalFullDescription: string;
+    modalSteps: ModalStep[];
 }
 
-export default function FeatureCard({ icon, title, description, href, delay = 0 }: FeatureCardProps) {
+export default function FeatureCard({ icon, title, description, href, delay = 0, modalFullDescription, modalSubtitle, modalSteps
+}: FeatureCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -40,13 +49,13 @@ export default function FeatureCard({ icon, title, description, href, delay = 0 
                     </div>
 
                     <div className='mt-auto pt-4'>
-                        <Link
+                        <FeatureModal
+                            title={title}
                             href={href}
-                            className='group inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80'
-                        >
-                            Pelajari Lebih Lanjut
-                            <ArrowRight size={18} strokeWidth={2.5} className='transition-transform group-hover:translate-x-1' />
-                        </Link>
+                            subtitle={modalSubtitle}
+                            fullDescription={modalFullDescription}
+                            steps={modalSteps}
+                        />
                     </div>
 
                 </Card.Content>
