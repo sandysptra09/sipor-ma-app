@@ -1,3 +1,4 @@
+import SmoothScroll from "@/components/providers/smooth-scroll-provider";
 import MainNavbar from "@/components/layout/user/main-navbar";
 import MainFooter from "@/components/layout/user/main-footer";
 
@@ -11,9 +12,11 @@ export default function UserLayout({
 
     return (
         <main>
-            <MainNavbar />
-            {children}
-            <MainFooter />
+            <SmoothScroll>
+                <MainNavbar />
+                {children}
+                <MainFooter />
+            </SmoothScroll>
         </main>
     );
 }
