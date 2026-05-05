@@ -1,6 +1,7 @@
 import HeroSection from "./sections/hero-section"
 import TransparencyDashboardSection from "./sections/transparency-dashboard-section"
 import FeatureSection from "./sections/features-section"
+import WorkflowSection from "./sections/workflow-section"
 
 export default function LandingContent() {
     return (
@@ -8,6 +9,7 @@ export default function LandingContent() {
             <HeroSection />
             <TransparencyDashboardSection />
             <FeatureSection />
+            <WorkflowSection />
         </div>
     )
 }
