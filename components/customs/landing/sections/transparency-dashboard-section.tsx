@@ -3,6 +3,7 @@
 import { Tabs } from '@heroui/react';
 import { FileSpreadsheet, FileCheck } from 'lucide-react';
 import { MdOutlineEngineering } from 'react-icons/md';
+import { motion } from 'framer-motion';
 import StatCard from '../cards/stat-card';
 
 export default function TransparencyDashboardSection() {
@@ -14,16 +15,26 @@ export default function TransparencyDashboardSection() {
 
                     <div className='mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
 
-                        <div className='max-w-2xl'>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-50px' }}
+                            transition={{ duration: 0.5 }}
+                            className='max-w-2xl'>
                             <h2 className='font-heading text-2xl font-extrabold text-[#181C1C] md:text-4xl'>
                                 Dashboard Transparansi
                             </h2>
                             <p className='mt-4 text-sm font-normal leading-relaxed text-foreground md:text-base'>
                                 Pantau kinerja perbaikan fasilitas secara real-time. Kami berkomitmen pada keterbukaan data setiap langkah.
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className='shrink-0'>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-50px' }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className='shrink-0'>
                             <Tabs.ListContainer className='rounded-lg bg-zinc-200/60 p-1'>
                                 <Tabs.List aria-label='Filter Waktu Statistik' className='flex'>
 
@@ -43,7 +54,7 @@ export default function TransparencyDashboardSection() {
 
                                 </Tabs.List>
                             </Tabs.ListContainer>
-                        </div>
+                        </motion.div>
                     </div>
 
                     <Tabs.Panel id='bulan'>

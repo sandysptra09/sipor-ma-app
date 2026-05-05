@@ -21,7 +21,13 @@ export default function FlowTimelineItem({ icon, title, description, delay = 0, 
         >
 
             {!isLast && (
-                <div className='absolute left-8 top-8 -bottom-12 z-0 w-0.5 bg-zinc-200 md:hidden' />
+                <motion.div
+                    initial={{ scaleY: 0 }}
+                    whileInView={{ scaleY: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, ease: "easeInOut", delay: delay + 0.1 }}
+                    className='absolute left-8 top-8 -bottom-12 z-0 w-0.5 origin-top bg-zinc-200 md:hidden'
+                />
             )}
 
             <div className='relative z-10 shrink-0 rounded-full bg-background p-2'>
