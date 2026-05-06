@@ -121,7 +121,7 @@ export function CustomTableReport({
               onPageChange(1);
             }}
           >
-            <SelectTrigger className="w-[70px] h-9 border-slate-200">
+            <SelectTrigger className="w-[70px] h-9 border-primary">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
