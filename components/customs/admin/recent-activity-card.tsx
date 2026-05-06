@@ -47,14 +47,14 @@ const dummyReports = [
 
 export default function RecentActivityCard({ className = '', }: RecentActivityCardProps) {
     return (
-        <Card className={`p-8 ${className}`}>
+        <Card className={`p-8 rounded-lg ${className}`}>
             <Card.Header>
                 <Card.Title className='text-lg font-bold font-heading'>Aktivitas Terbaru</Card.Title>
             </Card.Header>
             <Card.Content className='flex flex-col gap-2'>
                 {dummyReports.map((report) => (
                     <ReportItem
-                        key={report.id} 
+                        id={report.id} 
                         className='border-t-0 border-r-0 border-l-0 border-b rounded-none last:border-b-0'
                         user={report.user}
                         title={report.title}
