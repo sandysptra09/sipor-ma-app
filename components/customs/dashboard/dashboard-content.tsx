@@ -1,13 +1,15 @@
 'use client';
 
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
+import StatWidget, { StatData } from './widgets/stat-widget';
+import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
+import HelpWidget from './widgets/help-widget';
 import ReportCard from './cards/report-card';
-import { Clock4 } from 'lucide-react';
-import { LuFileText } from 'react-icons/lu';
+import { Clock4, History } from 'lucide-react';
+import { LuFileText, LuCircleCheckBig } from 'react-icons/lu';
 import { TbRosetteDiscountCheckFilled } from 'react-icons/tb';
-import { MdOutlineEngineering } from 'react-icons/md';
+import { MdOutlineEngineering, MdOutlineInsertComment } from 'react-icons/md';
 
-// 1. KITA BALIKIN DATA DUMMY-NYA DI SINI
 const tabItems: TabItem[] = [
     {
         id: 'semua',
@@ -119,26 +121,67 @@ const tabItems: TabItem[] = [
     }
 ];
 
+const statData: StatData = {
+    total: 24,
+    chipText: '+3 Bulan Ini',
+    proses: 8,
+    selesai: 16
+};
+
+const notificationData: NotificationItem[] = [
+    {
+        id: 1,
+        icon: <History size={16} strokeWidth={2.5} />,
+        message: <>Status laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-001</span> diperbarui ke Sedang Diproses.</>,
+        time: '1 JAM YANG LALU'
+    },
+    {
+        id: 2,
+        icon: <LuCircleCheckBig size={16} strokeWidth={2.5} />,
+        message: <>Selamat! Laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-002</span> telah dinyatakan selesai.</>,
+        time: 'KEMARIN'
+    },
+    {
+        id: 3,
+        icon: <MdOutlineInsertComment size={16} />,
+        message: <>Admin memberikan komentar pada laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-003</span> terkait lokasi.</>,
+        time: '3 HARI YANG LALU'
+    }
+];
+
 export default function DashboardContent() {
 
     return (
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12'>
+        <div className='flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full'>
 
-            <div className='lg:col-span-8 flex flex-col'>
+            <div className='contents lg:flex lg:flex-col lg:col-span-8 lg:gap-8'>
 
-                <div className='mb-8'>
+                <div className='order-1 flex flex-col mb-2 lg:mb-0'>
                     <h1 className='font-heading text-2xl font-extrabold text-[#181C1C] md:text-4xl'>Dashboard</h1>
                     <p className='mt-2 text-sm font-normal leading-relaxed text-foreground md:text-base'>
                         Pantau langsung status fasilitas sarana kampus dalam satu dashboard yang real-time dan terpercaya.
                     </p>
                 </div>
 
-                <div className='flex flex-col gap-6'>
+                <div className='order-3 w-full'>
                     <ReportFilterTabs items={tabItems} />
                 </div>
+
             </div>
 
-            <div className='lg:col-span-4 hidden lg:flex lg:flex-col gap-6'>
+            <div className='contents lg:flex lg:flex-col lg:col-span-4 lg:gap-6'>
+
+                <div className='order-2 w-full'>
+                    <StatWidget data={statData} />
+                </div>
+
+                <div className='order-4 w-full'>
+                    <NotificationWidget items={notificationData} />
+                </div>
+
+                <div className='order-5 w-full'>
+                    <HelpWidget />
+                </div>
 
             </div>
 
