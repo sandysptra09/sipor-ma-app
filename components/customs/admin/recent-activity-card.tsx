@@ -54,6 +54,7 @@ export default function RecentActivityCard({ className = '', }: RecentActivityCa
             <Card.Content className='flex flex-col gap-2'>
                 {dummyReports.map((report) => (
                     <ReportItem
+                        key={report.id}
                         id={report.id} 
                         className='border-t-0 border-r-0 border-l-0 border-b rounded-none last:border-b-0'
                         user={report.user}
