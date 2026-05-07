@@ -1,0 +1,144 @@
+'use client';
+
+import Image from 'next/image';
+import { Card, Chip, ProgressBar } from '@heroui/react';
+import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
+
+export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI';
+
+export interface ReportCardProps {
+    id: string;
+    title: string;
+    date: string;
+    status: ReportStatus;
+    imageSrc: string;
+    messageIcon?: ReactNode;
+    messageText: string;
+    actionIcon?: ReactNode;
+    actionText: string;
+    actionType?: 'neutral' | 'danger' | 'primary';
+    delay?: number;
+}
+
+export default function ReportCard({
+    id,
+    title,
+    date,
+    status,
+    imageSrc,
+    messageIcon,
+    messageText,
+    actionIcon,
+    actionText,
+    actionType = 'neutral',
+    delay = 0
+}: ReportCardProps) {
+
+    const statusConfig = {
+        PENDING: {
+            chipBg: 'bg-red-100',
+            chipText: 'text-destructive',
+            label: 'PENDING',
+            progressValue: 15,
+        },
+        PROSES: {
+            chipBg: 'bg-[#e6f4f1]',
+            chipText: 'text-[#0A6F66]',
+            label: 'SEDANG DIPROSES',
+            progressValue: 50,
+        },
+        SELESAI: {
+            chipBg: 'bg-[#A7E9D1]',
+            chipText: 'text-[#0A6F66]',
+            label: 'SELESAI',
+            progressValue: 100,
+        }
+    };
+
+    const config = statusConfig[status];
+
+    const actionTextColor =
+        actionType === 'danger' ? 'text-destructive font-semibold' :
+            actionType === 'primary' ? 'text-[#004C3F] font-semibold' :
+                'text-foreground font-medium';
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5, delay }}
+        >
+            <Card className='w-full bg-white border-none rounded-2xl'>
+
+                <Card.Content className='p-2'>
+
+                    <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
+                        <div className='flex items-center gap-5'>
+                            <div className='relative h-14 w-14 md:h-16 md:w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100'>
+                                <Image
+                                    src={imageSrc}
+                                    alt={title}
+                                    fill
+                                    className='object-cover'
+                                    sizes='(max-width: 768px) 56px, 64px'
+                                    unoptimized
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <h3 className='text-base md:text-lg font-semibold text-[#181C1C]'>{title}</h3>
+                                <p className='text-xs font-normal text-muted-foreground uppercase tracking-wider'>
+                                    ID: {id} • {date}
+                                </p>
+                            </div>
+                        </div>
+
+                        <Chip className={`rounded-full px-3 py-1 border-none ${config.chipBg}`}>
+                            <Chip.Label className={`font-semibold text-xs tracking-wider ${config.chipText}`}>
+                                {config.label}
+                            </Chip.Label>
+                        </Chip>
+                    </div>
+
+                    <div className='mt-6'>
+                        <div className='flex justify-between text-[10px] font-semibold tracking-wider mb-1'>
+                            <span className={status === 'PENDING' || status === 'PROSES' || status === 'SELESAI' ? 'text-[#0A6F66]' : 'text-zinc-400'}>
+                                PENDING
+                            </span>
+                            <span className={status === 'PROSES' || status === 'SELESAI' ? 'text-[#0A6F66] text-center' : 'text-zinc-400 text-center'}>
+                                SEDANG DIPROSES
+                            </span>
+                            <span className={status === 'SELESAI' ? 'text-[#0A6F66] text-right' : 'text-zinc-400 text-right'}>
+                                SELESAI
+                            </span>
+                        </div>
+
+                        <ProgressBar
+                            aria-label={`Progress laporan: ${config.label}`}
+                            value={config.progressValue}
+                            className='w-full'
+                        >
+                            <ProgressBar.Track className='h-2 bg-zinc-200/60 rounded-full border-none'>
+                                <ProgressBar.Fill className='bg-[#0A6F66] rounded-full' />
+                            </ProgressBar.Track>
+                        </ProgressBar>
+                    </div>
+
+                    <div className='mt-4 md:mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+                        <div className='flex items-center gap-2 text-[13px] text-[#181C1C] font-medium'>
+                            {messageIcon && <span className='text-primary'>{messageIcon}</span>}
+                            <span>{messageText}</span>
+                        </div>
+
+                        <div className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity`}>
+                            {actionIcon}
+                            <span>{actionText}</span>
+                        </div>
+                    </div>
+
+                </Card.Content>
+            </Card>
+        </motion.div>
+    );
+}
