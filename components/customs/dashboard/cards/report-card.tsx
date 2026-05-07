@@ -87,7 +87,7 @@ export default function ReportCard({
                                 />
                             </div>
                             <div className='flex flex-col'>
-                                <h3 className='text-base md:text-lg font-semibold text-[#181C1C]'>{title}</h3>
+                                <h3 className='text-sm md:text-lg font-semibold text-[#181C1C]'>{title}</h3>
                                 <p className='text-xs font-normal text-muted-foreground uppercase tracking-wider'>
                                     ID: {id} • {date}
                                 </p>
