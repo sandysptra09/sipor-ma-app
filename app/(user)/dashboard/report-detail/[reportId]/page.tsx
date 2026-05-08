@@ -57,9 +57,9 @@ export default function ReportDetailPage() {
                         Detail Dokumentasi Perbaikan
                     </h1>
 
-                    <p className='text-primary font-bold text-sm sm:text-base'>
+                    {/* <p className='text-primary font-bold text-sm sm:text-base'>
                         selesai
-                    </p>
+                    </p> */}
                 </div>
 
                 {/* div bungkus */}
@@ -69,7 +69,7 @@ export default function ReportDetailPage() {
                         {/* div card */}
                         <div className='flex flex-col md:flex-row gap-6'>
                             <ReportCardReporter
-                                image="/your-image.jpg"
+                                image="https://mahesasyawala.github.io/siporma/assets/images/before-repair.png"
                                 state="SEBELUM"
                                 content="AC di Ruang 006 mati total dan berbunyi bising sejak pagi tadi. Mohon segera diperbaiki karena suhu ruangan sangat panas."
                                 reporter="Nama Siswa"
@@ -77,9 +77,9 @@ export default function ReportDetailPage() {
                             />
 
                             <ReportCardSarpras
-                                image="/your-image.jpg"
+                                image="https://mahesasyawala.github.io/siporma/assets/images/after-repair.png"
                                 state="SESUDAH"
-                                content="AC di Ruang 006 mati total dan berbunyi bising sejak pagi tadi. Mohon segera diperbaiki karena suhu ruangan sangat panas."
+                                content="Semua komponen sepenuhnya diganti dan kembali berfungsi dengan baik. Filter udara juga sudah dibersihkan"
                                 sarpras="Budi Santoso"
                                 timestamp="12 Okt 2024, 09:15"
                             />
@@ -116,10 +116,10 @@ export default function ReportDetailPage() {
                         {/* report information */}
                         <div>
                             <InformasiLaporan
-                                id='asads'
-                                location='asdasad'
-                                category='dasdads'
-                                priority='tinggi'
+                                id='#REP-2026-001'
+                                location='Gedung Biru Lt. 5, Ruang 314'
+                                category='AC'
+                                priority='Tinggi'
                             />
                         </div>
 

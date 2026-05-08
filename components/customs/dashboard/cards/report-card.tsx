@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Card, Chip, ProgressBar } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
+import Link from 'next/link';
 
 export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI';
 
@@ -133,7 +134,7 @@ export default function ReportCard({
 
                         <div className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity`}>
                             {actionIcon}
-                            <span>{actionText}</span>
+                            <Link href={'/dashboard/report-detail/rep-2026-001'}>{actionText}</Link>
                         </div>
                     </div>
 
