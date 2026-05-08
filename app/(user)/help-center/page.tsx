@@ -4,6 +4,7 @@ import { User, Settings, Megaphone, ChevronDown } from "lucide-react";
 import React, { useState } from 'react'
 import { Accordion } from '@heroui/react';
 import { text } from 'framer-motion/client';
+import CtaBanner from '@/components/customs/landing/banners/cta-banner';
 
 const items = [
     {
@@ -146,6 +147,15 @@ export default function HelpCenterPage() {
                     </div>
                 </div>
             </div>
+
+            <div className='w-full bg-background py-10 md:py-14 min-h-[70vh] flex flex-col justify-center'>
+                <div className='mx-auto w-full max-w-6xl px-6 lg:px-8'>
+
+                    <CtaBanner />
+
+                </div>
+            </div>
+
         </div>
     )
 }
