@@ -4,10 +4,10 @@ import PrivacyContent from '@/components/customs/privacy-policy/main-content/pri
 
 export default function PrivacyPolicyPage() {
     return (
-        <div  className='w-full py-20 lg:py-28'>
+        <div className='min-h-screen w-full bg-background py-10 md:py-12'>
             <div className='mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:px-8'>
-                <div className='hidden lg:block lg:w-[280px] self-start sticky top-48'>
-                    <Sidebar/>
+                <div className='hidden lg:block lg:w-70 self-start sticky top-48'>
+                    <Sidebar />
                 </div>
 
                 <div className='w-full flex-1'>
@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
                         Kebijakan
                         <span className='text-black'> Privasi</span>
                     </h1>
-                    <PrivacyContent/>
+                    <PrivacyContent />
                 </div>
             </div>
         </div>
