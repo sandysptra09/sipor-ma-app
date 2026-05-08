@@ -5,11 +5,11 @@ import React from 'react'
 
 export default function ContactPage() {
     return (
-        <div className='w-full bg-card py-20 lg:py-28'>
+        <div className='min-h-screen w-full bg-background py-10 md:py-12'>
             <div className='mx-auto w-full max-w-6xl px-6 lg:px-8'>
                 <div className='w-full mb-8'>
                     <h1 className='mb-4 text-4xl font-heading font-bold text-black'>
-                        Kontak 
+                        Kontak
                         <span className='text-primary'> Kami</span>
                     </h1>
                     <p className=' font-sans text-base leading-relaxed text-black-100'>
@@ -20,8 +20,8 @@ export default function ContactPage() {
                 </div>
 
                 <div className='flex flex-col-reverse gap-16 lg:flex-row'>
-                    <CardInformation/>
-                    <CustomCardContact/>
+                    <CardInformation />
+                    <CustomCardContact />
                 </div>
             </div>
         </div>

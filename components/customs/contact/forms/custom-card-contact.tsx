@@ -6,17 +6,16 @@ import CustomInputTextfield from '../inputs/custom-input-textfield'
 
 export default function CustomCardContact() {
   return (
-    <div className='rounded-lg w-full bg-card shadow-md pt-[48px] px-[48px] pb-[64px] lg:w-1/2'>
-        <h2 className='mb-3 text-2xl md:text-3xl font-heading font-bold text-primary'>Kirim Pesan</h2>
+    <div className='rounded-lg w-full bg-card shadow-md pt-12 px-12 pb-16 lg:w-1/2'>
+      <h2 className='mb-3 text-2xl md:text-3xl font-heading font-bold text-primary'>Kirim Pesan</h2>
 
-        <CustomInputTextfield label='FULL NAME' placeholder='Nama Lengkap Anda'/>
-        <CustomInputTextfield label='EMAIL ADDRES' placeholder='email@kampus.ac.id'/>
+      <CustomInputTextfield label='FULL NAME' placeholder='Nama Lengkap Anda' />
 
-        <CustomInputTextArea label='MESSAGE' placeholder='Tuliskan pesan anda disini' />
+      <CustomInputTextfield label='EMAIL ADDRES' placeholder='email@kampus.ac.id' />
 
-        <CustomButtonContact name='Kirim Pesan'>
-            
-        </CustomButtonContact>
+      <CustomInputTextArea label='MESSAGE' placeholder='Tuliskan pesan anda disini' />
+
+      <CustomButtonContact name='Kirim Pesan' />
 
     </div>
   )
