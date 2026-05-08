@@ -6,7 +6,8 @@ import RecentActivityCard from "@/components/customs/admin/recent-activity-card"
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
 import { CustomTableReport } from "@/components/customs/admin/custom-table-report";
 import { BadgeCheck, Clock, MapPin, TrendingUp, Eye } from "lucide-react";
-import {  Chip } from "@heroui/react";
+import { Chip } from "@heroui/react";
+import Link from "next/link";
 
 const columns = [
     {
@@ -48,13 +49,13 @@ const columns = [
         name: "STATUS",
         render: (item: any) => {
             const statusConfig: any = {
-                SELESAI: { color: "text-white bg-primary", label: "SELESAI" },
-                DITOLAK: { color: "text-white bg-red-600", label: "DITOLAK" },
-                DIPROSES: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
-                MENUNGGU: { color: "text-gray-600 bg-gray-500/20", label: "MENUNGGU" },
-                DIVERIFIKASI: { color: "text-amber-500 bg-amber-500/20", label: "DIVERIFIKASI" },
+                completed: { color: "text-white bg-primary", label: "SELESAI" },
+                rejected: { color: "text-white bg-red-600", label: "DITOLAK" },
+                process: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
+                pending: { color: "text-gray-600 bg-gray-500/20", label: "MENUNGGU" },
+                verified: { color: "text-amber-500 bg-amber-500/20", label: "DIVERIFIKASI" },
             };
-            const current = statusConfig[item.status] || statusConfig.MENUNGGU;
+            const current = statusConfig[item.status] || statusConfig.pending;
             return (
                 <Chip size="sm" className={`font-semibold text-[10px] px-2.5 py-0.5      ${current.color}`}>
                     {current.label}
@@ -66,12 +67,12 @@ const columns = [
         id: "aksi",
         name: "AKSI",
         render: (item: any) => (
-            <button
-                onClick={() => console.log("View detail:", item.id)}
+            <Link
+                href={`/admin/report-management/${item.id}?status=${item.status}`}
                 className="inline-flex items-center justify-center p-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors cursor-pointer"
             >
                 <Eye size={22} />
-            </button>
+            </Link>
         )
     },
 ];
@@ -84,7 +85,7 @@ const dataList = [
         deskripsi: "Kaki kaki nya patah",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "SELESAI",
+        status: "completed",
     },
     {
         id: "2",
@@ -93,7 +94,7 @@ const dataList = [
         deskripsi: "Air tidak mengalir",
         lokasi: "Gedung Baru, 04.005",
         kategori: "SANITASI",
-        status: "DITOLAK",
+        status: "rejected",
     },
     {
         id: "3",
@@ -102,7 +103,7 @@ const dataList = [
         deskripsi: "AC mati tidak terasa dingin",
         lokasi: "Gedung Baru, 04.005",
         kategori: "AC",
-        status: "MENUNGGU",
+        status: "pending",
     },
     {
         id: "4",
@@ -111,7 +112,7 @@ const dataList = [
         deskripsi: "Lampu pada ruangan mati",
         lokasi: "Gedung Baru, 04.005",
         kategori: "KELISTRIKAN",
-        status: "DIPROSES",
+        status: "process",
     },
     {
         id: "5",
@@ -120,7 +121,7 @@ const dataList = [
         deskripsi: "Pena digital hilang",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "DIVERIFIKASI",
+        status: "verified",
     }, {
         id: "11",
         report_id: "#FAC-2024-001",
@@ -128,7 +129,7 @@ const dataList = [
         deskripsi: "Kaki kaki nya patah",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "SELESAI",
+        status: "completed",
     },
     {
         id: "21",
@@ -137,7 +138,7 @@ const dataList = [
         deskripsi: "Air tidak mengalir",
         lokasi: "Gedung Baru, 04.005",
         kategori: "SANITASI",
-        status: "DITOLAK",
+        status: "rejected",
     },
     {
         id: "13",
@@ -146,7 +147,7 @@ const dataList = [
         deskripsi: "AC mati tidak terasa dingin",
         lokasi: "Gedung Baru, 04.005",
         kategori: "AC",
-        status: "MENUNGGU",
+        status: "pending",
     },
     {
         id: "41",
@@ -155,7 +156,7 @@ const dataList = [
         deskripsi: "Lampu pada ruangan mati",
         lokasi: "Gedung Baru, 04.005",
         kategori: "KELISTRIKAN",
-        status: "DIPROSES",
+        status: "process",
     },
     {
         id: "51",
@@ -164,7 +165,7 @@ const dataList = [
         deskripsi: "Pena digital hilang",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "DIVERIFIKASI",
+        status: "verified",
     },
     {
         id: "12",
@@ -173,7 +174,7 @@ const dataList = [
         deskripsi: "Kaki kaki nya patah",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "SELESAI",
+        status: "completed",
     },
     {
         id: "22",
@@ -182,7 +183,7 @@ const dataList = [
         deskripsi: "Air tidak mengalir",
         lokasi: "Gedung Baru, 04.005",
         kategori: "SANITASI",
-        status: "DITOLAK",
+        status: "rejected",
     },
     {
         id: "32",
@@ -191,7 +192,7 @@ const dataList = [
         deskripsi: "AC mati tidak terasa dingin",
         lokasi: "Gedung Baru, 04.005",
         kategori: "AC",
-        status: "MENUNGGU",
+        status: "pending",
     },
     {
         id: "222",
@@ -200,7 +201,7 @@ const dataList = [
         deskripsi: "Lampu pada ruangan mati",
         lokasi: "Gedung Baru, 04.005",
         kategori: "KELISTRIKAN",
-        status: "DIPROSES",
+        status: "process",
     },
     {
         id: "25",
@@ -209,7 +210,7 @@ const dataList = [
         deskripsi: "Pena digital hilang",
         lokasi: "Gedung Baru, 04.005",
         kategori: "FURNITURE",
-        status: "DIVERIFIKASI",
+        status: "verified",
     },
 ];
 
@@ -263,14 +264,14 @@ export default function Page() {
             <div className="col-span-6">
                 <CustomTableReport
                     columns={columns}
-                    data={currentData} 
+                    data={currentData}
                     totalRecords={dataList.length}
                     currentPage={currentPage}
                     rowsPerPage={rowsPerPage}
                     onPageChange={(page) => setCurrentPage(page)}
                     onRowsPerPageChange={(rows) => {
                         setRowsPerPage(rows);
-                        setCurrentPage(1); 
+                        setCurrentPage(1);
                     }}
                 />
             </div>
