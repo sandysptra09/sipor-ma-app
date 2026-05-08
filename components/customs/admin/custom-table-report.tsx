@@ -133,7 +133,7 @@ export function CustomTableReport({
             </SelectContent>
           </Select>
           <p className="text-sm text-foreground font-medium whitespace-nowrap">
-            Showing{endIdx} of {totalRecords} active reports
+            Showing {endIdx} of {totalRecords} active reports
           </p>
         </div>
 
