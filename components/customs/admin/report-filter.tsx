@@ -35,7 +35,7 @@ export function ReportFilter({
     onReset,
 }: ReportFilterProps) {
     return (
-        <div className='grid grid-cols-5 gap-8 p-2.5 bg-background'>
+        <div className='grid grid-cols-5 gap-8 p-2.5 bg-background rounded-lg'>
 
             {/* Start Date */}
             <div className="flex flex-col gap-2 w-full">
