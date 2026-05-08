@@ -13,7 +13,7 @@ import {
 
 interface ReportData {
   id: string | number;
-  type: 'success' | 'process' | 'rejected' | 'verification' | 'pending';
+  type: 'completed' | 'process' | 'rejected' | 'verified' | 'pending';
   user: string;
   title: string;
   location: string;
@@ -40,12 +40,9 @@ export default function ReportNotificationCard({
   onRowsPerPageChange,
 }: ReportNotificationCardProps) {
 
-  // --- LOGIKA PAGINATION CLIENT-SIDE ---
-  // Menghitung indeks data yang akan dipotong (slice)
   const indexOfLastItem = currentPage * rowsPerPage;
   const indexOfFirstItem = indexOfLastItem - rowsPerPage;
 
-  // Memotong data asli agar hanya tampil sesuai limit rowsPerPage
   const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
@@ -70,7 +67,7 @@ export default function ReportNotificationCard({
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 p-8">
+    <div className="w-full bg-white rounded-lg shadow-md ring-0 overflow-hidden border border-gray-100 p-8">
 
       {/* List Content */}
       <div className="flex flex-col">
@@ -102,7 +99,7 @@ export default function ReportNotificationCard({
             value={rowsPerPage.toString()}
             onValueChange={(value) => {
               onRowsPerPageChange(Number(value));
-              onPageChange(1); // Reset ke halaman 1 saat ganti jumlah tampilan
+              onPageChange(1);
             }}
           >
             <SelectTrigger className="w-[70px] h-9 border-primary focus:ring-0">
