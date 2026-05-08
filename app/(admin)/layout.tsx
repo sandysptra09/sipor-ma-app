@@ -40,12 +40,12 @@ export default function AdminLayout({
         <>
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset>
-                    <header className="sticky top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 ">
-                        <a href="#" className="text-primary">
+                <SidebarInset className="bg-white/80">
+                    <header className="sticky z-[50] top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
+                        <Link href={`/admin/notifications`} className="text-primary">
                             <Bell size={18} />
-                        </a>
-                        <div className="w-fit flex gap-2 items-center">
+                        </Link>
+                        <Link href={`/admin/profile`} className="w-fit flex gap-2 items-center">
                             <div className="text-right">
                                 <p className="text-sm font-semibold text-black">Admin</p>
                                 <p className="text-xs text-gray-500">SIPOR-MA Admin</p>
@@ -53,7 +53,7 @@ export default function AdminLayout({
                             <div className=" bg-gray-600 h-[35px] w-[35px] rounded-full">
 
                             </div>
-                        </div>
+                        </Link>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm">
                         <div className="flex gap-2 items-center" >

@@ -62,12 +62,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="bg-white">
         <div className=" w-ful h-12 text-center">
           LOGO
         </div>
       </SidebarHeader>
-      <SidebarContent className="gap-0 px-2">
+      <SidebarContent className="gap-0 px-2 bg-white">
 
         <SidebarGroupLabel className="mt-3 uppercase">reports</SidebarGroupLabel>
         <SidebarMenu>
