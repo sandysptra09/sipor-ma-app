@@ -19,7 +19,7 @@ export default function LoginForm() {
 
             <TextFieldInput
                 name='email-or-nim'
-                label='NIM atau Email Intuisi'
+                label='NIM atau Email Institusi'
                 placeholder='Masukan NIM atau Email'
                 startIcon={<User size={18} />}
             />
