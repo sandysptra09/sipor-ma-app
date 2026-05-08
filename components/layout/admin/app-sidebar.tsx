@@ -26,6 +26,8 @@ import { Bell, ChartColumnIncreasing, ChevronRightIcon, DoorOpen, LayoutDashboar
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import SipormaLogo from '@/public/assets/icons/siporma-icon.svg';
+import Image from "next/image"
 
 // This is sample data.
 const data = {
@@ -63,8 +65,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="bg-white">
-        <div className=" w-ful h-12 text-center">
-          LOGO
+        <div className="flex items-center justify-center w-ful h-12 text-center">
+          <Image
+            src='/assets/images/siporma-icon.svg'
+            alt='Logo SIPOR-MA'
+            width={32}
+            height={32}
+            className='h-7 w-7 object-contain md:h-8 md:w-8'
+          />
+          <span className='font-heading text-lg font-bold tracking-wider text-primary md:text-xl'>
+            SIPOR-MA
+          </span>
         </div>
       </SidebarHeader>
       <SidebarContent className="gap-0 px-2 bg-white">
