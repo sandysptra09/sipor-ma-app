@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import {
     Card,
     CardContent
@@ -13,10 +13,10 @@ import {
     Hammer,
     TriangleAlert
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns'
 import { cn } from "@/lib/utils";
 
-type ReportItemType = 'success' | 'process' | 'rejected' | 'verification' | 'pending';
+type ReportItemType = 'completed' | 'process' | 'rejected' | 'verified' | 'pending';
 
 interface ReportItemProps {
     id: string | number;
@@ -43,7 +43,7 @@ export default function ReportItem({
 }: ReportItemProps) {
 
     const typeStyle = {
-        success: {
+        completed: {
             icon: <Check size={20} />,
             badge: 'selesai',
             theme: 'text-primary bg-primary/20',
@@ -58,7 +58,7 @@ export default function ReportItem({
             badge: 'ditolak',
             theme: 'text-red-600 bg-red-500/20',
         },
-        verification: {
+        verified: {
             icon: <BadgeCheck size={20} />,
             badge: 'diverifikasi',
             theme: 'text-amber-500 bg-amber-500/20',
@@ -71,13 +71,13 @@ export default function ReportItem({
     }[type];
 
     const timeAgo = datetime
-        ? formatDistanceToNow(new Date(datetime), {
+        ? formatDistanceToNowStrict(new Date(datetime), {
             addSuffix: true,
         })
-        : "";
+        : ""
 
     return (
-        <Link href={`/admin/reports/${id}`} className="block transition-transform active:scale-[0.98] border-b-2 border-gray-100 last:border-0">
+        <Link href={`/admin/report-management/${id}?status=${type}`} className="block transition-transform active:scale-[0.98] border-b-2 border-gray-100 last:border-0">
             <Card className={cn("flex flex-row items-start px-2 py-4 gap-5 rounded-none shadow-none ring-0 border-0 hover:bg-background", className)}>
                 {/* Icon Container */}
                 <div className={cn("p-3 rounded-lg shrink-0", typeStyle.theme)}>
