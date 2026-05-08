@@ -23,14 +23,14 @@ const dummyReports = [
         location: 'Ruang Meeting Utama',
         type: 'rejected',
         description: 'Laporan ditolak karena kabel HDMI hanya kendor, tidak ada kerusakan hardware.',
-        datetime: new Date(),
+        datetime: '2024-10-24T09:46:00', 
     },
     {
         id: 4,
         user: 'Rina Wijaya',
         title: 'Kursi Patah',
         location: 'Ruang Kelas A3',
-        type: 'success',
+        type: 'completed',
         description: 'Kursi sudah diganti dengan yang baru oleh tim sarana prasarana.',
         datetime: '2024-05-15',
     },
@@ -41,13 +41,13 @@ const dummyReports = [
         location: 'Toilet Pria Lt. 1',
         type: 'process',
         description: 'Air terus mengalir meskipun keran sudah ditutup rapat. Boros air!',
-        datetime: Date.now() - 3600000 * 2,
+        datetime: '2024-05-15T10:00:00',
     },
 ];
 
 export default function RecentActivityCard({ className = '', }: RecentActivityCardProps) {
     return (
-        <Card className={`p-8 rounded-lg ${className}`}>
+        <Card className={`p-8 rounded-lg shadow-md ${className}`}>
             <Card.Header>
                 <Card.Title className='text-lg font-bold font-heading'>Aktivitas Terbaru</Card.Title>
             </Card.Header>
