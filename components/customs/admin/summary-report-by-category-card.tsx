@@ -16,7 +16,7 @@ const categoryData = [
 
 export default function SummaryReportByCategoryCard({ className }: SummaryReportByCategoryCardProps) {
   return (
-    <Card className={`p-8 rounded-lg ${className}`}>
+    <Card className={`p-8 rounded-lg shadow-md ring-0 ${className}`}>
       {/* Header Section */}
       <div className='flex flex-row items-center justify-between mb-8'>
         <div className='flex flex-col'>
