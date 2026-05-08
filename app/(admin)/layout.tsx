@@ -39,9 +39,9 @@ export default function AdminLayout({
     return (
         <>
             <SidebarProvider>
-                <AppSidebar/>
+                <AppSidebar />
                 <SidebarInset className="bg-white/80">
-                    <header className="sticky top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white ">
+                    <header className="sticky z-[50] top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
                         <a href="#" className="text-primary">
                             <Bell size={18} />
                         </a>
