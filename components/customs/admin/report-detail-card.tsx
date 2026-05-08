@@ -45,11 +45,11 @@ export function ReportDetailCard({
             <CardFooter className='bg-foreground/5 p-6 grid grid-cols-2 gap-6 items-start rounded-[8px]'>
                 <div className='flex flex-col gap-1'>
                     <p className='uppercase text-[10px] tracking-[1px] font-semibold text-foreground/40'>Lokasi Spesifik</p>
-                    <p className='text-[16px] leading-6 text-[#181C1C]'>{location}</p>
+                    <p className='text-[16px] leading-6 text-[#181C1C] font-medium'>{location}</p>
                 </div>
                 <div className='flex flex-col gap-1'>
                     <p className='uppercase text-[10px] tracking-[1px] font-semibold text-foreground/40'>Pelapor</p>
-                    <p className='text-[16px] leading-6 text-[#181C1C]'>{reporter}</p>
+                    <p className='text-[16px] leading-6 text-[#181C1C] font-medium'>{reporter}</p>
                 </div>
             </CardFooter>
         </Card>
