@@ -42,7 +42,7 @@ export default function AdminLayout({
                 <AppSidebar />
                 <SidebarInset className="bg-white/80">
                     <header className="sticky z-[50] top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
-                        <Link href={`/admin/notification`} className="text-primary">
+                        <Link href={`/admin/notifications`} className="text-primary">
                             <Bell size={18} />
                         </Link>
                         <Link href={`/admin/profile`} className="w-fit flex gap-2 items-center">
