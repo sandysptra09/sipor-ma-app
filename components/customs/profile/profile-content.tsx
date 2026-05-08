@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { FileText, CheckCircle2, RefreshCcw } from 'lucide-react';
 import ProfileHeaderCard from './cards/profile-header-card';
 import StatCard from './cards/stat-card';
+import AccountInfoCard from './cards/account-info-card';
+import NotificationCard from './cards/notification-card';
 
 export default function ProfileContent() {
     return (
@@ -39,7 +41,8 @@ export default function ProfileContent() {
             <div className='grid grid-cols-1 md:grid-cols-12 gap-6 w-full mt-2'>
 
                 <div className='flex flex-col md:col-span-7 gap-6'>
-
+                    <AccountInfoCard />
+                    <NotificationCard />
                 </div>
 
                 <div className='flex flex-col md:col-span-5 gap-6'>
