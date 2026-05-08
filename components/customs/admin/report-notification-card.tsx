@@ -125,7 +125,7 @@ export default function ReportNotificationCard({
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="text-slate-500 hover:text-slate-900 font-semibold px-4 h-9"
+            className="text-slate-900 font-semibold px-4 h-9"
           >
             Previous
           </Button>
