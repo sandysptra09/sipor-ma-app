@@ -19,6 +19,7 @@ import { Calendar as CalendarIcon, Eye, Funnel, FunnelX, MapPin } from 'lucide-r
 import React, { useState } from 'react'
 import { ReportFilter } from "@/components/customs/admin/report-filter";
 import Link from "next/link";
+import TitlePage from "@/components/customs/admin/title-page";
 
 
 const columns = [
@@ -258,7 +259,9 @@ export default function ReportManagementPage() {
     const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
-        <div className='flex flex-col gap-5'>
+        <div className='flex flex-col gap-8'>
+            <TitlePage title="Manajemen Laporan" desc="Kelola dan pantau status pemeliharaan fasilitas kampus"/>
+
             <ReportFilter
                 startDate={startDate}
                 endDate={endDate}
