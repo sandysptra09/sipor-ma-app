@@ -12,7 +12,7 @@ export default function DescriptionTextarea({ value, onChange }: DescriptionText
     return (
         <TextField className='w-full flex flex-col gap-2'>
             <Label isRequired className='text-xs font-semibold uppercase tracking-wider text-foreground'>
-                Deskripsi Tambahan (Opsional)
+                Deskripsi Kerusakan
             </Label>
             <TextArea
                 value={value}
