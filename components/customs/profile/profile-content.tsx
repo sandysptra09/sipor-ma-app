@@ -6,6 +6,8 @@ import ProfileHeaderCard from './cards/profile-header-card';
 import StatCard from './cards/stat-card';
 import AccountInfoCard from './cards/account-info-card';
 import NotificationCard from './cards/notification-card';
+import SecurityForm from './forms/security-form';
+import HelpCard from './cards/help-card';
 
 export default function ProfileContent() {
     return (
@@ -46,7 +48,8 @@ export default function ProfileContent() {
                 </div>
 
                 <div className='flex flex-col md:col-span-5 gap-6'>
-
+                    <SecurityForm />
+                    <HelpCard />
                 </div>
             </div>
 
