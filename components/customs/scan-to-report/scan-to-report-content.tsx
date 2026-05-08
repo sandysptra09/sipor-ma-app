@@ -15,6 +15,7 @@ export default function ScanToReportContent() {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className='flex flex-col gap-6 md:gap-8 w-full mx-auto'
         >
             <div className='flex flex-col w-full gap-1'>
