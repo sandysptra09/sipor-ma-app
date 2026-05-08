@@ -25,7 +25,7 @@ const MOCK_REPORTS = [
     },
     {
         id: "REP-003",
-        type: "success" as const,
+        type: "completed" as const,
         user: "Budi Doremi",
         title: "Sampah Menumpuk",
         location: "Pasar Baru",
@@ -52,7 +52,7 @@ const MOCK_REPORTS = [
     },
     {
         id: "REP-023",
-        type: "success" as const,
+        type: "completed" as const,
         user: "Budi Doremi",
         title: "Sampah Menumpuk",
         location: "Pasar Baru",
@@ -79,7 +79,7 @@ const MOCK_REPORTS = [
     },
     {
         id: "REP-0243",
-        type: "success" as const,
+        type: "completed" as const,
         user: "Budi Doremi",
         title: "Sampah Menumpuk",
         location: "Pasar Baru",
@@ -107,7 +107,7 @@ const MOCK_REPORTS = [
     },
     {
         id: "REP-0253",
-        type: "success" as const,
+        type: "completed" as const,
         user: "Budi Doremi",
         title: "Sampah Menumpuk",
         location: "Pasar Baru",
@@ -135,7 +135,7 @@ const MOCK_REPORTS = [
     },
     {
         id: "REP-1034",
-        type: "success" as const,
+        type: "completed" as const,
         user: "Budi Doremi",
         title: "Sampah Menumpuk",
         location: "Pasar Baru",
@@ -147,7 +147,7 @@ const MOCK_REPORTS = [
 export default function AdminNotificationsPage() {
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const totalRecords = MOCK_REPORTS.length;
 
@@ -166,7 +166,7 @@ export default function AdminNotificationsPage() {
         console.log('Action triggered!');
     };
     return (
-        <div className='flex flex-col gap-[32px]'>
+        <div className='flex flex-col gap-8'>
             <TitlePage title='Notifikasi' desc='Pembaruan dan Pemberitahuan Laporan terbaru yang masuk' />
 
             <ReportNotificationCard
