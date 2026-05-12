@@ -42,25 +42,28 @@ export default function AdminLayout({
                 <AppSidebar />
                 <SidebarInset className="bg-white/80">
                     <header className="sticky z-[50] top-0 flex h-16 shrink-0 justify-between md:justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
-                        <Link href={`/admin/notifications`} className="text-primary">
-                            <Bell size={18} />
-                        </Link>
-                        <Link href={`/admin/profile`} className="w-fit flex gap-2 items-center">
-                            <div className="text-right">
-                                <p className="text-sm font-semibold text-black">Admin</p>
-                                <p className="text-xs text-gray-500">SIPOR-MA Admin</p>
-                            </div>
-                            <div className=" bg-gray-600 h-[35px] w-[35px] rounded-full">
+                        <SidebarTrigger className="-ml-1 flex md:hidden" />
+                        <div className="flex gap-4 items-center">
+                            <Link href={`/admin/notifications`} className="text-primary">
+                                <Bell size={18} />
+                            </Link>
+                            <Link href={`/admin/profile`} className="w-fit flex gap-2 items-center">
+                                <div className="text-right hidden md:flex flex-col">
+                                    <p className="text-sm font-semibold text-black">Admin</p>
+                                    <p className="text-xs text-gray-500">SIPOR-MA Admin</p>
+                                </div>
+                                <div className=" bg-gray-600 h-[35px] w-[35px] rounded-full">
 
-                            </div>
-                        </Link>
+                                </div>
+                            </Link>
+                        </div>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm">
-                        <div className="flex gap-2 items-center" >
-                            <SidebarTrigger className="-ml-1" />
+                        <div className="hidden md:flex gap-2 items-center" >
+                            <SidebarTrigger className="-ml-1 hidden md:flex" />
                             <Separator
                                 orientation="vertical"
-                                className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+                                className="hidden md:flex mr-2 data-vertical:h-4 data-vertical:self-auto"
                             />
                             <Breadcrumb>
                                 <BreadcrumbList>
