@@ -226,7 +226,7 @@ export default function Page() {
         <div className="grid grid-cols-6 gap-[20px]">
             {/* Row 1: Summary Cards */}
             <SummaryCardReport
-                className="col-span-2"
+                className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
                 subTitle="Testing"
                 count={1222}
@@ -235,7 +235,7 @@ export default function Page() {
                 description={<><TrendingUp size={14} /> +12% dari bulan lalu</>}
             />
             <SummaryCardReport
-                className="col-span-2"
+                className="col-span-6 md:col-span-2"
                 title={"Laporan Keluar"}
                 subTitle="Testing"
                 count={1222}
@@ -244,7 +244,7 @@ export default function Page() {
                 description={<><Clock size={14} /> Estimasi selesai: 3 hari</>}
             />
             <SummaryCardReport
-                className="col-span-2"
+                className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
                 subTitle="Testing"
                 count={1222}
@@ -255,10 +255,10 @@ export default function Page() {
 
             {/* Row 2: Charts & Activities */}
             <RecentActivityCard
-                className='col-span-3'
+                className='col-span-6 md:col-span-3'
             />
             <SummaryReportByCategoryCard
-                className='col-span-3'
+                className='col-span-6 md:col-span-3'
             />
 
             <div className="col-span-6">

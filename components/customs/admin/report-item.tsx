@@ -80,7 +80,7 @@ export default function ReportItem({
         <Link href={`/admin/report-management/${id}?status=${type}`} className="block transition-transform active:scale-[0.98] border-b-2 border-gray-100 last:border-0">
             <Card className={cn("flex flex-row items-start px-2 py-4 gap-5 rounded-none shadow-none ring-0 border-0 hover:bg-background", className)}>
                 {/* Icon Container */}
-                <div className={cn("p-3 rounded-lg shrink-0", typeStyle.theme)}>
+                <div className={cn("hidden md:flex p-3 rounded-lg shrink-0", typeStyle.theme)}>
                     {icon ? icon : typeStyle.icon}
                 </div>
 
