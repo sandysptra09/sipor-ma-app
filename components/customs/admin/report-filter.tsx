@@ -35,7 +35,7 @@ export function ReportFilter({
     onReset,
 }: ReportFilterProps) {
     return (
-        <div className='grid grid-cols-5 gap-8 p-2.5 bg-background rounded-lg'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 p-2.5 bg-background rounded-lg'>
 
             {/* Start Date */}
             <div className="flex flex-col gap-2 w-full">
@@ -165,7 +165,7 @@ export function ReportFilter({
             </div>
 
             {/* Buttons */}
-            <div className='flex items-end gap-2'>
+            <div className='flex items-end col-span-1 md:col-span-2 lg:col-span-1 justify-end lg:justify-start gap-2'>
                 <Button
                     onClick={onReset}
                     className='font-semibold text-primary border-2 border-primary bg-background hover:bg-primary/10 p-2.5'
