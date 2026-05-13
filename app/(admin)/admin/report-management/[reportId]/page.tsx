@@ -3,17 +3,10 @@
 import React, { useState } from 'react';
 
 import TitlePage from '@/components/customs/admin/title-page';
-import {
-    Card,
-    CardAction,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
-import { CheckCircle, Image as ImageIcon, Mail, MessageSquare, UserCheck, Wrench } from 'lucide-react';
-
+import { CheckCircle, Mail, UserCheck, Wrench } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@heroui/react';
+import { MessageSquare } from 'lucide-react';
 import { LogItem } from '@/components/customs/admin/log-item';
 import AttachmentCard from '@/components/customs/admin/attachment-card';
 import ImgMeja from '@/public/assets/images/meja.jpeg';
@@ -59,29 +52,24 @@ export default function ReportDetailPage() {
     const status = searchParams.get('status')
     const [modal, setModal] = useState<'verify' | 'process' | 'rejected' | 'upload' | null>(null)
 
-    const handleAction = () => {
-        console.log('test');
-    }
-
-
     return (
         <div className="flex flex-col gap-5">
 
             {status == 'pending' ? (
-                <TitlePage title='Meja Dosen' desc='' isReport verificationAction={() => { setModal('verify') }} rejectAction={() => { setModal('rejected') }} />
+                <TitlePage title='Meja Dosen' desc='' isReport verificationAction={() => setModal('verify')} rejectAction={() => setModal('rejected')} />
             ) : status == 'verified' ? (
-                <TitlePage title='Meja Dosen' desc='' isReport processAction={() => { setModal('process') }} />
+                <TitlePage title='Meja Dosen' desc='' isReport processAction={() => setModal('process')} />
             ) : status == 'process' ? (
-                <TitlePage title='Meja Dosen' desc='' isReport completedAction={() => { setModal('upload') }} />
+                <TitlePage title='Meja Dosen' desc='' isReport completedAction={() => setModal('upload')} />
             ) : (
                 <TitlePage title='Meja Dosen' desc='' />
             )}
 
+            {/* Grid utama: 1 kolom di mobile, 3 kolom di lg ke atas */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-            <div className="grid grid-cols-3 gap-6 items-start">
-
-                {/* Kiri */}
-                <div className="col-span-2 flex flex-col gap-5 flex-1">
+                {/* Kiri: full width di mobile, 2/3 di lg */}
+                <div className="col-span-1 lg:col-span-2 flex flex-col gap-5">
                     <ReportDetailCard
                         category="furniture"
                         submittedAt="24 Okt 2023, 09:45 WIB"
@@ -90,28 +78,29 @@ export default function ReportDetailPage() {
                         location="Gedung Baru, 04,005"
                         reporter="Budi Setiawan (Mahasiswa - 20210082)"
                     />
-
                     <ReportLogCard logs={logs} />
                 </div>
 
-                {/* Kanan */}
-                <div className=" flex flex-col gap-5 shrink-0">
-                    <AttachmentCard
-                        // isRejected
-                        title='Bukti foto (PROOF)'
-                    >
-                        <Image alt='meja' src={ImgMeja} className='w-full max-w-64 rounded-md' />
-                        <Button className='w-full max-w-64 bg-background hover:bg-primary/20 text-primary font-semibold border-2 border-dashed rounded-md border-primary py-3 text-xs leading-4'>
+                {/* Kanan: full width di mobile, 1/3 di lg */}
+                <div className="col-span-1 flex flex-col gap-5">
+                    <AttachmentCard title='Bukti foto (PROOF)'>
+                        <Image
+                            alt='meja'
+                            src={ImgMeja}
+                            className='w-full max-w-full sm:max-w-64 rounded-md'
+                        />
+                        <Button className='w-full sm:max-w-64 bg-background hover:bg-primary/20 text-primary font-semibold border-2 border-dashed rounded-md border-primary py-3 text-xs leading-4'>
                             Unduh Lampiran Original
                         </Button>
                     </AttachmentCard>
 
-                    {status == 'completed' ? (
-
-                        <AttachmentCard
-                            title='Bukti Perbaikan'
-                        >
-                            <Image alt='meja' src={ImgMeja} className='w-full max-w-64 rounded-md' />
+                    {status == 'completed' && (
+                        <AttachmentCard title='Bukti Perbaikan'>
+                            <Image
+                                alt='meja'
+                                src={ImgMeja}
+                                className='w-full sm:max-w-64 rounded-md'
+                            />
                             <div className='w-full flex flex-col gap-1'>
                                 <div className='w-full justify-start items-center flex gap-2'>
                                     <MessageSquare size={21} className='text-primary' />
@@ -120,22 +109,17 @@ export default function ReportDetailPage() {
                                 <p className='text-foreground text-sm'>Meja Telah diganti Dengan yang baru</p>
                             </div>
                         </AttachmentCard>
-                    ) : ''}
+                    )}
 
-
-                    {status == 'rejected' ? (
-                        <AttachmentCard
-                            isRejected
-                            title='Pesan Penolakan'
-                        >
+                    {status == 'rejected' && (
+                        <AttachmentCard isRejected title='Pesan Penolakan'>
                             <p className='text-foreground text-sm'>Laporan tidak valid ruangan yang anda maksud adalah WC</p>
                         </AttachmentCard>
-                    ) : ''}
-
+                    )}
                 </div>
             </div>
 
-            {/* Verifikasi */}
+            {/* Modals */}
             <ConfirmationModal
                 open={modal === 'verify'}
                 onClose={() => setModal(null)}
@@ -146,8 +130,6 @@ export default function ReportDetailPage() {
                 icon={CheckCircle}
                 variant="primary"
             />
-
-            {/* Proses */}
             <ConfirmationModal
                 open={modal === 'process'}
                 onClose={() => setModal(null)}
@@ -158,8 +140,6 @@ export default function ReportDetailPage() {
                 icon={Wrench}
                 variant="primary"
             />
-
-            {/* Penolakan */}
             <RejectionModal
                 open={modal === 'rejected'}
                 onClose={() => setModal(null)}
@@ -168,8 +148,6 @@ export default function ReportDetailPage() {
                     setModal(null)
                 }}
             />
-
-            {/* Upload Bukti Perbaikan */}
             <UploadProofModal
                 open={modal === 'upload'}
                 onClose={() => setModal(null)}
