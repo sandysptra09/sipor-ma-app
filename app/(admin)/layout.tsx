@@ -59,11 +59,11 @@ export default function AdminLayout({
                         </div>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm">
-                        <div className="hidden md:flex gap-2 items-center" >
+                        <div className="flex gap-2 items-center" >
                             <SidebarTrigger className="-ml-1 hidden md:flex" />
                             <Separator
                                 orientation="vertical"
-                                className="hidden md:flex mr-2 data-vertical:h-4 data-vertical:self-auto"
+                                className=" mr-2 data-vertical:h-4 data-vertical:self-auto"
                             />
                             <Breadcrumb>
                                 <BreadcrumbList>
