@@ -1,5 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/axios';
+
 import { Form, Separator } from '@heroui/react';
 import TextFieldInput from '../inputs/text-field-input';
 import NumberFieldInput from '../inputs/number-field-input';
@@ -12,10 +16,47 @@ import Link from 'next/link';
 import { User, IdCard, Mail, ShieldCheck } from 'lucide-react';
 
 export default function SignUpForm() {
+
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        if (data.password !== data.confirm_password) {
+            alert('Password dan Konfirmasi Password tidak sama!');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+
+            const response = await api.post('/auth/register', {
+                name: data.nama,
+                nim_nip: data.nim,
+                email: data.email,
+                password: data.password,
+            });
+
+            alert(response.data.message || 'Registrasi Berhasil! Silakan Login.');
+            router.push('/login');
+
+        } catch (error: any) {
+            alert(error.response?.data?.message || 'Terjadi kesalahan saat registrasi.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <Form
             className='flex w-full flex-col gap-4'
             validationBehavior='native'
+            onSubmit={handleRegister}
         >
 
             <TextFieldInput
@@ -69,7 +110,7 @@ export default function SignUpForm() {
                 </AuthCheckbox>
             </div>
 
-            <AuthSubmitButton name='Mulai Berkontribusi' />
+            <AuthSubmitButton name='Mulai Berkontribusi' isLoading={isLoading} />
 
             <div className='my-2 flex w-full items-center gap-3'>
                 <Separator className='flex-1 bg-border' />
