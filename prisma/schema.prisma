@@ -13,17 +13,38 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  image         String?
-  nim_nip       String?       @unique
-  role          Role          @default(STUDENT)
-  reports       Report[]
-  assignments   Report[]      @relation("AdminAssignment")
-  shifts        Shift[]
-  chatSessions  ChatSession[]
-  createdAt     DateTime      @default(now())
+  id           String        @id @default(cuid())
+  name         String?
+  email        String?       @unique
+  image        String?
+  nim_nip      String?       @unique
+  password     String?
+  role         Role          @default(STUDENT)
+  accounts     Account[]
+  reports      Report[]
+  assignments  Report[]      @relation("AdminAssignment")
+  shifts       Shift[]
+  chatSessions ChatSession[]
+  createdAt    DateTime      @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 enum Role {
@@ -32,27 +53,27 @@ enum Role {
 }
 
 model Report {
-  id            String     @id @default(uuid())
-  reportNumber  String     @unique
-  title         String
-  description   String     @db.Text
-  location      String
-  roomCode      String
-  category      String
-  imageBefore   String
-  imageAfter    String?
-  status        Status     @default(PENDING)
-  priority      Priority   @default(MEDIUM)
-  isVerified    Boolean    @default(false)
+  id           String   @id @default(uuid())
+  reportNumber String   @unique
+  title        String
+  description  String   @db.Text
+  location     String
+  roomCode     String
+  category     String
+  imageBefore  String
+  imageAfter   String?
+  status       Status   @default(PENDING)
+  priority     Priority @default(MEDIUM)
+  isVerified   Boolean  @default(false)
 
-  userId        String
-  user          User       @relation(fields: [userId], references: [id])
-  adminId       String?
-  admin         User?      @relation("AdminAssignment", fields: [adminId], references: [id])
-  logs          AuditLog[]
+  userId  String
+  user    User       @relation(fields: [userId], references: [id])
+  adminId String?
+  admin   User?      @relation("AdminAssignment", fields: [adminId], references: [id])
+  logs    AuditLog[]
 
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Status {
