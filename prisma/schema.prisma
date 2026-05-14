@@ -13,19 +13,20 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  name         String?
-  email        String?       @unique
-  image        String?
-  nim_nip      String?       @unique
-  password     String?
-  role         Role          @default(STUDENT)
-  accounts     Account[]
-  reports      Report[]
-  assignments  Report[]      @relation("AdminAssignment")
-  shifts       Shift[]
-  chatSessions ChatSession[]
-  createdAt    DateTime      @default(now())
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  nim_nip       String?       @unique
+  password      String?
+  role          Role          @default(STUDENT)
+  accounts      Account[]
+  reports       Report[]
+  assignments   Report[]      @relation("AdminAssignment")
+  shifts        Shift[]
+  chatSessions  ChatSession[]
+  createdAt     DateTime      @default(now())
 }
 
 model Account {
