@@ -11,7 +11,6 @@ import { useUserStore } from '@/store/useUserStore';
 
 import UserNotification from './user-notification';
 import UserNav from './user-nav';
-import { u } from 'framer-motion/client';
 
 export default function MainNavbar() {
 
