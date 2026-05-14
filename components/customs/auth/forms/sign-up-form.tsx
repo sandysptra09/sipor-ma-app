@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
 
-import { Form, Separator } from '@heroui/react';
+import { Form, Separator, toast } from '@heroui/react';
 import TextFieldInput from '../inputs/text-field-input';
 import NumberFieldInput from '../inputs/number-field-input';
 import PasswordFieldInput from '../inputs/password-field-input';
@@ -28,13 +28,12 @@ export default function SignUpForm() {
         const data = Object.fromEntries(formData.entries());
 
         if (data.password !== data.confirm_password) {
-            alert('Password dan Konfirmasi Password tidak sama!');
+            toast.danger('Konfirmasi Password Gagal', { description: 'Password dan Konfirmasi Password tidak sama!' });
             setIsLoading(false);
             return;
         }
 
         try {
-
             const response = await api.post('/auth/register', {
                 name: data.nama,
                 nim_nip: data.nim,
@@ -42,12 +41,13 @@ export default function SignUpForm() {
                 password: data.password,
             });
 
-            alert(response.data.message || 'Registrasi Berhasil! Silakan Login.');
+            toast.success('Registrasi Berhasil!',
+                { description: response.data.message || 'Silakan Login menggunakan akun Anda.' }
+            );
             router.push('/login');
 
         } catch (error: any) {
-            alert(error.response?.data?.message || 'Terjadi kesalahan saat registrasi.');
-        } finally {
+            toast.danger(error.response?.data?.message || 'Terjadi kesalahan saat registrasi.');
             setIsLoading(false);
         }
     };
@@ -97,7 +97,7 @@ export default function SignUpForm() {
             />
 
             <div className='mt-2'>
-                <AuthCheckbox name='terms_and_conditions'>
+                <AuthCheckbox name='terms_and_conditions' required>
                     Saya menyetujui{' '}
                     <Link href='#' className='font-semibold text-primary hover:underline'>
                         ketentuan layanan
@@ -110,7 +110,11 @@ export default function SignUpForm() {
                 </AuthCheckbox>
             </div>
 
-            <AuthSubmitButton name='Mulai Berkontribusi' isLoading={isLoading} />
+            <AuthSubmitButton
+                name='Mulai Berkontribusi'
+                isLoading={isLoading}
+                loadingText='Mendaftarkan akun...'
+            />
 
             <div className='my-2 flex w-full items-center gap-3'>
                 <Separator className='flex-1 bg-border' />

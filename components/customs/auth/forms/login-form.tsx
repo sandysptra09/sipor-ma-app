@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
-import { Form, Separator } from '@heroui/react';
+import { Form, Separator, toast } from '@heroui/react';
 import TextFieldInput from '../inputs/text-field-input';
 import PasswordFieldInput from '../inputs/password-field-input';
 import AuthCheckbox from '../checkboxs/auth-checkbox';
@@ -26,7 +26,6 @@ export default function LoginForm() {
         const data = Object.fromEntries(formData.entries());
 
         try {
-
             const res = await signIn('credentials', {
                 identifier: data['email-or-nim'],
                 password: data.password,
@@ -34,16 +33,18 @@ export default function LoginForm() {
             });
 
             if (res?.error) {
-                alert(res.error);
+
+                toast.danger('Login Gagal', { description: res.error });
+                setIsLoading(false);
+
             } else {
-                alert('Login Berhasil!');
+                toast.success('Login Berhasil!');
                 router.push('/dashboard');
-                router.refresh();
+
             }
 
-        } catch (error) {
-            alert('Terjadi kesalahan sistem.');
-        } finally {
+        } catch (error: any) {
+            toast.danger('Terjadi kesalahan sistem.');
             setIsLoading(false);
         }
     };
@@ -73,7 +74,10 @@ export default function LoginForm() {
                 Ingat saya di perangkat ini
             </AuthCheckbox>
 
-            <AuthSubmitButton name='Masuk' isLoading={isLoading} />
+            <AuthSubmitButton
+                name='Masuk' isLoading={isLoading}
+                loadingText='Memeriksa kredensial...'
+            />
 
             <div className='my-2 flex w-full items-center gap-3'>
                 <Separator className='flex-1 bg-border' />
