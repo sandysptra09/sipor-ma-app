@@ -1,7 +1,21 @@
+'use client';
+
+import { useEffect } from 'react';
+import { toast } from '@heroui/react';
 import Link from 'next/link'
 import LoginForm from '@/components/customs/auth/forms/login-form'
 
 export default function LoginPage() {
+
+    useEffect(() => {
+        if (sessionStorage.getItem('showRegisterToast') === 'true') {
+            toast.success('Registrasi Berhasil!', {
+                description: <span className='text-zinc-600'>Silakan masuk menggunakan akun baru Anda.</span>
+            });
+            sessionStorage.removeItem('showRegisterToast');
+        }
+    }, []);
+
     return (
         <div className='flex w-full flex-col items-center justify-center px-1 md:px-0'>
 

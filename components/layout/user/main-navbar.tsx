@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@heroui/react';
+import { Button, toast } from '@heroui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useUserStore } from '@/store/useUserStore';
 
 import UserNotification from './user-notification';
 import UserNav from './user-nav';
+import { u } from 'framer-motion/client';
 
 export default function MainNavbar() {
 
@@ -19,6 +20,15 @@ export default function MainNavbar() {
     const router = useRouter();
 
     const { user } = useUserStore();
+
+    useEffect(() => {
+        if (sessionStorage.getItem('showLoginToast') === 'true') {
+            toast.success('Login Berhasil!', {
+                description: <span className='text-zinc-600'>Selamat datang kembali {user?.name || 'User'}</span>
+            });
+            sessionStorage.removeItem('showLoginToast');
+        }
+    }, [user]);
 
     const navLinks = [
         {

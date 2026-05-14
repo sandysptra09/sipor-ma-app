@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 
 import { Form, Separator, toast } from '@heroui/react';
 import TextFieldInput from '../inputs/text-field-input';
@@ -34,12 +34,26 @@ export default function LoginForm() {
 
             if (res?.error) {
 
-                toast.danger('Login Gagal', { description: res.error });
+                const errorMessage = (res.error === 'Configuration' || res.error === 'CredentialsSignin')
+                    ? 'NIM/Email atau Kata Sandi yang Anda masukkan salah.'
+                    : 'Gagal masuk. Silakan coba lagi.';
+
+                toast.danger('Login Gagal', {
+                    description: <span className='text-zinc-600'>{errorMessage}</span>
+                });
+
                 setIsLoading(false);
 
             } else {
-                toast.success('Login Berhasil!');
-                router.push('/dashboard');
+                sessionStorage.setItem('showLoginToast', 'true');
+
+                const session = await getSession();
+
+                if (session?.user?.role === 'ADMIN') {
+                    router.replace('/admin/dashboard');
+                } else {
+                    router.replace('/dashboard');
+                }
 
             }
 
@@ -65,7 +79,7 @@ export default function LoginForm() {
 
             <PasswordFieldInput
                 name='password'
-                label='Kata Sandi'
+                label='Password'
                 placeholder='Masukan Password'
                 showForgotLink={true}
             />

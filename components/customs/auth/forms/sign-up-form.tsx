@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
+import { getSession } from 'next-auth/react';
 
 import { Form, Separator, toast } from '@heroui/react';
 import TextFieldInput from '../inputs/text-field-input';
@@ -28,23 +29,23 @@ export default function SignUpForm() {
         const data = Object.fromEntries(formData.entries());
 
         if (data.password !== data.confirm_password) {
-            toast.danger('Konfirmasi Password Gagal', { description: 'Password dan Konfirmasi Password tidak sama!' });
+            toast.danger('Konfirmasi Password Gagal',
+                { description: <span className='text-zinc-600'>Password dan Konfirmasi Password tidak sama!</span> });
             setIsLoading(false);
             return;
         }
 
         try {
-            const response = await api.post('/auth/register', {
+            await api.post('/auth/register', {
                 name: data.nama,
                 nim_nip: data.nim,
                 email: data.email,
                 password: data.password,
             });
 
-            toast.success('Registrasi Berhasil!',
-                { description: response.data.message || 'Silakan Login menggunakan akun Anda.' }
-            );
-            router.push('/login');
+            sessionStorage.setItem('showRegisterToast', 'true');
+
+            router.replace('/login');
 
         } catch (error: any) {
             toast.danger(error.response?.data?.message || 'Terjadi kesalahan saat registrasi.');
