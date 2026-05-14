@@ -7,6 +7,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@heroui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { useUserStore } from '@/store/useUserStore';
+
+import UserNotification from './user-notification';
+import UserNav from './user-nav';
 
 export default function MainNavbar() {
 
@@ -14,19 +18,17 @@ export default function MainNavbar() {
     const pathname = usePathname();
     const router = useRouter();
 
+    const { user } = useUserStore();
+
     const navLinks = [
-        { name: 'Beranda', href: '/' },
+        {
+            name: user ? 'Dashboard' : 'Beranda',
+            href: user ? '/dashboard' : '/'
+        },
         { name: 'Pusat Bantuan', href: '/help-center' },
     ];
 
     const closeMenu = () => setIsMobileMenuOpen(false);
-
-    // const isAuthPage = pathname === '/login' || pathname === '/sign-up';
-    // const isAdminPage = pathname?.startsWith('/admin');
-
-    // if (isAuthPage || isAdminPage) {
-    //     return null;
-    // }
 
     return (
         <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md shadow-sm'>
@@ -80,23 +82,32 @@ export default function MainNavbar() {
                     })}
                 </nav>
 
-                <div className='flex items-center gap-3'>
+                <div className={`flex items-center ${user ? 'gap-1' : 'gap-3'}`}>
 
-                    <Button
-                        variant='ghost'
-                        onClick={() => router.push('/sign-up')}
-                        className='rounded-md bg-background border-2 border-transparent px-6 font-semibold text-primary transition-all hover:border-primary'
-                    >
-                        Register
-                    </Button>
+                    {user ? (
+                        <>
+                            <UserNotification />
+                            <UserNav />
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant='ghost'
+                                onClick={() => router.push('/sign-up')}
+                                className='rounded-md bg-background border-2 border-transparent px-6 font-semibold text-primary transition-all hover:border-primary'
+                            >
+                                Register
+                            </Button>
 
-                    <Button
-                        variant='primary'
-                        onClick={() => router.push('/login')}
-                        className='hidden rounded-md bg-primary px-6 font-semibold text-white md:flex'
-                    >
-                        Lapor Sekarang
-                    </Button>
+                            <Button
+                                variant='primary'
+                                onClick={() => router.push('/login')}
+                                className='hidden rounded-md bg-primary px-6 font-semibold text-white md:flex'
+                            >
+                                Lapor Sekarang
+                            </Button>
+                        </>
+                    )}
 
                 </div>
 
@@ -128,26 +139,30 @@ export default function MainNavbar() {
                             })}
 
                             <div className='mt-2 border-t pt-4 flex flex-col gap-3'>
-                                <Button
-                                    variant='ghost'
-                                    className='w-full rounded-md bg-background border-2 border-transparent px-6 font-semibold text-primary transition-all hover:border-primary'
-                                    onClick={() => {
-                                        closeMenu();
-                                        router.push('/sign-up');
-                                    }}
-                                >
-                                    Register
-                                </Button>
-                                <Button
-                                    variant='primary'
-                                    className='w-full rounded-md bg-primary font-semibold text-white'
-                                    onClick={() => {
-                                        closeMenu();
-                                        router.push('/login');
-                                    }}
-                                >
-                                    Lapor Sekarang
-                                </Button>
+                                {!user && (
+                                    <>
+                                        <Button
+                                            variant='ghost'
+                                            className='w-full rounded-md bg-background border-2 border-transparent px-6 font-semibold text-primary transition-all hover:border-primary'
+                                            onClick={() => {
+                                                closeMenu();
+                                                router.push('/sign-up');
+                                            }}
+                                        >
+                                            Register
+                                        </Button>
+                                        <Button
+                                            variant='primary'
+                                            className='w-full rounded-md bg-primary font-semibold text-white'
+                                            onClick={() => {
+                                                closeMenu();
+                                                router.push('/login');
+                                            }}
+                                        >
+                                            Lapor Sekarang
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </motion.div>
