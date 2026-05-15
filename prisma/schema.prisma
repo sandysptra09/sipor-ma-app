@@ -13,20 +13,21 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?       @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
-  nim_nip       String?       @unique
+  nim_nip       String?        @unique
   password      String?
-  role          Role          @default(STUDENT)
+  role          Role           @default(STUDENT)
   accounts      Account[]
   reports       Report[]
-  assignments   Report[]      @relation("AdminAssignment")
+  assignments   Report[]       @relation("AdminAssignment")
   shifts        Shift[]
   chatSessions  ChatSession[]
-  createdAt     DateTime      @default(now())
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
 }
 
 model Account {
@@ -67,11 +68,12 @@ model Report {
   priority     Priority @default(MEDIUM)
   isVerified   Boolean  @default(false)
 
-  userId  String
-  user    User       @relation(fields: [userId], references: [id])
-  adminId String?
-  admin   User?      @relation("AdminAssignment", fields: [adminId], references: [id])
-  logs    AuditLog[]
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  adminId       String?
+  admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
+  logs          AuditLog[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,4 +138,19 @@ model Message {
 enum MessageRole {
   USER
   ASSISTANT
+}
+
+model Notification {
+  id      String  @id @default(cuid())
+  title   String
+  message String  @db.Text
+  isRead  Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reportId String?
+  report   Report? @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 }
