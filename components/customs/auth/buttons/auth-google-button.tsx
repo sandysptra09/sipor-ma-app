@@ -1,9 +1,24 @@
-import { Button } from '@heroui/react';
+'use client';
+
+import { Button, toast } from '@heroui/react';
+import { signIn } from 'next-auth/react';
 
 export default function AuthGoogleButton() {
+
+    const handleGoogleLogin = () => {
+        toast("Mengalihkan ke Google...", {
+            description: "Mohon tunggu sebentar",
+            isLoading: true,
+            timeout: 0,
+        });
+
+        signIn('google', { callbackUrl: '/dashboard' });
+    };
+
     return (
         <Button
             type='button'
+            onPress={handleGoogleLogin}
             className='h-12 w-full rounded-md bg-accent text-sm font-medium text-foreground transition-colors hover:bg-muted'
         >
             <svg viewBox='0 0 24 24' width='18' height='18' xmlns='http://www.w3.org/2000/svg'>
