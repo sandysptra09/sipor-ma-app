@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { pusherServer } from '@/lib/pusher';
+import { pusherServer } from '@/lib/pusher-server';
 
 interface SendNotificationParams {
     userId: string;

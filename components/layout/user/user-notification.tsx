@@ -1,14 +1,68 @@
 'use client';
 
-import { Badge, Dropdown } from '@heroui/react';
+import { useState, useEffect } from 'react';
+import { useUserStore } from '@/store/useUserStore';
+import { api } from '@/lib/axios';
+import { getPusherClient } from '@/lib/pusher-client';
+import { formatDistanceToNow } from 'date-fns';
+import { id } from 'date-fns/locale';
+
+import { Badge, Dropdown, toast } from '@heroui/react';
 import { Bell } from 'lucide-react';
 
+interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    isRead: boolean;
+    createdAt: string;
+}
+
 export default function UserNotification() {
-    const notifications = [
-        { id: 1, title: 'Laporan Diterima', desc: 'Laporan AC rusak di Lab Komputer sedang diproses admin.', time: '5 menit lalu' },
-        { id: 2, title: 'Perbaikan Selesai', desc: 'Lampu proyektor Ruang 302 sudah selesai diganti.', time: '1 jam lalu' },
-        { id: 3, title: 'Info Sistem', desc: 'Sistem SIPOR-MA akan maintenance malam ini.', time: '2 hari lalu' },
-    ];
+
+    const { user } = useUserStore();
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const fetchNotifications = async () => {
+            try {
+                const res = await api.get('/notifications');
+                setNotifications(res.data);
+            } catch (error) {
+                console.error('Gagal mengambil notifikasi:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchNotifications();
+    }, [user?.id]);
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const pusher = getPusherClient();
+
+        const channelName = `user-${user.id}-notifications`;
+        const channel = pusher.subscribe(channelName);
+
+        channel.bind('new-notification', (newNotif: Notification) => {
+            setNotifications((prev) => [newNotif, ...prev]);
+
+            toast.info(newNotif.title, {
+                description: <span className='text-foreground'>{newNotif.message}</span>,
+            });
+        });
+
+        return () => {
+            pusher.unsubscribe(channelName);
+        };
+    }, [user?.id]);
+
+    const unreadCount = notifications.filter(n => !n.isRead).length;
 
     return (
         <Dropdown>
@@ -22,9 +76,9 @@ export default function UserNotification() {
                     <Badge.Anchor>
                         <Bell size={20} className='text-primary' />
 
-                        {notifications.length > 0 && (
+                        {unreadCount > 0 && (
                             <Badge color='danger' size='sm' className='border-2 border-white'>
-                                <Badge.Label>{notifications.length}</Badge.Label>
+                                <Badge.Label>{unreadCount}</Badge.Label>
                             </Badge>
                         )}
                     </Badge.Anchor>
@@ -42,19 +96,38 @@ export default function UserNotification() {
                         aria-label='Daftar Notifikasi'
                         className='max-h-80 overflow-y-auto p-2'
                     >
-                        {notifications.map((notif) => (
-                            <Dropdown.Item key={notif.id} textValue={notif.title} className='mb-1'>
-                                <div className='flex flex-col gap-1 py-1'>
-                                    <p className='text-sm font-semibold'>{notif.title}</p>
-                                    <p className='whitespace-normal text-xs text-muted-foreground leading-relaxed'>
-                                        {notif.desc}
-                                    </p>
-                                    <p className='mt-1 text-[10px] font-medium text-muted-foreground/70'>
-                                        {notif.time}
-                                    </p>
-                                </div>
+                        {isLoading ? (
+                            <Dropdown.Item key='loading' textValue='Loading'>
+                                <p className='text-center text-sm text-muted-foreground py-4'>Memuat...</p>
                             </Dropdown.Item>
-                        ))}
+                        ) : notifications.length === 0 ? (
+                            <Dropdown.Item key='empty' textValue='Kosong'>
+                                <p className='text-center text-sm text-muted-foreground py-4'>Belum ada notifikasi.</p>
+                            </Dropdown.Item>
+                        ) : (
+                            notifications.map((notif) => (
+                                <Dropdown.Item
+                                    key={notif.id}
+                                    textValue={notif.title}
+                                    className={`mb-1 ${!notif.isRead ? 'bg-primary/5' : ''}`}
+                                >
+                                    <div className='flex flex-col gap-1 py-1'>
+                                        <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
+                                            {notif.title}
+                                        </p>
+                                        <p className='whitespace-normal text-xs text-muted-foreground leading-relaxed'>
+                                            {notif.message}
+                                        </p>
+                                        <p className='mt-1 text-[10px] font-medium text-muted-foreground/70'>
+                                            {formatDistanceToNow(new Date(notif.createdAt), {
+                                                addSuffix: true,
+                                                locale: id
+                                            })}
+                                        </p>
+                                    </div>
+                                </Dropdown.Item>
+                            ))
+                        )}
                     </Dropdown.Menu>
 
                 </div>
