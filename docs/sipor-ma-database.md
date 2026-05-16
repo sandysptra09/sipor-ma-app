@@ -14,17 +14,39 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  emailVerified DateTime? // Status verifikasi email (NextAuth)
   image         String?
   nim_nip       String?   @unique
   role          Role      @default(STUDENT)
 
   // Relations
+  accounts      Account[]     // Relasi ke OAuth Provider (Google, dll)
   reports       Report[]      // Laporan yang dibuat mahasiswa
   assignments   Report[]      @relation("AdminAssignment") // Penugasan ke Admin
   shifts        Shift[]       // Jadwal piket Admin
   chatSessions  ChatSession[] // Riwayat chatbot
+  notifications Notification[]// Notifikasi Real-time
 
   createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 enum Role {
@@ -55,6 +77,7 @@ model Report {
   admin           User?     @relation("AdminAssignment", fields: [adminId], references: [id])
 
   logs            AuditLog[] // Data untuk Real-time Tracker
+  notifications   Notification[] // Notifikasi yang terkait dengan laporan ini
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -81,6 +104,21 @@ model AuditLog {
   report    Report   @relation(fields: [reportId], references: [id])
   status    String   // Status pada saat log dicatat
   note      String?  // Pesan/Catatan Admin (e.g. "Sparepart telah dipesan")
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reportId  String?
+  report    Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 }
 
@@ -134,7 +172,9 @@ Untuk menjaga integritas data, SIPOR-MA menerapkan beberapa tipe relasi database
 
 - **`User` ↔ `Report`**: Satu mahasiswa (`User`) dapat membuat banyak laporan kerusakan (`Report`). Namun, satu laporan hanya dimiliki oleh satu pelapor.
 - **`User` ↔ `Report` (Admin Assignment)**: Satu Admin dapat menangani/ditugaskan ke banyak laporan.
+- **`User` ↔ `Account`**: Satu pengguna dapat menautkan banyak metode login OAuth (Google, GitHub, dll).
 - **`User` ↔ `Shift`**: Satu Admin memiliki banyak jadwal piket (`Shift`) dalam seminggu.
+- **`User` ↔ `Notification`**: Satu pengguna memiliki banyak notifikasi masuk.
 - **`User` ↔ `ChatSession`**: Satu pengguna dapat memulai banyak sesi percakapan dengan AI Chatbot.
 - **`Report` ↔ `AuditLog`**: Satu laporan memiliki banyak catatan riwayat (`AuditLog`) yang mencatat setiap perubahan status dari awal sampai selesai.
 - **`ChatSession` ↔ `Message`**: Satu sesi percakapan berisi banyak pesan (`Message`), baik dari pengguna maupun dari asisten AI.
@@ -176,3 +216,16 @@ Untuk menjaga kualitas dan integritas data, sistem memanfaatkan AI Engine (Gemin
 
 - **`category`**: String ini diisi secara otomatis oleh AI berdasarkan analisis visual foto bukti dan deskripsi teks yang diinput mahasiswa.
 - **`isVerified`**: Merupakan flag keamanan utama. Secara _default_ bernilai `false`. Jika **AI NSFW Validation** menyatakan gambar aman (bukan pornografi/prank), status berubah menjadi `true`. Jika terdeteksi gambar tidak layak, status laporan akan otomatis dialihkan menjadi `REJECTED`.
+
+### **5. Tabel `Notification` (Real-Time Engine)**
+
+Tabel ini adalah tulang punggung dari fitur notifikasi _real-time_ berbasis WebSockets:
+
+- **State Persistence:** Menyimpan riwayat pemberitahuan di _database_. Jadi, kalau mahasiswa lagi _offline_ (tutup browser) saat status laporannya berubah, mereka tetep bisa melihat notifikasi tersebut di _dropdown_ lonceng saat login kembali.
+- **Pusher Trigger:** Setiap kali ada data baru yang masuk ke tabel ini (via _helper_ `sendNotification`), sistem akan otomatis menembakkan _event_ ke **Pusher Channels** untuk memunculkan _pop-up toast_ dan _badge_ angka di layar _user_ target secara instan.
+
+### **6. Tabel `Account` (NextAuth / OAuth Integration)**
+
+Tabel khusus yang berkolaborasi dengan adapter Prisma dari Auth.js (NextAuth):
+
+- **Seamless SSO (Single Sign-On):** Digunakan untuk mengelola sesi login dari pihak ketiga (misalnya **Google OAuth**). Tabel ini menyimpan `providerAccountId` dan _tokens_ dengan aman, memungkinkan _user_ untuk mengaitkan akun kampus/Google mereka tanpa mengganggu sistem otentikasi manual (_Credentials_).
