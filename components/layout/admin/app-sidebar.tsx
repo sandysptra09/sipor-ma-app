@@ -28,6 +28,8 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import SipormaLogo from '@/public/assets/icons/siporma-icon.svg';
 import Image from "next/image"
+import { useUserStore } from '@/store/useUserStore';
+import { signOut } from "next-auth/react"
 
 // This is sample data.
 const data = {
@@ -61,6 +63,13 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const pathname = usePathname()
+
+  const { user, clearUser } = useUserStore();
+
+  const handleLogout = async () => {
+    clearUser();
+    await signOut({ callbackUrl: '/login' });
+  };
 
   return (
     <Sidebar {...props}>
@@ -120,7 +129,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem className="" key={`logout`}>
-            <SidebarMenuButton className="text-slate-500 hover:text-primary py-4 flex justify-center border data-[active=true]:text-primary data-[active=true]:bg-primary/10" asChild>
+            <SidebarMenuButton className="text-slate-500 hover:text-primary py-4 flex justify-center border data-[active=true]:text-primary data-[active=true]:bg-primary/10"
+              asChild onClick={handleLogout}>
               <a className="text-gray-500 hover:text-primary" href={`#`}>
                 <DoorOpen />
                 <span>Logout</span>
