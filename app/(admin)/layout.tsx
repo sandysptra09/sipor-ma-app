@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/layout/admin/app-sidebar"
 import {
     Breadcrumb,
@@ -16,9 +16,10 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { getSession } from "next-auth/react";
+import AdminNotification from "@/components/layout/admin/admin-notification";
 
 export default function AdminLayout({
     children,
@@ -28,6 +29,18 @@ export default function AdminLayout({
 
     console.log('Ini layouth untuk halaman admin');
 
+    const [adminName, setAdminName] = useState('Admin');
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const session = await getSession();
+            if (session?.user?.name) {
+                setAdminName(session.user.name);
+            }
+        };
+        fetchSession();
+    }, []);
+
     const pathname = usePathname();
     const pathnames = pathname ? pathname.split('/').filter((x) => x) : [];
     const formatString = (str: string) => {
@@ -36,22 +49,26 @@ export default function AdminLayout({
             .replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
+    const userInitial = adminName.charAt(0).toUpperCase();
+
     return (
         <>
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset className="bg-white/80">
-                    <header className="sticky z-[50] top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
-                        <Link href={`/admin/notifications`} className="text-primary">
-                            <Bell size={18} />
-                        </Link>
+                    <header className="sticky z-50 top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
+
+                        <AdminNotification />
+
                         <Link href={`/admin/profile`} className="w-fit flex gap-2 items-center">
                             <div className="text-right">
-                                <p className="text-sm font-semibold text-black">Admin</p>
+                                <p className="text-sm font-semibold text-black">{adminName}</p>
                                 <p className="text-xs text-gray-500">SIPOR-MA Admin</p>
                             </div>
-                            <div className=" bg-gray-600 h-[35px] w-[35px] rounded-full">
-
+                            <div className=" bg-gray-600 h-8.75 w-8.75 rounded-full">
+                                <span className="flex items-center justify-center h-full text-white font-bold">
+                                    {userInitial}
+                                </span>
                             </div>
                         </Link>
                     </header>
