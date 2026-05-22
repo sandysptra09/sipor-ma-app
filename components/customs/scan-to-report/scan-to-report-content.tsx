@@ -4,18 +4,56 @@ import { motion } from 'framer-motion';
 import ScannerWidget from './widgets/scanner-widget';
 import FallbackWidget from './widgets/fallback-widget';
 
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { api } from '@/lib/axios';
+import { toast } from '@heroui/react';
+
 export default function ScanToReportContent() {
 
-    const handleScanSuccess = (qrText: string) => {
-        // nanti kalau udah integrasi sama backend, routing url nya bakal dinamis kayak gini :
-        // router.push(`/report/${qrText}`);
+    const router = useRouter();
+    const [isVerifying, setIsVerifying] = useState(false);
+
+    const handleScanSuccess = async (qrText: string) => {
+        if (!qrText || isVerifying) return;
+
+        setIsVerifying(true);
+
+        const loadingId = toast('Memverifikasi ruangan...', {
+            isLoading: true,
+            timeout: 0,
+        });
+
+        try {
+            const res = await api.get(`/rooms/${qrText}`);
+            toast.close(loadingId);
+
+            setTimeout(() => {
+                toast.success(`Ruangan ditemukan: ${res.data.data.name}`);
+                setTimeout(() => {
+                    router.push(`/reporting/${qrText}`);
+                }, 1500);
+            }, 100);
+
+        } catch (error: any) {
+            toast.close(loadingId);
+
+            setTimeout(() => {
+                if (error.response?.status === 404) {
+                    toast.danger('Ruangan tidak ditemukan! Cek kembali kode ruangan.');
+                } else {
+                    toast.danger('Gagal menghubungi server. Coba lagi nanti.');
+                }
+                setIsVerifying(false);
+            }, 100);
+        }
     };
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className='flex flex-col gap-6 md:gap-8 w-full mx-auto'
         >
             <div className='flex flex-col w-full gap-1'>

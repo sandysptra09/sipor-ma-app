@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button, Input, TextField, Label, Separator } from '@heroui/react';
-import { ImagePlus, Keyboard, ArrowRight, RefreshCcw } from 'lucide-react';
+import { ImagePlus, ArrowRight, RefreshCcw } from 'lucide-react';
 
 interface FallbackWidgetProps {
     onSuccess: (result: string) => void;
@@ -12,6 +12,11 @@ export default function FallbackWidget({ onSuccess }: FallbackWidgetProps) {
     const [manualCode, setManualCode] = useState('');
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleManualSubmit = () => {
         if (manualCode.trim().length > 0) {
@@ -33,6 +38,8 @@ export default function FallbackWidget({ onSuccess }: FallbackWidgetProps) {
             // nanti logic baca QR dari gambar ditaruh di sini
         }
     };
+
+    if (!isMounted) return null;
 
     return (
         <div className='w-full flex flex-col md:pb-0'>
