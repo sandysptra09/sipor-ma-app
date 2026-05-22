@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import ReportingForm from './forms/reporting-form';
 import ReportStepsCard from './cards/report-steps-card';
+import { useEffect, useState } from 'react';
+import { api } from '@/lib/axios';
 
 interface ReportingContentProps {
     roomCode: string;
@@ -11,6 +13,26 @@ interface ReportingContentProps {
 
 export default function ReportingContent({ roomCode }: ReportingContentProps) {
     const router = useRouter();
+
+    const [fullLocation, setFullLocation] = useState<string>(roomCode);
+    const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
+    useEffect(() => {
+        const fetchRoomData = async () => {
+            try {
+                const res = await api.get(`/rooms/${roomCode}`);
+                const data = res.data.data;
+
+                setFullLocation(`${data.building} - ${data.name} - ${data.code}`);
+            } catch (error) {
+                console.error('Gagal mengambil data ruangan:', error);
+            } finally {
+                setIsLoadingLocation(false);
+            }
+        };
+
+        fetchRoomData();
+    }, [roomCode]);
 
     return (
         <motion.div
@@ -30,7 +52,11 @@ export default function ReportingContent({ roomCode }: ReportingContentProps) {
                 </div>
             </div>
 
-            <ReportingForm roomCode={roomCode} />
+            <ReportingForm
+                roomCode={roomCode}
+                fullLocation={fullLocation}
+                isLoadingLocation={isLoadingLocation}
+            />
 
             <ReportStepsCard />
 

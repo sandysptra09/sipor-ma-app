@@ -11,9 +11,11 @@ import UploadMediaWidget from '../widgets/upload-media-widget';
 
 interface ReportingFormProps {
     roomCode: string;
+    fullLocation?: string;
+    isLoadingLocation?: boolean;
 }
 
-export default function ReportingForm({ roomCode }: ReportingFormProps) {
+export default function ReportingForm({ roomCode, fullLocation, isLoadingLocation }: ReportingFormProps) {
     const router = useRouter();
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function ReportingForm({ roomCode }: ReportingFormProps) {
     return (
         <div className='flex flex-col gap-6 w-full bg-white p-5 md:p-8 rounded-lg shadow-sm border-none'>
 
-            <LocationFieldInput roomCode={roomCode} />
+            <LocationFieldInput locationText={isLoadingLocation ? 'Memuat lokasi...' : (fullLocation || roomCode)} />
 
             <UploadMediaWidget onUploadSuccess={(url) => setImageUrl(url)} />
 
