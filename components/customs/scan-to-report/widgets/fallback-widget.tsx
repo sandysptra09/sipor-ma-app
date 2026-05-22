@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Button, Input, TextField, Label, Separator } from '@heroui/react';
+import { Button, Input, TextField, Label, Separator, toast } from '@heroui/react';
 import { ImagePlus, ArrowRight, RefreshCcw } from 'lucide-react';
+import jsQR from 'jsqr';
 
 interface FallbackWidgetProps {
     onSuccess: (result: string) => void;
@@ -30,12 +31,44 @@ export default function FallbackWidget({ onSuccess }: FallbackWidgetProps) {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewUrl(objectUrl);
-            console.log('File dipilih:', file.name);
+        if (!file) return;
 
-            // nanti logic baca QR dari gambar ditaruh di sini
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+        console.log('File dipilih:', file.name);
+
+        const img = new window.Image();
+        img.src = objectUrl;
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            if (!ctx) {
+                toast.danger('Gagal memproses sistem gambar.');
+                return;
+            }
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'attemptBoth',
+            });
+
+            if (code && code.data) {
+                onSuccess(code.data);
+            } else {
+                toast.warning('QR Code tidak terdeteksi pada gambar. Pastikan gambar jelas atau gunakan input manual.');
+            }
+        };
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
