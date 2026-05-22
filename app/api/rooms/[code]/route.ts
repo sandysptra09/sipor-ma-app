@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { code: string } }
+    { params }: { params: Promise<{ code: string }> } 
 ) {
     try {
         const session = await auth();
@@ -16,7 +16,8 @@ export async function GET(
             );
         }
 
-        const roomCode = params.code;
+        const resolvedParams = await params; 
+        const roomCode = resolvedParams.code;
 
         if (!roomCode) {
             return NextResponse.json(
