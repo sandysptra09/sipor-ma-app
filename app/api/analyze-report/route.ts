@@ -5,6 +5,7 @@ import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { generateReportNumber } from '@/lib/generate-report-number';
+import { sendNotification } from '@/lib/notification';
 
 export const maxDuration = 30;
 
@@ -89,9 +90,24 @@ export async function POST(req: Request) {
             }
         });
 
-        // await pusherServer.trigger('admin-channel', 'new-report', {
-        //     message: `Laporan baru: ${aiResult.titleSuggestion} di ruangan ${roomCode}`,
-        // });
+        try {
+            const admins = await prisma.user.findMany({
+                where: { role: 'ADMIN' }
+            });
+
+            await Promise.all(
+                admins.map((admin) => 
+                    sendNotification({
+                        userId: admin.id,
+                        title: '🚨 Laporan Baru Masuk!',
+                        message: `Laporan ${newReport.priority} dari ${fullLocation}: ${aiResult.titleSuggestion}`,
+                        reportId: newReport.id
+                    })
+                )
+            );
+        } catch (pushError) {
+            console.error('Gagal mengirim notifikasi Pusher:', pushError);
+        }
 
         return NextResponse.json({
             message: 'Laporan berhasil dianalisa dan dikirim!',
