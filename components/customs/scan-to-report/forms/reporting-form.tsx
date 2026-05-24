@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@heroui/react';
+import { Button, toast } from '@heroui/react';
 import { Send, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/axios';
 
 import LocationFieldInput from '../inputs/location-field-input';
 import DescriptionTextarea from '../textareas/description-textarea';
@@ -45,17 +46,51 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
 
     const handleSubmit = async () => {
         if (!imageUrl) {
-            alert('Mohon unggah foto bukti terlebih dahulu agar AI dapat menganalisa.');
+            toast.warning('Mohon unggah foto bukti terlebih dahulu!');
+            return;
+        }
+        if (description.trim().length < 10) {
+            toast.warning('Deskripsi terlalu singkat. Mohon jelaskan lebih detail.');
             return;
         }
 
         setIsSubmitting(true);
 
-        setTimeout(() => {
-            setIsSubmitting(false);
-            alert('Laporan berhasil dikirim dan dianalisa oleh AI!');
+        const loadingId = toast('Memproses Laporan...', {
+            isLoading: true,
+            timeout: 0,
+        });
 
-        }, 6000);
+        try {
+            const res = await api.post('/analyze-report', {
+                roomCode,
+                description,
+                imageUrl
+            });
+
+            toast.close(loadingId);
+
+            setTimeout(() => {
+                toast.success(res.data.message || 'Laporan berhasil dikirim!');
+
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 1500);
+            }, 100);
+
+        } catch (error: any) {
+            toast.close(loadingId);
+
+            setTimeout(() => {
+                setIsSubmitting(false);
+
+                if (error.response?.status === 400) {
+                    toast.danger(error.response.data.message);
+                } else {
+                    toast.danger('Gagal memproses laporan. Coba beberapa saat lagi.');
+                }
+            }, 100);
+        }
     };
 
     return (
@@ -66,8 +101,8 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
             <UploadMediaWidget onUploadSuccess={(url) => setImageUrl(url)} />
 
             {imageUrl && (
-                <div className='flex items-center gap-2 text-sm text-emerald-700 font-medium bg-emerald-50 p-3 rounded-xl border border-emerald-200'>
-                    <CheckCircle2 size={18} className='text-emerald-600' />
+                <div className='flex items-center gap-2 text-sm text-primary font-medium bg-emerald-50 p-3 rounded-md border border-emerald-200'>
+                    <CheckCircle2 size={18} className='text-primary' />
                     Foto bukti berhasil diunggah! AI siap menganalisa.
                 </div>
             )}
@@ -94,7 +129,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
 
                     <Button
                         className={`font-bold text-sm transition-all duration-500 w-full rounded-md sm:w-auto p-6 ${isSubmitting
-                            ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)]'
+                            ? 'bg-[#0A6F66] text-white'
                             : 'bg-[#0A6F66] text-white hover:bg-[#07534c]'
                             }`}
                         onClick={handleSubmit}
