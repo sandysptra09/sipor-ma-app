@@ -20,7 +20,7 @@ export default function DescriptionTextarea({ value, onChange }: DescriptionText
                 placeholder='Jelaskan secara detail kendala yang dialami (contoh: AC tidak dingin, ada bunyi bising, atau air menetes)...'
                 minLength={10}
                 rows={6}
-                className='flex text-muted-foreground placeholder:text-muted-foreground placeholder:text-[13px] w-full items-center gap-3 rounded-md border-2 border-transparent bg-accent/70 px-4 py-3 transition-all hover:bg-muted focus-within:border-primary focus-within:bg-card'
+                className='flex text-sm text-muted-foreground placeholder:text-muted-foreground placeholder:text-[13px] w-full items-center gap-3 rounded-md border-2 border-transparent bg-accent/70 px-4 py-3 transition-all hover:bg-muted focus-within:border-primary focus-within:bg-card'
             />
         </TextField>
     );
