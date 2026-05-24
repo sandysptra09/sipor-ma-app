@@ -1,10 +1,8 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
+import { auth } from '@/auth';
 
-const f = createUploadthing();
-
-// fake auth function (ini masi setup awalan dan dummy, nanti diisi dengan auth dari NextAuth)
-const auth = (req: Request) => ({ id: 'fakeId' }); 
+const f = createUploadthing(); 
 
 export const ourFileRouter = {
 
@@ -16,11 +14,13 @@ export const ourFileRouter = {
     })
         .middleware(async ({ req }) => {
 
-            const user = await auth(req);
+           const session = await auth();
 
-            if (!user) throw new UploadThingError('Unauthorized');
+            if (!session?.user?.id) {
+                throw new UploadThingError('Unauthorized. Silakan login terlebih dahulu.');
+            }
 
-            return { userId: user.id };
+            return { userId: session.user.id };
         })
         .onUploadComplete(async ({ metadata, file }) => {
 
@@ -28,7 +28,7 @@ export const ourFileRouter = {
 
             console.log('file url', file.ufsUrl);
 
-            return { uploadedBy: metadata.userId };
+           return { uploadedBy: metadata.userId, url: file.ufsUrl };
         }),
 } satisfies FileRouter;
 
