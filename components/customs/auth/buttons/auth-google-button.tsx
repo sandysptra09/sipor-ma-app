@@ -7,7 +7,7 @@ export default function AuthGoogleButton() {
 
     const handleGoogleLogin = () => {
         toast("Mengalihkan ke Google...", {
-            description: "Mohon tunggu sebentar",
+            description: <span className='text-zinc-600'>Silahkan tunggu beberapa saat.</span>,
             isLoading: true,
             timeout: 0,
         });
