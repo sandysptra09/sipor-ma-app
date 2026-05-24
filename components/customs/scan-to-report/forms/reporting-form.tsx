@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Button, toast } from '@heroui/react';
-import { Send, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Sparkles, CheckCircle2, ShieldCheck, Bot, Rocket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
 
 import LocationFieldInput from '../inputs/location-field-input';
 import DescriptionTextarea from '../textareas/description-textarea';
 import UploadMediaWidget from '../widgets/upload-media-widget';
+import ConfirmationModal from '../modals/confirmation-modal';
 
 interface ReportingFormProps {
     roomCode: string;
@@ -23,6 +24,8 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loadingText, setLoadingText] = useState('Menyiapkan data...');
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         let timeout1: NodeJS.Timeout;
@@ -44,16 +47,27 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
         };
     }, [isSubmitting]);
 
-    const handleSubmit = async () => {
+    const handleOpenConfirmation = () => {
         if (!imageUrl) {
             toast.warning('Mohon unggah foto bukti terlebih dahulu!');
             return;
         }
+
+        if (!description) {
+            toast.warning('Mohon isi deskripsi terlebih dahulu!');
+            return;
+        }
+
         if (description.trim().length < 10) {
             toast.warning('Deskripsi terlalu singkat. Mohon jelaskan lebih detail.');
             return;
         }
 
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmSubmit = async () => {
+        setIsModalOpen(false);
         setIsSubmitting(true);
 
         const loadingId = toast('Memproses Laporan...', {
@@ -132,7 +146,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
                             ? 'bg-[#0A6F66] text-white'
                             : 'bg-[#0A6F66] text-white hover:bg-[#07534c]'
                             }`}
-                        onClick={handleSubmit}
+                        onPress={handleOpenConfirmation}
                         isDisabled={isSubmitting || !imageUrl}
                     >
                         {isSubmitting ? (
@@ -146,6 +160,12 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
                     </Button>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                onConfirm={handleConfirmSubmit}
+            />
 
         </div>
     );
