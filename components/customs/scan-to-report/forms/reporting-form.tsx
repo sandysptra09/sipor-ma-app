@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button, toast } from '@heroui/react';
-import { Sparkles, CheckCircle2, ShieldCheck, Bot, Rocket } from 'lucide-react';
+import { Send, Sparkles, CheckCircle2, ShieldCheck, Bot, Rocket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
 
@@ -23,7 +23,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [loadingText, setLoadingText] = useState('Menyiapkan data...');
+    const [loadingStep, setLoadingStep] = useState(1);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,11 +33,11 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
         let timeout3: NodeJS.Timeout;
 
         if (isSubmitting) {
-            setLoadingText('Mengunggah Laporan...');
+            setLoadingStep(0);
 
-            timeout1 = setTimeout(() => setLoadingText('AI sedang menganalisa foto... 🤖'), 1500);
-            timeout2 = setTimeout(() => setLoadingText('Menentukan kategori & prioritas... ✨'), 3000);
-            timeout3 = setTimeout(() => setLoadingText('Menyelesaikan laporan... 🚀'), 4500);
+            timeout1 = setTimeout(() => setLoadingStep(1), 1500);
+            timeout2 = setTimeout(() => setLoadingStep(2), 3000);
+            timeout3 = setTimeout(() => setLoadingStep(3), 4500);
         }
 
         return () => {
@@ -107,6 +107,41 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
         }
     };
 
+    const renderLoadingContent = () => {
+        switch (loadingStep) {
+            case 0:
+                return (
+                    <span className='flex items-center gap-2 animate-pulse'>
+                        <Send size={18} />
+                        Mengunggah Laporan...
+                    </span>
+                );
+            case 1:
+                return (
+                    <span className='flex items-center gap-2 animate-pulse'>
+                        <Bot size={18} />
+                        AI sedang menganalisa foto bukti...
+                    </span>
+                );
+            case 2:
+                return (
+                    <span className='flex items-center gap-2 animate-pulse'>
+                        <Sparkles size={18} />
+                        Menentukan kategori & prioritas ...
+                    </span>
+                );
+            case 3:
+                return (
+                    <span className='flex items-center gap-2 animate-pulse'>
+                        <Rocket size={18} />
+                        Menyelesaikan laporan...
+                    </span>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className='flex flex-col gap-6 w-full bg-white p-5 md:p-8 rounded-lg shadow-sm border-none'>
 
@@ -149,14 +184,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
                         onPress={handleOpenConfirmation}
                         isDisabled={isSubmitting || !imageUrl}
                     >
-                        {isSubmitting ? (
-                            <span className='flex items-center gap-2 animate-pulse'>
-                                <Sparkles size={18} />
-                                {loadingText}
-                            </span>
-                        ) : (
-                            'Kirim Laporan'
-                        )}
+                        {isSubmitting ? renderLoadingContent() : 'Kirim Laporan'}
                     </Button>
                 </div>
             </div>
