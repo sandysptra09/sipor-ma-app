@@ -13,18 +13,59 @@ interface ChatMessageListProps {
 
 export default function ChatMessageListWidget({ messages, isLoading }: ChatMessageListProps) {
 
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+    const isUserScrolling = useRef(false);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (!chatContainerRef.current) return;
+
+        if (isUserScrolling.current) return;
+
+        const container = chatContainerRef.current;
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+        });
     };
 
     useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+        const container = chatContainerRef.current;
+        if (!container) return;
+
+        const observer = new MutationObserver(() => {
+            scrollToBottom();
+        });
+
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const container = chatContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            isUserScrolling.current = !isAtBottom;
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        setTimeout(scrollToBottom, 100);
+    }, [messages.length]);
 
     return (
-        <div className='flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-zinc-50/50 data-lenis-prevent'>
+        <div
+            ref={chatContainerRef}
+            className='flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-zinc-50/50 data-lenis-prevent'>
 
             <div className='flex justify-center'>
                 <span className='bg-zinc-100 text-zinc-500 text-xs font-medium px-3 py-1 rounded-full'>
