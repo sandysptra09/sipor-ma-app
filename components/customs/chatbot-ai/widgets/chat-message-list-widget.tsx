@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Bot, MoreHorizontal } from 'lucide-react';
 import { UIMessage } from '@ai-sdk/react';
 import { format } from 'date-fns';
+import ReactMarkdown from 'react-markdown';
 
 interface ChatMessageListProps {
     messages: UIMessage[];
@@ -10,6 +12,17 @@ interface ChatMessageListProps {
 }
 
 export default function ChatMessageListWidget({ messages, isLoading }: ChatMessageListProps) {
+
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
     return (
         <div className='flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-zinc-50/50 data-lenis-prevent'>
 
@@ -44,7 +57,24 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
                                 >
                                     {msg.parts.map((part, index) => {
                                         if (part.type === 'text') {
-                                            return <span key={index}>{part.text}</span>;
+                                            if (isUser) {
+                                                return <span key={index}>{part.text}</span>;
+                                            } else {
+                                                return (
+                                                    <ReactMarkdown
+                                                        key={index}
+                                                        components={{
+                                                            p: ({ node, ...props }) => <p className='mb-2 last:mb-0' {...props} />,
+                                                            ul: ({ node, ...props }) => <ul className='list-disc ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                            ol: ({ node, ...props }) => <ol className='list-decimal ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                            li: ({ node, ...props }) => <li className='' {...props} />,
+                                                            strong: ({ node, ...props }) => <strong className='font-semibold' {...props} />
+                                                        }}
+                                                    >
+                                                        {part.text}
+                                                    </ReactMarkdown>
+                                                );
+                                            }
                                         }
                                         return null;
                                     })}
