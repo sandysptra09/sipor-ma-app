@@ -1,7 +1,9 @@
-import React from 'react'
+import ChatbotAiContent from '@/components/customs/chatbot-ai/chatbot-ai-content'
 
 export default function ChatAssistantPage() {
     return (
-        <div>page</div>
+        <div className='h-[calc(100vh-80px)] w-full bg-[#f8fafc] overflow-hidden'>
+            <ChatbotAiContent />
+        </div>
     )
 }
