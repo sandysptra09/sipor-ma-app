@@ -34,6 +34,22 @@ export async function POST(req: Request) {
 
         const lastUserMessage = messages[messages.length - 1];
 
+        let extractedContent = lastUserMessage.content;
+        
+        if (!extractedContent && lastUserMessage.parts && lastUserMessage.parts.length > 0) {
+            extractedContent = lastUserMessage.parts
+                .filter((part: any) => part.type === 'text')
+                .map((part: any) => part.text)
+                .join(' ');
+        }
+
+        if (!extractedContent || extractedContent.trim() === '') {
+            return NextResponse.json(
+                { message: 'Teks pesan tidak valid atau kosong.' },
+                { status: 400 }
+            );
+        }
+
         let chatSession = await prisma.chatSession.findUnique({
             where: { id: sessionId }
         });
@@ -51,12 +67,12 @@ export async function POST(req: Request) {
             data: {
                 sessionId: chatSession.id,
                 role: 'USER', 
-                content: lastUserMessage.content,
+                content: extractedContent, 
             }
         });
 
         const result = streamText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-3.1-flash-lite'),
             system: 'Kamu adalah SIPOR-Assistant, asisten AI ramah dan cerdas dari aplikasi SIPOR-MA. Tugasmu membantu mahasiswa melaporkan kerusakan fasilitas kampus atau memberikan informasi seputar SOP perbaikan fasilitas dengan jawaban yang singkat, padat, ramah, dan jelas. Jangan menjawab jika ditanya hal di luar fasilitas kampus.',
             
             messages: await convertToModelMessages(messages), 
@@ -76,7 +92,7 @@ export async function POST(req: Request) {
             },
         });
 
-        return result.toTextStreamResponse();
+        return result.toUIMessageStreamResponse();
 
     } catch (error) {
         console.error('Chat API Error:', error);
