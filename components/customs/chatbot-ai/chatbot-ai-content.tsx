@@ -50,6 +50,17 @@ export default function ChatbotAiContent({ initialSessionId, initialMessages }: 
         }
     };
 
+    const handleSuggestionClick = (text: string) => {
+        sendMessage(
+            { text: text },
+            {
+                body: {
+                    sessionId: sessionId
+                }
+            }
+        );
+    };
+
     return (
         <div className='flex justify-center w-full h-full'>
             <div className='flex flex-col w-full max-w-6xl h-full bg-white shadow-sm border-x border-zinc-200 overflow-hidden relative'>
@@ -60,7 +71,7 @@ export default function ChatbotAiContent({ initialSessionId, initialMessages }: 
 
                 <div className='flex flex-col bg-white border-t border-zinc-100 z-10'>
                     {messages.length === 0 && (
-                        <ChatSuggestionsWidget />
+                        <ChatSuggestionsWidget onSuggestionClick={handleSuggestionClick} />
                     )}
 
                     <ChatInputArea
