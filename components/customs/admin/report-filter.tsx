@@ -145,11 +145,11 @@ export function ReportFilter({
                     <Select.Popover className="rounded-md shadow-2xl border border-slate-200">
                         <ListBox>
                             {[
-                                { id: "selesai", label: "Selesai" },
-                                { id: "ditolak", label: "Ditolak" },
-                                { id: "diproses", label: "Diproses" },
-                                { id: "menunggu", label: "Menunggu" },
-                                { id: "diverifikasi", label: "Diverifikasi" },
+                                { id: "RESOLVED", label: "Selesai" },
+                                { id: "REJECTED", label: "Ditolak" },
+                                { id: "IN_PROGRESS", label: "Diproses" },
+                                { id: "PENDING", label: "Menunggu" },
+                                { id: "VERIFIED", label: "Diverifikasi" },
                             ].map((item) => (
                                 <ListBox.Item
                                     key={item.id}
