@@ -2,6 +2,7 @@
 
 import { Bot, MoreHorizontal } from 'lucide-react';
 import { UIMessage } from '@ai-sdk/react';
+import { format } from 'date-fns';
 
 interface ChatMessageListProps {
     messages: UIMessage[];
@@ -20,6 +21,9 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
 
             {messages.map((msg) => {
                 const isUser = msg.role === 'user';
+
+                const createdAt = (msg as any).createdAt;
+                const timeString = createdAt ? format(new Date(createdAt), 'HH:mm') : '';
 
                 return (
                     <div key={msg.id} className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -46,8 +50,8 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
                                     })}
                                 </div>
 
-                                <span className={`text-[10px] text-zinc-400 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
-                                    {/* nanti isi pakai date-fns kalau udah connect DB penuh */}
+                                <span className={`text-[11px] text-zinc-400 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
+                                    {timeString}
                                 </span>
                             </div>
 

@@ -28,6 +28,7 @@ export default async function ChatAssistantPage() {
                 id: msg.id,
                 role: msg.role === 'USER' ? 'user' : 'assistant',
                 content: msg.content,
+                createdAt: msg.createdAt,
                 parts: [{ type: 'text', text: msg.content }]
             })) as UIMessage[];
         } else {
