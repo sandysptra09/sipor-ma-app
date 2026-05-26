@@ -1,24 +1,27 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useChat } from '@ai-sdk/react';
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import ChatHeader from './header/chat-header';
 import ChatMessageListWidget from './widgets/chat-message-list-widget';
 import ChatInputArea from './inputs/chat-area-input';
 import ChatSuggestionsWidget from './widgets/chat-suggestions-widget';
 
-export default function ChatbotAiContent() {
+interface ChatbotAiContentProps {
+    initialSessionId: string;
+    initialMessages: UIMessage[];
+}
 
-    const [sessionId, setSessionId] = useState<string>('');
+export default function ChatbotAiContent({ initialSessionId, initialMessages }: ChatbotAiContentProps) {
+
+    const [sessionId] = useState<string>(initialSessionId);
 
     const [input, setInput] = useState('');
 
-    useEffect(() => {
-        setSessionId(crypto.randomUUID());
-    }, []);
-
     const { messages, sendMessage, status } = useChat({
+        id: sessionId,
+        messages: initialMessages,
         transport: new DefaultChatTransport({
             api: '/api/chat',
         }),
@@ -31,7 +34,6 @@ export default function ChatbotAiContent() {
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
     };
-
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
