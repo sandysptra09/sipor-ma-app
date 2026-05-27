@@ -72,6 +72,23 @@ export async function POST(req: Request) {
             );
         }
 
+        const existingReport = await prisma.report.findFirst({
+            where: {
+                roomCode: roomCode,
+                category: aiResult.category,
+                status: {
+                    in: ['PENDING', 'VERIFIED', 'IN_PROGRESS']
+                }
+            }
+        });
+
+        if (existingReport) {
+            return NextResponse.json(
+                { message: `Laporan ditolak! Masalah pada kategori "${aiResult.category}" di ruangan ini sudah dilaporkan sebelumnya dan sedang dalam proses penanganan.` },
+                { status: 400 } 
+            );
+        }
+
         const newReportNumber = await generateReportNumber();
 
         const newReport = await prisma.report.create({
