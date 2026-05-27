@@ -76,8 +76,12 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
             {messages.map((msg) => {
                 const isUser = msg.role === 'user';
 
-                const createdAt = (msg as any).createdAt;
-                const timeString = createdAt ? format(new Date(createdAt), 'HH:mm') : '';
+                let rawDate = (msg as any).createdAt;
+                if (!rawDate) {
+                    rawDate = new Date();
+                }
+
+                const timeString = format(new Date(rawDate), 'HH:mm');
 
                 return (
                     <div key={msg.id} className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
