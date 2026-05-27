@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Bot, MoreHorizontal } from 'lucide-react';
+import { Bot, MoreHorizontal, Database } from 'lucide-react';
 import { UIMessage } from '@ai-sdk/react';
 import { format, isSameDay, isToday, isYesterday } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -98,6 +98,11 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
                     }
                 }
 
+                const hasText = msg.parts?.some(part => part.type === 'text' && part.text.trim() !== '');
+                const hasToolInvocation = msg.parts?.some(part => part.type === 'tool-invocation');
+
+                const isThinkingBeforeTool = !isUser && !hasText && !hasToolInvocation;
+
                 return (
                     <div key={msg.id} className='flex flex-col gap-6 w-full'>
 
@@ -125,29 +130,42 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
                                             : 'bg-white border border-zinc-200 text-zinc-800 rounded-2xl rounded-bl-sm shadow-sm'
                                             }`}
                                     >
-                                        {msg.parts.map((part, partIndex) => {
-                                            if (part.type === 'text') {
-                                                if (isUser) {
-                                                    return <span key={partIndex}>{part.text}</span>;
-                                                } else {
+                                        {isThinkingBeforeTool ? (
+                                            <div className='flex items-center text-zinc-500'>
+                                                <MoreHorizontal size={20} className='animate-bounce' />
+                                            </div>
+                                        ) : (
+                                            msg.parts.map((part, partIndex) => {
+                                                if (part.type === 'text' && part.text) {
+                                                    if (isUser) {
+                                                        return <span key={partIndex}>{part.text}</span>;
+                                                    } else {
+                                                        return (
+                                                            <ReactMarkdown
+                                                                key={partIndex}
+                                                                components={{
+                                                                    p: ({ node, ...props }) => <p className='mb-2 last:mb-0' {...props} />,
+                                                                    ul: ({ node, ...props }) => <ul className='list-disc ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                                    ol: ({ node, ...props }) => <ol className='list-decimal ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                                    li: ({ node, ...props }) => <li className='' {...props} />,
+                                                                    strong: ({ node, ...props }) => <strong className='font-semibold' {...props} />
+                                                                }}
+                                                            >
+                                                                {part.text}
+                                                            </ReactMarkdown>
+                                                        );
+                                                    }
+                                                } else if (part.type === 'tool-invocation') {
                                                     return (
-                                                        <ReactMarkdown
-                                                            key={partIndex}
-                                                            components={{
-                                                                p: ({ node, ...props }) => <p className='mb-2 last:mb-0' {...props} />,
-                                                                ul: ({ node, ...props }) => <ul className='list-disc ml-4 mb-2 flex flex-col gap-1' {...props} />,
-                                                                ol: ({ node, ...props }) => <ol className='list-decimal ml-4 mb-2 flex flex-col gap-1' {...props} />,
-                                                                li: ({ node, ...props }) => <li className='' {...props} />,
-                                                                strong: ({ node, ...props }) => <strong className='font-semibold' {...props} />
-                                                            }}
-                                                        >
-                                                            {part.text}
-                                                        </ReactMarkdown>
+                                                        <div key={partIndex} className='flex items-center gap-2 text-[11px] text-[#0A6F66] bg-teal-50/50 border border-teal-100 px-3 py-2 rounded-lg my-1 w-fit'>
+                                                            <Database size={14} className='animate-pulse' />
+                                                            <span className='font-medium animate-pulse'>Mengecek sistem SIPOR-MA...</span>
+                                                        </div>
                                                     );
                                                 }
-                                            }
-                                            return null;
-                                        })}
+                                                return null;
+                                            })
+                                        )}
                                     </div>
 
                                     <span className={`text-[11px] text-zinc-400 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
