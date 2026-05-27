@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
         const result = streamText({
             model: google('gemini-3.1-flash-lite'),
-            system: 'Kamu adalah SIPOR-Assistant, asisten AI ramah dan cerdas dari aplikasi SIPOR-MA. Tugasmu membantu mahasiswa melaporkan kerusakan fasilitas kampus atau memberikan informasi seputar SOP perbaikan fasilitas dengan jawaban yang singkat, padat, ramah, dan jelas. Jika user menanyakan status atau mencari laporan mereka, GUNAKAN tool checkReportStatus. PENTING: SETELAH KAMU MENGGUNAKAN TOOL DAN MENDAPATKAN DATA, KAMU WAJIB MEMBALAS DENGAN TEKS PENJELASAN KEPADA USER BERDASARKAN DATA TERSEBUT. Jangan cuma diam! Jangan menjawab hal di luar fasilitas kampus.',
+            system: 'Kamu adalah SIPOR-Assistant, asisten AI ramah dan cerdas dari aplikasi SIPOR-MA. Tugasmu membantu mahasiswa melaporkan kerusakan fasilitas kampus atau memberikan informasi seputar SOP perbaikan fasilitas dengan jawaban yang singkat, padat, ramah, dan jelas. JIKA user ingin melaporkan kerusakan BARU, GUNAKAN tool checkDuplicateFacility terlebih dahulu untuk memastikan tidak ada yang melaporkan hal serupa. JIKA user menanyakan status atau mencari laporan yang sudah mereka buat sebelumnya, GUNAKAN tool checkReportStatus. PENTING: SETELAH KAMU MENGGUNAKAN TOOL DAN MENDAPATKAN DATA, KAMU WAJIB MEMBALAS DENGAN TEKS PENJELASAN KEPADA USER BERDASARKAN DATA TERSEBUT. Jangan cuma diam! Jangan menjawab hal di luar fasilitas kampus.',
 
             messages: await convertToModelMessages(messages),
 
@@ -130,7 +130,67 @@ export async function POST(req: Request) {
                             return { result: 'Terjadi kesalahan sistem saat mengambil data dari database.' };
                         }
                     }
+                }),
+
+                checkDuplicateFacility: tool({
+                    description: 'Mengecek apakah fasilitas yang ingin dilaporkan user SUDAH PERNAH dilaporkan oleh orang lain dan masih dalam proses perbaikan. Wajib digunakan sebelum merespon user yang berniat membuat laporan baru.',
+                    inputSchema: z.object({
+                        lokasi: z.string().optional().describe('Lokasi gedung, lantai, atau ruangan yang disebut user (contoh: gedung E lantai 2)'),
+                        keyword: z.string().describe('Fasilitas utama yang rusak (contoh: AC, proyektor, kursi, meja, keran)'),
+                    }),
+
+                    execute: async ({ lokasi, keyword }) => {
+                        console.log('AI MENGECEK DUPLIKASI LAPORAN:', { lokasi, keyword });
+
+                        try {
+                            const conditions: any[] = [
+                                {
+                                    OR: [
+                                        { title: { contains: keyword } },
+                                        { description: { contains: keyword } },
+                                        { category: { contains: keyword } },
+                                    ]
+                                }
+                            ];
+
+                            if (lokasi) {
+                                conditions.push({ location: { contains: lokasi } });
+                            }
+
+                            const duplicates = await prisma.report.findMany({
+                                where: {
+                                    status: {
+                                        in: ['PENDING', 'VERIFIED', 'IN_PROGRESS']
+                                    },
+                                    AND: conditions
+                                },
+                                orderBy: { createdAt: 'desc' },
+                                take: 1, 
+                                select: {
+                                    reportNumber: true,
+                                    status: true,
+                                    location: true,
+                                    title: true,
+                                    createdAt: true
+                                }
+                            });
+
+                            if (duplicates.length > 0) {
+                                return { 
+                                    result: 'Peringatan: Ditemukan laporan serupa yang sedang diproses. Beritahu user untuk tidak perlu melapor lagi.', 
+                                    data: duplicates[0] 
+                                };
+                            }
+                            
+                            return { result: 'Aman, tidak ada laporan duplikat. Persilakan user untuk melapor via form.' };
+
+                        } catch (error) {
+                            console.error('Error Tool checkDuplicateFacility:', error);
+                            return { result: 'Terjadi kesalahan sistem saat mengecek duplikasi laporan.' };
+                        }
+                    }
                 })
+
             },
 
             onFinish: async ({ text }) => {
