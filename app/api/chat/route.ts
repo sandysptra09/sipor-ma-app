@@ -85,8 +85,8 @@ export async function POST(req: Request) {
                     description: 'Mencari dan mengecek status laporan kerusakan fasilitas milik pengguna berdasarkan kode laporan, lokasi, atau kata kunci kerusakan. Gunakan ini saat user menanyakan kabar laporan mereka.',
                     inputSchema: z.object({
                         kodeLaporan: z.string().optional().describe('Kode laporan spesifik jika disebutkan user (contoh: SPM-2026-001)'),
-                        lokasi: z.string().optional().describe('Lokasi gedung, lantai, atau ruangan (contoh: gedung baru, lantai 2, lab komputer)'),
-                        keyword: z.string().optional().describe('Kata kunci masalah atau fasilitas (contoh: AC bocor, proyektor mati, kursi rusak/patah.)'),
+                        lokasi: z.string().optional().describe('Lokasi gedung, lantai, kode ruangan atau nama ruangan (contoh: gedung baru, lantai 2, lab komputer, 20.4E.02.006)'),
+                        keyword: z.string().optional().describe('Kata kunci masalah atau kategori fasilitas (contoh kategori: AC, Kelistrikan, Furnitur & Interior, Sanitasi & Air, Infrastruktur Jalan. Atau spesifik: ac bocor, proyektor mati, kursi patah, meja rusak, smartboard rusak, keran rusak, dan lainnya yang berhubungan dengan kategori tersebut.)'),
                     }),
 
                     execute: async ({ kodeLaporan, lokasi, keyword }) => {
@@ -133,10 +133,10 @@ export async function POST(req: Request) {
                 }),
 
                 checkDuplicateFacility: tool({
-                    description: 'Mengecek apakah fasilitas yang ingin dilaporkan user SUDAH PERNAH dilaporkan oleh orang lain dan masih dalam proses perbaikan. Wajib digunakan sebelum merespon user yang berniat membuat laporan baru.',
+                    description: 'Mengecek apakah fasilitas yang ingin dilaporkan user SUDAH PERNAH dilaporkan oleh orang lain dan masih dalam proses perbaikan. Wajib digunakan sebelum merespon user yang berniat membuat laporan baru, ATAU SAAT user sekadar bertanya apakah suatu fasilitas/ruangan sudah ada yang melaporkannya.',
                     inputSchema: z.object({
-                        lokasi: z.string().optional().describe('Lokasi gedung, lantai, atau ruangan yang disebut user (contoh: gedung E lantai 2)'),
-                        keyword: z.string().describe('Fasilitas utama yang rusak (contoh: AC, proyektor, kursi, meja, keran)'),
+                        lokasi: z.string().optional().describe('Lokasi gedung, lantai, kode ruangan atau nama ruangan yang disebut user (contoh: gedung E lantai 2, ruang 20.4E.02.006)'),
+                        keyword: z.string().describe('Kategori fasilitas atau nama barang yang rusak (Kategori sistem: AC, Kelistrikan, Furnitur & Interior, Sanitasi & Air, Infrastruktur Jalan. Atau spesifik: proyektor, kursi, meja, keran)'),
                     }),
 
                     execute: async ({ lokasi, keyword }) => {
