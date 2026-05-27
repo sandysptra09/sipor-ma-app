@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { Bot, MoreHorizontal } from 'lucide-react';
 import { UIMessage } from '@ai-sdk/react';
-import { format } from 'date-fns';
+import { format, isSameDay, isToday, isYesterday } from 'date-fns';
+import { id } from 'date-fns/locale';
 import ReactMarkdown from 'react-markdown';
 
 interface ChatMessageListProps {
@@ -62,74 +63,99 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
         setTimeout(scrollToBottom, 100);
     }, [messages.length]);
 
+    const getDateSeparatorText = (date: Date) => {
+        if (isToday(date)) return 'Hari ini';
+        if (isYesterday(date)) return 'Kemarin';
+        return format(date, 'd MMMM yyyy', { locale: id });
+    };
+
     return (
         <div
             ref={chatContainerRef}
-            className='flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-zinc-50/50 data-lenis-prevent'>
+            className='flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-zinc-50/50 data-lenis-prevent'
+        >
 
-            <div className='flex justify-center'>
-                <span className='bg-zinc-100 text-zinc-500 text-xs font-medium px-3 py-1 rounded-full'>
-                    Hari ini
-                </span>
-            </div>
-
-            {messages.map((msg) => {
+            {messages.map((msg, index) => {
                 const isUser = msg.role === 'user';
-
                 let rawDate = (msg as any).createdAt;
                 if (!rawDate) {
                     rawDate = new Date();
                 }
+                const currentDate = new Date(rawDate);
+                const timeString = format(currentDate, 'HH:mm');
 
-                const timeString = format(new Date(rawDate), 'HH:mm');
+                let showDateSeparator = false;
+
+                if (index === 0) {
+                    showDateSeparator = true;
+                } else {
+                    let prevRawDate = (messages[index - 1] as any).createdAt;
+                    if (!prevRawDate) prevRawDate = new Date();
+                    const prevDate = new Date(prevRawDate);
+
+                    if (!isSameDay(currentDate, prevDate)) {
+                        showDateSeparator = true;
+                    }
+                }
 
                 return (
-                    <div key={msg.id} className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex gap-3 max-w-[90%] sm:max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div key={msg.id} className='flex flex-col gap-6 w-full'>
 
-                            {!isUser && (
-                                <div className='shrink-0 w-8 h-8 rounded-full bg-[#0A6F66] text-white flex items-center justify-center mt-auto shadow-sm'>
-                                    <Bot size={18} />
-                                </div>
-                            )}
-
-                            <div className='flex flex-col gap-1'>
-                                <div
-                                    className={`px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${isUser
-                                        ? 'bg-[#0A6F66] text-white rounded-2xl rounded-br-sm shadow-sm'
-                                        : 'bg-white border border-zinc-200 text-zinc-800 rounded-2xl rounded-bl-sm shadow-sm'
-                                        }`}
-                                >
-                                    {msg.parts.map((part, index) => {
-                                        if (part.type === 'text') {
-                                            if (isUser) {
-                                                return <span key={index}>{part.text}</span>;
-                                            } else {
-                                                return (
-                                                    <ReactMarkdown
-                                                        key={index}
-                                                        components={{
-                                                            p: ({ node, ...props }) => <p className='mb-2 last:mb-0' {...props} />,
-                                                            ul: ({ node, ...props }) => <ul className='list-disc ml-4 mb-2 flex flex-col gap-1' {...props} />,
-                                                            ol: ({ node, ...props }) => <ol className='list-decimal ml-4 mb-2 flex flex-col gap-1' {...props} />,
-                                                            li: ({ node, ...props }) => <li className='' {...props} />,
-                                                            strong: ({ node, ...props }) => <strong className='font-semibold' {...props} />
-                                                        }}
-                                                    >
-                                                        {part.text}
-                                                    </ReactMarkdown>
-                                                );
-                                            }
-                                        }
-                                        return null;
-                                    })}
-                                </div>
-
-                                <span className={`text-[11px] text-zinc-400 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
-                                    {timeString}
+                        {showDateSeparator && (
+                            <div className='flex justify-center'>
+                                <span className='bg-zinc-100 text-zinc-500 text-xs font-medium px-3 py-1 rounded-full'>
+                                    {getDateSeparatorText(currentDate)}
                                 </span>
                             </div>
+                        )}
 
+                        <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`flex gap-3 max-w-[90%] sm:max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+
+                                {!isUser && (
+                                    <div className='shrink-0 w-8 h-8 rounded-full bg-[#0A6F66] text-white flex items-center justify-center mt-auto shadow-sm'>
+                                        <Bot size={18} />
+                                    </div>
+                                )}
+
+                                <div className='flex flex-col gap-1 w-full'>
+                                    <div
+                                        className={`px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${isUser
+                                            ? 'bg-[#0A6F66] text-white rounded-2xl rounded-br-sm shadow-sm'
+                                            : 'bg-white border border-zinc-200 text-zinc-800 rounded-2xl rounded-bl-sm shadow-sm'
+                                            }`}
+                                    >
+                                        {msg.parts.map((part, partIndex) => {
+                                            if (part.type === 'text') {
+                                                if (isUser) {
+                                                    return <span key={partIndex}>{part.text}</span>;
+                                                } else {
+                                                    return (
+                                                        <ReactMarkdown
+                                                            key={partIndex}
+                                                            components={{
+                                                                p: ({ node, ...props }) => <p className='mb-2 last:mb-0' {...props} />,
+                                                                ul: ({ node, ...props }) => <ul className='list-disc ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                                ol: ({ node, ...props }) => <ol className='list-decimal ml-4 mb-2 flex flex-col gap-1' {...props} />,
+                                                                li: ({ node, ...props }) => <li className='' {...props} />,
+                                                                strong: ({ node, ...props }) => <strong className='font-semibold' {...props} />
+                                                            }}
+                                                        >
+                                                            {part.text}
+                                                        </ReactMarkdown>
+                                                    );
+                                                }
+                                            }
+                                            return null;
+                                        })}
+                                    </div>
+
+                                    <span className={`text-[11px] text-zinc-400 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
+                                        {timeString}
+                                    </span>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 );
@@ -149,7 +175,6 @@ export default function ChatMessageListWidget({ messages, isLoading }: ChatMessa
                     </div>
                 </div>
             )}
-
         </div>
     );
 }
