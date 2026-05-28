@@ -1,126 +1,19 @@
 'use client';
 
+import { useEffect, useState, useMemo } from 'react';
+import { api } from '@/lib/axios';
+import { format, isToday, isYesterday } from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
+
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
 import StatWidget from './widgets/stat-widget';
 import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
 import HelpWidget from './widgets/help-widget';
-import ReportCard from './cards/report-card';
+import ReportCard, { ReportStatus } from './cards/report-card';
 import { Clock4, History } from 'lucide-react';
 import { LuFileText, LuCircleCheckBig } from 'react-icons/lu';
 import { TbRosetteDiscountCheckFilled } from 'react-icons/tb';
 import { MdOutlineEngineering, MdOutlineInsertComment } from 'react-icons/md';
-
-const tabItems: TabItem[] = [
-    {
-        id: 'semua',
-        label: 'Semua Laporan',
-        content: (
-            <div className='flex flex-col gap-6'>
-                <ReportCard
-                    id='#REP-2026-001'
-                    title='AC Ruang Kuliah 20.4B.05.005'
-                    date='12 JAN 2026'
-                    status='PROSES'
-                    imageSrc='https://suarakampus.com/wp-content/uploads/2024/11/IMG-20241112-WA0062-1160x764.jpg'
-                    messageIcon={<TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />}
-                    messageText='Laporan Diterima'
-                    actionIcon={<MdOutlineEngineering size={18} className='text-zinc-400' />}
-                    actionText='Tim Lapangan Menuju Lokasi'
-                    actionType='neutral'
-                    delay={0.1}
-                />
-                <ReportCard
-                    id='#REP-2026-002'
-                    title='Kursi Ruang Kuliah 20.4E.02.006'
-                    date='13 JAN 2026'
-                    status='SELESAI'
-                    imageSrc='https://pascasarjana.unsrat.ac.id/images/Ruang_kuliah_1.JPG'
-                    messageIcon={<TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />}
-                    messageText='Masalah Teratasi'
-                    actionIcon={<LuFileText size={18} />}
-                    actionText='Lihat Dokumentasi Perbaikan'
-                    actionType='primary'
-                    delay={0.2}
-                />
-                <ReportCard
-                    id='#REP-2026-003'
-                    title='Smartboard Ruang Kuliah 20.4B.04.001'
-                    date='KEMARIN'
-                    status='PENDING'
-                    imageSrc='https://www.indovisual.co.id/wp-content/uploads/2025/01/asian-female-professor-giving-biology-lecture-university_63762-12486.jpg'
-                    messageIcon={<Clock4 size={18} className='text-destructive' />}
-                    messageText='Menunggu Verifikasi Admin'
-                    actionText='Batalkan Laporan'
-                    actionType='danger'
-                    delay={0.3}
-                />
-            </div>
-        )
-    },
-    {
-        id: 'pending',
-        label: 'Pending',
-        content: (
-            <div className='flex flex-col gap-6'>
-                <ReportCard
-                    id='#REP-2026-003'
-                    title='Smartboard Ruang Kuliah 20.4B.04.001'
-                    date='KEMARIN'
-                    status='PENDING'
-                    imageSrc='https://www.indovisual.co.id/wp-content/uploads/2025/01/asian-female-professor-giving-biology-lecture-university_63762-12486.jpg'
-                    messageIcon={<Clock4 size={18} className='text-destructive' />}
-                    messageText='Menunggu Verifikasi Admin'
-                    actionText='Batalkan Laporan'
-                    actionType='danger'
-                    delay={0.1}
-                />
-            </div>
-        )
-    },
-    {
-        id: 'proses',
-        label: 'Proses',
-        content: (
-            <div className='flex flex-col gap-6'>
-                <ReportCard
-                    id='#REP-2026-001'
-                    title='AC Ruang Kuliah 20.4B.05.005'
-                    date='12 JAN 2026'
-                    status='PROSES'
-                    imageSrc='https://suarakampus.com/wp-content/uploads/2024/11/IMG-20241112-WA0062-1160x764.jpg'
-                    messageIcon={<TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />}
-                    messageText='Laporan Diterima'
-                    actionIcon={<MdOutlineEngineering size={18} className='text-zinc-400' />}
-                    actionText='Tim Lapangan Menuju Lokasi'
-                    actionType='neutral'
-                    delay={0.1}
-                />
-            </div>
-        )
-    },
-    {
-        id: 'selesai',
-        label: 'Selesai',
-        content: (
-            <div className='flex flex-col gap-6'>
-                <ReportCard
-                    id='#REP-2026-002'
-                    title='Kursi Ruang Kuliah 20.4E.02.006'
-                    date='13 JAN 2026'
-                    status='SELESAI'
-                    imageSrc='https://pascasarjana.unsrat.ac.id/images/Ruang_kuliah_1.JPG'
-                    messageIcon={<TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />}
-                    messageText='Masalah Teratasi'
-                    actionIcon={<LuFileText size={18} />}
-                    actionText='Lihat Dokumentasi Perbaikan'
-                    actionType='primary'
-                    delay={0.1}
-                />
-            </div>
-        )
-    }
-];
-
 
 const notificationData: NotificationItem[] = [
     {
@@ -144,6 +37,142 @@ const notificationData: NotificationItem[] = [
 ];
 
 export default function DashboardContent() {
+
+    const [reports, setReports] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchReports = async () => {
+            try {
+                const response = await api.get('/reports');
+                setReports(response.data.data);
+            } catch (error) {
+                console.error('Gagal mengambil data laporan:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchReports();
+    }, []);
+
+    const formatReportDate = (dateString: string) => {
+        const date = new Date(dateString);
+        if (isToday(date)) return 'HARI INI';
+        if (isYesterday(date)) return 'KEMARIN';
+        return format(date, 'dd MMM yyyy', { locale: localeId }).toUpperCase();
+    };
+
+    const getCardPropsByStatus = (prismaStatus: string) => {
+        switch (prismaStatus) {
+            case 'PENDING':
+                return {
+                    status: 'PENDING' as ReportStatus,
+                    messageIcon: <Clock4 size={18} className='text-destructive' />,
+                    messageText: 'Menunggu Verifikasi Admin',
+                    actionIcon: null,
+                    actionText: 'Batalkan Laporan',
+                    actionType: 'danger' as const,
+                };
+            case 'VERIFIED':
+            case 'IN_PROGRESS':
+                return {
+                    status: 'PROSES' as ReportStatus,
+                    messageIcon: <TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />,
+                    messageText: 'Laporan Diterima',
+                    actionIcon: <MdOutlineEngineering size={18} className='text-zinc-400' />,
+                    actionText: 'Tim Lapangan Menuju Lokasi',
+                    actionType: 'neutral' as const,
+                };
+            case 'RESOLVED':
+                return {
+                    status: 'SELESAI' as ReportStatus,
+                    messageIcon: <TbRosetteDiscountCheckFilled size={22} className='text-[#0A6F66]' />,
+                    messageText: 'Masalah Teratasi',
+                    actionIcon: <LuFileText size={18} />,
+                    actionText: 'Lihat Dokumentasi Perbaikan',
+                    actionType: 'primary' as const,
+                };
+            default:
+                return {
+                    status: 'PENDING' as ReportStatus,
+                    messageIcon: <Clock4 size={18} className='text-zinc-400' />,
+                    messageText: 'Menunggu',
+                    actionIcon: null,
+                    actionText: 'Lihat Detail',
+                    actionType: 'neutral' as const,
+                };
+        }
+    };
+
+    const renderReportCards = (filteredReports: any[]) => {
+        if (isLoading) {
+            return (
+                <div className='flex flex-col gap-6 animate-pulse'>
+                    <div className='w-full h-36 bg-zinc-100 rounded-2xl'></div>
+                    <div className='w-full h-36 bg-zinc-100 rounded-2xl'></div>
+                </div>
+            );
+        }
+
+        if (filteredReports.length === 0) {
+            return (
+                <div className='flex flex-col items-center justify-center py-12 text-center bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200'>
+                    <LuFileText size={40} className='text-zinc-300 mb-3' />
+                    <p className='text-zinc-500 font-medium text-sm'>Belum ada laporan di kategori ini.</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className='flex flex-col gap-6'>
+                {filteredReports.map((report, index) => {
+                    const { status, messageIcon, messageText, actionIcon, actionText, actionType } = getCardPropsByStatus(report.status);
+
+                    return (
+                        <ReportCard
+                            key={report.id}
+                            id={`${report.reportNumber}`}
+                            title={report.title}
+                            date={formatReportDate(report.createdAt)}
+                            status={status}
+                            imageSrc={report.imageBefore}
+                            messageIcon={messageIcon}
+                            messageText={messageText}
+                            actionIcon={actionIcon}
+                            actionText={actionText}
+                            actionType={actionType}
+                            delay={index * 0.05}
+                            roomCode={report.roomCode}
+                        />
+                    )
+                })}
+            </div>
+        );
+    };
+
+    const tabItems = useMemo<TabItem[]>(() => [
+        {
+            id: 'semua',
+            label: 'Semua Laporan',
+            content: renderReportCards(reports)
+        },
+        {
+            id: 'pending',
+            label: 'Pending',
+            content: renderReportCards(reports.filter(r => r.status === 'PENDING' || r.status === 'REJECTED'))
+        },
+        {
+            id: 'proses',
+            label: 'Proses',
+            content: renderReportCards(reports.filter(r => r.status === 'VERIFIED' || r.status === 'IN_PROGRESS'))
+        },
+        {
+            id: 'selesai',
+            label: 'Selesai',
+            content: renderReportCards(reports.filter(r => r.status === 'RESOLVED'))
+        }
+    ], [reports, isLoading]);
 
     return (
         <div className='flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full'>

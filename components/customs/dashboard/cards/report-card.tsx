@@ -20,6 +20,7 @@ export interface ReportCardProps {
     actionText: string;
     actionType?: 'neutral' | 'danger' | 'primary';
     delay?: number;
+    roomCode?: string;
 }
 
 export default function ReportCard({
@@ -33,7 +34,8 @@ export default function ReportCard({
     actionIcon,
     actionText,
     actionType = 'neutral',
-    delay = 0
+    delay = 0,
+    roomCode
 }: ReportCardProps) {
 
     const statusConfig = {
@@ -64,6 +66,8 @@ export default function ReportCard({
             actionType === 'primary' ? 'text-[#004C3F] font-semibold' :
                 'text-foreground font-medium';
 
+    const cleanReportId = id.replace('#', '').toLowerCase();
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -88,7 +92,7 @@ export default function ReportCard({
                                 />
                             </div>
                             <div className='flex flex-col'>
-                                <h3 className='text-sm md:text-lg font-semibold text-[#181C1C]'>{title}</h3>
+                                <h3 className='text-sm md:text-lg font-semibold text-[#181C1C]'>{title} {roomCode}</h3>
                                 <p className='text-xs font-normal text-muted-foreground uppercase tracking-wider'>
                                     ID: {id} • {date}
                                 </p>
@@ -132,10 +136,13 @@ export default function ReportCard({
                             <span>{messageText}</span>
                         </div>
 
-                        <div className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity`}>
+                        <Link
+                            href={`/dashboard/report-detail/${cleanReportId}`}
+                            className={`flex items-center gap-2 text-[12px] md:text-[13px] ${actionTextColor} hover:opacity-70 transition-opacity`}
+                        >
                             {actionIcon}
-                            <Link href={'/dashboard/report-detail/rep-2026-001'}>{actionText}</Link>
-                        </div>
+                            {actionText}
+                        </Link>
                     </div>
 
                 </Card.Content>
