@@ -1,7 +1,6 @@
 "use client";
 
 import { CustomTableReport } from '@/components/customs/admin/custom-table-report'
-
 import React, { useEffect, useState } from 'react'
 import { ReportFilter } from "@/components/customs/admin/report-filter";
 import TitlePage from "@/components/customs/admin/title-page";
@@ -24,12 +23,14 @@ export default function ReportManagementPage() {
     const [endDate, setEndDate] = useState<Date>();
     const [selectedGedung, setSelectedGedung] = useState<string>("");
     const [selectedStatus, setSelectedStatus] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>(""); 
 
     const handleReset = () => {
         setStartDate(undefined);
         setEndDate(undefined);
         setSelectedGedung("");
         setSelectedStatus("");
+        setSearchQuery(""); 
         setCurrentPage(1);
         setRefetch(prev => prev + 1);
     };
@@ -47,6 +48,9 @@ export default function ReportManagementPage() {
             params.append('page', currentPage.toString());
             params.append('limit', rowsPerPage.toString());
 
+            if (searchQuery) {
+                params.append('keyword', searchQuery);
+            }
             if (selectedGedung) {
                 params.append('building', selectedGedung.replace("gedung-", "gedung "));
             }
@@ -104,6 +108,8 @@ export default function ReportManagementPage() {
                 endDate={endDate}
                 selectedGedung={selectedGedung}
                 selectedStatus={selectedStatus}
+                searchQuery={searchQuery} 
+                onSearchChange={setSearchQuery} 
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onGedungChange={setSelectedGedung}
