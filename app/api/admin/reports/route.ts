@@ -16,14 +16,15 @@ export async function GET(request: NextRequest) {
 
         const { searchParams } = new URL(request.url);
 
-        //pagination
+        // pagination
         const page = Number(searchParams.get('page')) || 1;
         const limit = Number(searchParams.get('limit')) || 5;
 
         const skip = (page - 1) * limit;
 
-        //filter
+        // filter
         const search = searchParams.get('search') || '';
+        const keyword = searchParams.get('keyword') || ''; 
         const building = searchParams.get('building') || '';
         const status = searchParams.get('status') || '';
         const category = searchParams.get('category') || '';
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
-        //query
+        // query
         const where: Prisma.ReportWhereInput = {
             AND: [
                 search
@@ -56,11 +57,29 @@ export async function GET(request: NextRequest) {
                       }
                     : {},
 
+                // filter keyword baru
+                keyword
+                    ? {
+                          OR: [
+                              {
+                                  title: {
+                                      contains: keyword,
+                                  },
+                              },
+                              {
+                                  description: {
+                                      contains: keyword,
+                                  },
+                              },
+                          ],
+                      }
+                    : {},
+
                 // filter gedung
                 building
                     ? {
                           location: {
-                            startsWith: building,
+                              startsWith: building,
                           },
                       }
                     : {},
