@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
                 building
                     ? {
                           location: {
-                              contains: building,
+                            startsWith: building,
                           },
                       }
                     : {},
