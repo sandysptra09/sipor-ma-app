@@ -8,28 +8,26 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  image         String?
-  nim_nip       String?        @unique
-  role          Role           @default(STUDENT)
-  createdAt     DateTime       @default(now())
-  password      String?
-  emailVerified DateTime?
-
-  campusEmail     String?        @unique
-  studyProgram    String?
-  faculty         String?
-  enrollmentYear  Int?
-
-  accounts      Account[]
-  chatSessions  ChatSession[]
-  notifications Notification[]
-  assignments   Report[]       @relation("AdminAssignment")
-  activityLogs ActivityLog[]
-  reports       Report[]
-  shifts        Shift[]
+  id             String         @id @default(cuid())
+  name           String?
+  email          String?        @unique
+  image          String?
+  nim_nip        String?        @unique
+  role           Role           @default(STUDENT)
+  createdAt      DateTime       @default(now())
+  password       String?
+  emailVerified  DateTime?
+  enrollmentYear Int?
+  faculty        String?
+  studyProgram   String?
+  campusEmail    String?        @unique
+  accounts       Account[]
+  activityLogs   ActivityLog[]
+  chatSessions   ChatSession[]
+  notifications  Notification[]
+  assignments    Report[]       @relation("AdminAssignment")
+  reports        Report[]
+  shifts         Shift[]
 }
 
 model Account {
@@ -68,8 +66,8 @@ model Report {
   adminId       String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  activityLogs  ActivityLog[]
   logs          AuditLog[]
-  activityLogs ActivityLog[]
   notifications Notification[]
   admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
   user          User           @relation(fields: [userId], references: [id])
@@ -143,6 +141,23 @@ model Notification {
   @@index([userId], map: "Notification_userId_fkey")
 }
 
+model ActivityLog {
+  id          String       @id @default(cuid())
+  userId      String
+  reportId    String?
+  title       String
+  description String?      @db.Text
+  type        ActivityType
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  report      Report?      @relation(fields: [reportId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([reportId])
+  @@index([createdAt])
+}
+
 enum Role {
   STUDENT
   ADMIN
@@ -165,29 +180,6 @@ enum Priority {
 enum MessageRole {
   USER
   ASSISTANT
-}
-
-model ActivityLog {
-  id          String   @id @default(cuid())
-
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  reportId    String?
-  report      Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
-
-  title       String
-  description String?  @db.Text
-
-  type        ActivityType
-
-  metadata    Json?
-
-  createdAt   DateTime @default(now())
-
-  @@index([userId])
-  @@index([reportId])
-  @@index([createdAt])
 }
 
 enum ActivityType {
