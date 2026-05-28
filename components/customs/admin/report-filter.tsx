@@ -10,6 +10,8 @@ import { Calendar as CalendarIcon, Funnel, FunnelX } from 'lucide-react';
 import { format } from "date-fns";
 
 interface ReportFilterProps {
+    loading?: boolean;
+    buildingOptions: any[];
     startDate: Date | undefined;
     endDate: Date | undefined;
     selectedGedung: string;
@@ -23,6 +25,8 @@ interface ReportFilterProps {
 }
 
 export function ReportFilter({
+    loading = false,
+    buildingOptions,
     startDate,
     endDate,
     selectedGedung,
@@ -40,9 +44,10 @@ export function ReportFilter({
             {/* Start Date */}
             <div className="flex flex-col gap-2 w-full">
                 <Label className="font-semibold text-primary">Tanggal Awal</Label>
-                <Popover>
+                <Popover  modal={!loading}>
                     <PopoverTrigger asChild>
                         <Button
+                            disabled={loading}
                             variant="outline"
                             className={cn(
                                 "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#e6f4f4] hover:bg-[#d1eded] transition-colors rounded-md",
@@ -73,9 +78,10 @@ export function ReportFilter({
             {/* End Date */}
             <div className="flex flex-col gap-2 w-full">
                 <Label className="font-semibold text-primary">Tanggal Akhir</Label>
-                <Popover>
+                <Popover  modal={!loading}>
                     <PopoverTrigger asChild>
                         <Button
+                            disabled={loading}
                             variant="outline"
                             className={cn(
                                 "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#e6f4f4] hover:bg-[#d1eded] transition-colors rounded-md",
@@ -107,6 +113,7 @@ export function ReportFilter({
             <div className="flex flex-col gap-2 w-full">
                 <Label className='font-semibold text-primary'>Gedung</Label>
                 <Select
+                    isDisabled={loading}
                     className="w-full"
                     placeholder="Pilih Gedung"
                     selectedKey={selectedGedung}
@@ -118,12 +125,19 @@ export function ReportFilter({
                     </Select.Trigger>
                     <Select.Popover className="rounded-md shadow-2xl border border-slate-200">
                         <ListBox>
-                            <ListBox.Item id="gedung-a" className="rounded-md font-semibold text-primary data-[focused=true]:bg-[#e6f4f4] data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white">
-                                Gedung A <ListBox.ItemIndicator />
-                            </ListBox.Item>
-                            <ListBox.Item id="gedung-b" className="rounded-md font-semibold text-primary data-[focused=true]:bg-[#e6f4f4] data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white">
-                                Gedung B <ListBox.ItemIndicator />
-                            </ListBox.Item>
+
+                            {buildingOptions.map((item) => (
+                                <ListBox.Item
+                                    key={item.name}
+                                    id={item.name}
+                                    className="rounded-md font-semibold text-primary data-[focused=true]:bg-[#e6f4f4] data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
+                                >
+                                    {item.label}
+
+                                    <ListBox.ItemIndicator />
+                                </ListBox.Item>
+                            ))}
+
                         </ListBox>
                     </Select.Popover>
                 </Select>
@@ -133,6 +147,7 @@ export function ReportFilter({
             <div className="flex flex-col gap-2 w-full">
                 <Label className='font-semibold text-primary'>Status</Label>
                 <Select
+                    isDisabled={loading}
                     className="w-full"
                     placeholder="Pilih Status"
                     selectedKey={selectedStatus}
@@ -167,13 +182,14 @@ export function ReportFilter({
             {/* Buttons */}
             <div className='flex items-end col-span-1 md:col-span-2 lg:col-span-1 justify-end lg:justify-start gap-2'>
                 <Button
+                    disabled={loading}
                     onClick={onReset}
                     className='font-semibold text-primary border-2 border-primary bg-background hover:bg-primary/10 p-2.5'
                 >
                     <FunnelX size={34} />
                     Reset
                 </Button>
-                <Button onClick={onFilter} className='font-semibold p-2.5'>
+                <Button disabled={loading} onClick={onFilter} className='font-semibold p-2.5'>
                     <Funnel size={24} />
                     Filter
                 </Button>
