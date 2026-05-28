@@ -83,7 +83,7 @@ export function CustomTableReport({
                     maxWidth: column.width
                   }}
                   key={column.id}
-                  className="text-[#64748B] font-semibold text-xs uppercase py-4 px-6 tracking-[1px] whitespace-nowrap"
+                  className="text-[#64748B] font-semibold text-xs uppercase p-4 tracking-[1px] whitespace-nowrap"
                 >
                   {column.name}
                 </TableHead>
@@ -100,7 +100,7 @@ export function CustomTableReport({
                   {columns.map((column, colIndex) => (
                     <TableCell
                       key={`${rowIndex}-${colIndex}`}
-                      className="py-4 px-6"
+                      className="py-4"
                     >
                       <div className="flex items-center gap-3">
                         {/* Avatar / Badge Skeleton Optional */}
@@ -138,7 +138,7 @@ export function CustomTableReport({
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
-                      className="py-4 px-6 text-sm"
+                      className="p-4 text-sm"
                     >
                       {column.render
                         ? column.render(item)
