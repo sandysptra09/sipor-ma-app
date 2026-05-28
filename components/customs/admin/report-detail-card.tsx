@@ -1,5 +1,3 @@
-// components/customs/admin/report-detail-card.tsx
-
 import {
     Card,
     CardAction,
@@ -7,6 +5,9 @@ import {
     CardFooter,
     CardHeader,
 } from "@/components/ui/card";
+
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 interface ReportDetailCardProps {
     category: string
@@ -25,6 +26,17 @@ export function ReportDetailCard({
     location,
     reporter,
 }: ReportDetailCardProps) {
+
+    const formattedSubmittedAt = submittedAt
+    ? format(
+        new Date(submittedAt),
+        "dd MMM yyyy, HH:mm 'WIB'",
+        {
+            locale: id,
+        }
+    )
+    : '-';
+
     return (
         <Card className='p-8 shadow-md ring-0 rounded-lg'>
             <CardHeader className='p-0 flex items-center justify-between'>
@@ -32,7 +44,7 @@ export function ReportDetailCard({
                     <span className='order-last md:order-first uppercase bg-primary/10 text-primary font-semibold text-xs inline px-3 py-1 rounded-sm'>
                         {category}
                     </span>
-                    <p className='order-first md:order-last text-foreground/40'>Diajukan: {submittedAt}</p>
+                    <p className='order-first md:order-last text-foreground/40'>Diajukan: {formattedSubmittedAt}</p>
                 </div>
                 <CardAction className='uppercase p-2.5 rounded-xl bg-foreground/20 font-semibold border-2 text-xs'>
                     {reporterInitial}
