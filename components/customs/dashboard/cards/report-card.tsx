@@ -5,6 +5,7 @@ import { Card, Chip, ProgressBar } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react'; 
 
 export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI';
 
@@ -20,6 +21,8 @@ export interface ReportCardProps {
     actionText: string;
     actionType?: 'neutral' | 'danger' | 'primary';
     delay?: number;
+    onActionClick?: () => void; 
+    isLoadingAction?: boolean;
 }
 
 export default function ReportCard({
@@ -33,7 +36,9 @@ export default function ReportCard({
     actionIcon,
     actionText,
     actionType = 'neutral',
-    delay = 0
+    delay = 0,
+    onActionClick,
+    isLoadingAction = false
 }: ReportCardProps) {
 
     const statusConfig = {
@@ -64,6 +69,9 @@ export default function ReportCard({
             actionType === 'primary' ? 'text-[#004C3F] font-semibold' :
                 'text-foreground font-medium';
 
+    
+    const detailUrl = `/dashboard/report-detail/${id.replace('#', '').toLowerCase()}`;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -72,9 +80,7 @@ export default function ReportCard({
             transition={{ duration: 0.5, delay }}
         >
             <Card className='w-full bg-white border-none rounded-2xl'>
-
-                <Card.Content className='p-2'>
-
+                <Card.Content className='p-2 sm:p-3'>
                     <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
                         <div className='flex items-center gap-5'>
                             <div className='relative h-14 w-14 md:h-16 md:w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100'>
@@ -89,7 +95,7 @@ export default function ReportCard({
                             </div>
                             <div className='flex flex-col'>
                                 <h3 className='text-sm md:text-lg font-semibold text-[#181C1C]'>{title}</h3>
-                                <p className='text-xs font-normal text-muted-foreground uppercase tracking-wider'>
+                                <p className='text-xs font-normal text-muted-foreground uppercase tracking-wider mt-1'>
                                     ID: {id} • {date}
                                 </p>
                             </div>
@@ -103,7 +109,7 @@ export default function ReportCard({
                     </div>
 
                     <div className='mt-6'>
-                        <div className='flex justify-between text-[10px] font-semibold tracking-wider mb-1'>
+                        <div className='flex justify-between text-[10px] font-semibold tracking-wider mb-2'>
                             <span className={status === 'PENDING' || status === 'PROSES' || status === 'SELESAI' ? 'text-[#0A6F66]' : 'text-zinc-400'}>
                                 PENDING
                             </span>
@@ -126,16 +132,30 @@ export default function ReportCard({
                         </ProgressBar>
                     </div>
 
-                    <div className='mt-4 md:mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+                    <div className='mt-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
                         <div className='flex items-center gap-2 text-[13px] text-[#181C1C] font-medium'>
                             {messageIcon && <span className='text-primary'>{messageIcon}</span>}
                             <span>{messageText}</span>
                         </div>
 
-                        <div className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity`}>
-                            {actionIcon}
-                            <Link href={'/dashboard/report-detail/rep-2026-001'}>{actionText}</Link>
-                        </div>
+                        {onActionClick ? (
+                            <button 
+                                onClick={onActionClick}
+                                disabled={isLoadingAction}
+                                className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity disabled:opacity-50`}
+                            >
+                                {isLoadingAction ? <Loader2 className="w-4 h-4 animate-spin" /> : actionIcon}
+                                <span>{isLoadingAction ? 'Memproses...' : actionText}</span>
+                            </button>
+                        ) : (
+                            <Link 
+                                href={detailUrl} 
+                                className={`flex items-center gap-2 text-[13px] ${actionTextColor} cursor-pointer hover:opacity-70 transition-opacity`}
+                            >
+                                {actionIcon}
+                                <span>{actionText}</span>
+                            </Link>
+                        )}
                     </div>
 
                 </Card.Content>
