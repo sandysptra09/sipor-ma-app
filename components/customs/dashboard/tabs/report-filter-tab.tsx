@@ -11,11 +11,19 @@ export interface TabItem {
 
 interface ReportFilterTabsProps {
     items: TabItem[];
+    onTabChange?: () => void;
 }
 
-export default function ReportFilterTabs({ items }: ReportFilterTabsProps) {
+export default function ReportFilterTabs({ items, onTabChange }: ReportFilterTabsProps) {
     return (
-        <Tabs className='w-full'>
+        <Tabs
+            className='w-full'
+            onSelectionChange={(key) => {
+                if (onTabChange) {
+                    onTabChange();
+                }
+            }}
+        >
 
             <Tabs.ListContainer className='border-b border-zinc-200 pb-4 mb-6 w-full overflow-x-auto no-scrollbar'>
 

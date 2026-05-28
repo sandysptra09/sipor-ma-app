@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/axios';
 import { format, isToday, isYesterday } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-import { Skeleton } from '@heroui/react';
+import { Skeleton, Pagination } from '@heroui/react';
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
 import StatWidget from './widgets/stat-widget';
 import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
@@ -40,6 +40,9 @@ export default function DashboardContent() {
 
     const [reports, setReports] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 5;
 
     useEffect(() => {
         const fetchReports = async () => {
@@ -148,31 +151,113 @@ export default function DashboardContent() {
             );
         }
 
+        const totalItems = filteredReports.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const currentData = filteredReports.slice(startIndex, endIndex);
+
+        const getPageNumbers = () => {
+            const pages: (number | 'ellipsis')[] = [];
+
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                if (currentPage > 3) pages.push('ellipsis');
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+                for (let i = start; i <= end; i++) pages.push(i);
+                if (currentPage < totalPages - 2) pages.push('ellipsis');
+                pages.push(totalPages);
+            }
+            return pages;
+        };
+
         return (
             <div className='flex flex-col gap-6'>
-                {filteredReports.map((report, index) => {
-                    const { status, messageIcon, messageText, actionIcon, actionText, actionType } = getCardPropsByStatus(report.status);
+                <div className='flex flex-col gap-6'>
+                    {currentData.map((report, index) => {
+                        const { status, messageIcon, messageText, actionIcon, actionText, actionType } = getCardPropsByStatus(report.status);
 
-                    return (
-                        <ReportCard
-                            key={report.id}
-                            id={`${report.reportNumber}`}
-                            title={report.title}
-                            date={formatReportDate(report.createdAt)}
-                            status={status}
-                            imageSrc={report.imageBefore}
-                            messageIcon={messageIcon}
-                            messageText={messageText}
-                            actionIcon={actionIcon}
-                            actionText={actionText}
-                            actionType={actionType}
-                            delay={index * 0.05}
-                            roomCode={report.roomCode}
-                        />
-                    )
-                })}
+                        return (
+                            <ReportCard
+                                key={report.id}
+                                id={`${report.reportNumber}`}
+                                title={report.title}
+                                date={formatReportDate(report.createdAt)}
+                                status={status}
+                                imageSrc={report.imageBefore}
+                                messageIcon={messageIcon}
+                                messageText={messageText}
+                                actionIcon={actionIcon}
+                                actionText={actionText}
+                                actionType={actionType}
+                                delay={index * 0.05}
+                                roomCode={report.roomCode}
+                            />
+                        )
+                    })}
+                </div>
+
+                {totalPages > 1 && (
+                    <div className='flex flex-col items-center gap-4 mt-4 overflow-x-auto no-scrollbar pb-2'>
+                        <Pagination className='justify-center'>
+                            <Pagination.Content className='gap-2'>
+                                <Pagination.Item>
+                                    <Pagination.Previous
+                                        isDisabled={currentPage === 1}
+                                        onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                        className='bg-white text-zinc-500 hover:bg-zinc-100 rounded-xl shadow-sm border border-zinc-100 w-10 h-10'
+                                    >
+                                        <Pagination.PreviousIcon />
+                                    </Pagination.Previous>
+                                </Pagination.Item>
+
+                                {getPageNumbers().map((p, i) =>
+                                    p === 'ellipsis' ? (
+                                        <Pagination.Item key={`ellipsis-${i}`}>
+                                            <Pagination.Ellipsis className='w-10 h-10 text-zinc-400' />
+                                        </Pagination.Item>
+                                    ) : (
+                                        <Pagination.Item key={p}>
+                                            <Pagination.Link
+                                                isActive={p === currentPage}
+                                                onPress={() => setCurrentPage(p as number)}
+                                                className={`w-10 h-10 text-sm font-bold rounded-xl transition-all shadow-sm ${p === currentPage
+                                                    ? 'bg-[#0A6F66] text-white'
+                                                    : 'bg-white text-zinc-500 hover:bg-zinc-100 border border-zinc-100'
+                                                    }`}
+                                            >
+                                                {p}
+                                            </Pagination.Link>
+                                        </Pagination.Item>
+                                    ),
+                                )}
+
+                                <Pagination.Item>
+                                    <Pagination.Next
+                                        isDisabled={currentPage === totalPages}
+                                        onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                        className='bg-white text-zinc-500 hover:bg-zinc-100 rounded-xl shadow-sm border border-zinc-100 w-10 h-10'
+                                    >
+                                        <Pagination.NextIcon />
+                                    </Pagination.Next>
+                                </Pagination.Item>
+                            </Pagination.Content>
+                        </Pagination>
+                    </div>
+                )}
             </div>
+
         );
+    };
+
+    const handleTabChange = () => {
+        setCurrentPage(1);
     };
 
     const tabItems = useMemo<TabItem[]>(() => [
@@ -196,7 +281,7 @@ export default function DashboardContent() {
             label: 'Selesai',
             content: renderReportCards(reports.filter(r => r.status === 'RESOLVED'))
         }
-    ], [reports, isLoading]);
+    ], [reports, isLoading, currentPage]);
 
     return (
         <div className='flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full'>
@@ -211,7 +296,7 @@ export default function DashboardContent() {
                 </div>
 
                 <div className='order-3 w-full'>
-                    <ReportFilterTabs items={tabItems} />
+                    <ReportFilterTabs items={tabItems} onTabChange={handleTabChange} />
                 </div>
 
             </div>
