@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -13,21 +8,26 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  nim_nip       String?        @unique
-  password      String?
-  role          Role           @default(STUDENT)
-  accounts      Account[]
-  reports       Report[]
-  assignments   Report[]       @relation("AdminAssignment")
-  shifts        Shift[]
-  chatSessions  ChatSession[]
-  notifications Notification[]
-  createdAt     DateTime       @default(now())
+  id             String         @id @default(cuid())
+  name           String?
+  email          String?        @unique
+  image          String?
+  nim_nip        String?        @unique
+  role           Role           @default(STUDENT)
+  createdAt      DateTime       @default(now())
+  password       String?
+  emailVerified  DateTime?
+  enrollmentYear Int?
+  faculty        String?
+  studyProgram   String?
+  campusEmail    String?        @unique
+  accounts       Account[]
+  ActivityLog    ActivityLog[]
+  chatSessions   ChatSession[]
+  notifications  Notification[]
+  assignments    Report[]       @relation("AdminAssignment")
+  reports        Report[]
+  shifts         Shift[]
 }
 
 model Account {
@@ -43,40 +43,124 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model Report {
+  id            String         @id @default(uuid())
+  reportNumber  String         @unique
+  title         String
+  description   String         @db.Text
+  location      String
+  roomCode      String
+  category      String
+  imageBefore   String
+  imageAfter    String?
+  status        Status         @default(PENDING)
+  priority      Priority       @default(MEDIUM)
+  isVerified    Boolean        @default(false)
+  userId        String
+  adminId       String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  ActivityLog   ActivityLog[]
+  logs          AuditLog[]
+  notifications Notification[]
+  admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
+
+  @@index([adminId], map: "Report_adminId_fkey")
+  @@index([userId], map: "Report_userId_fkey")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  reportId  String
+  status    String
+  note      String?
+  createdAt DateTime @default(now())
+  report    Report   @relation(fields: [reportId], references: [id])
+
+  @@index([reportId], map: "AuditLog_reportId_fkey")
+}
+
+model Room {
+  id       String @id @default(cuid())
+  code     String @unique
+  name     String
+  building String
+}
+
+model Shift {
+  id        String   @id @default(cuid())
+  userId    String
+  startTime DateTime
+  endTime   DateTime
+  day       String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Shift_userId_fkey")
+}
+
+model ChatSession {
+  id        String    @id @default(cuid())
+  userId    String
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+
+  @@index([userId], map: "ChatSession_userId_fkey")
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  sessionId String
+  role      MessageRole
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+  session   ChatSession @relation(fields: [sessionId], references: [id])
+
+  @@index([sessionId], map: "Message_sessionId_fkey")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  userId    String
+  reportId  String?
+  createdAt DateTime @default(now())
+  report    Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([reportId], map: "Notification_reportId_fkey")
+  @@index([userId], map: "Notification_userId_fkey")
+}
+
+model ActivityLog {
+  id          String           @id
+  userId      String
+  reportId    String?
+  title       String
+  description String?          @db.Text
+  type        ActivityLog_type
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  Report      Report?          @relation(fields: [reportId], references: [id])
+  User        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([reportId])
+  @@index([userId])
 }
 
 enum Role {
   STUDENT
   ADMIN
-}
-
-model Report {
-  id           String   @id @default(uuid())
-  reportNumber String   @unique
-  title        String
-  description  String   @db.Text
-  location     String
-  roomCode     String
-  category     String
-  imageBefore  String
-  imageAfter   String?
-  status       Status   @default(PENDING)
-  priority     Priority @default(MEDIUM)
-  isVerified   Boolean  @default(false)
-
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
-  adminId       String?
-  admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
-  logs          AuditLog[]
-  notifications Notification[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum Status {
@@ -93,64 +177,17 @@ enum Priority {
   HIGH
 }
 
-model AuditLog {
-  id        String   @id @default(cuid())
-  reportId  String
-  report    Report   @relation(fields: [reportId], references: [id])
-  status    String
-  note      String?
-  createdAt DateTime @default(now())
-}
-
-model Room {
-  id       String @id @default(cuid())
-  code     String @unique
-  name     String
-  building String
-}
-
-model Shift {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  startTime DateTime
-  endTime   DateTime
-  day       String
-}
-
-model ChatSession {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  messages  Message[]
-  createdAt DateTime  @default(now())
-}
-
-model Message {
-  id        String      @id @default(cuid())
-  sessionId String
-  session   ChatSession @relation(fields: [sessionId], references: [id])
-  role      MessageRole
-  content   String      @db.Text
-  createdAt DateTime    @default(now())
-}
-
 enum MessageRole {
   USER
   ASSISTANT
 }
 
-model Notification {
-  id      String  @id @default(cuid())
-  title   String
-  message String  @db.Text
-  isRead  Boolean @default(false)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  reportId String?
-  report   Report? @relation(fields: [reportId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
+enum ActivityLog_type {
+  REPORT_CREATED
+  REPORT_UPDATED
+  REPORT_VERIFIED
+  REPORT_REJECTED
+  REPORT_RESOLVED
+  ROOM_UPDATED
+  PROFILE_UPDATED
 }
