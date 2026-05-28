@@ -8,7 +8,7 @@ Dokumen ini mendefinisikan logika berpikir, instruksi prompt, dan alur integrasi
 
 ## 🤖 AI Engine Overview
 
-- **Model:** Google Gemini 1.5 Flash (via Google AI SDK).
+- **Model:** Google Gemini 3.1 Flash-Lite (via Google AI SDK).
 - **Integration:** Vercel AI SDK (`generateObject` & `streamText`).
 - **Objective:** Automasi validasi, klasifikasi data, dan asisten bantuan cerdas.
 

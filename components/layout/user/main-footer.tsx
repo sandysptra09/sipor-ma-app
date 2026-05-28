@@ -3,9 +3,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, Mail } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function MainFooter() {
     const currentYear = new Date().getFullYear();
+
+    const pathname = usePathname();
+
+    if (pathname === '/chat-assistant') {
+        return null;
+    }
 
     return (
         <footer className='relative w-full overflow-hidden bg-[#f4faf8] py-10 lg:py-16'>
