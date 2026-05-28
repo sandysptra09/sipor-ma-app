@@ -47,9 +47,9 @@ export const columns = [
         width: "140px",
         render: (item: any) => {
             const statusConfig: any = {
-                COMPLETED: { color: "text-white bg-primary", label: "SELESAI" },
+                RESOLVED: { color: "text-white bg-primary", label: "SELESAI" },
                 REJECTED: { color: "text-white bg-red-600", label: "DITOLAK" },
-                PROCESS: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
+                IN_PROGRESS: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
                 PENDING: { color: "text-gray-600 bg-gray-500/20", label: "MENUNGGU" },
                 VERIFIED: { color: "text-amber-500 bg-amber-500/20", label: "DIVERIFIKASI" },
             };
