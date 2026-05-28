@@ -1,74 +1,44 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
+
+import { CheckCircle, Wrench, MessageSquare } from 'lucide-react';
+import { Button} from '@heroui/react'; 
 
 import TitlePage from '@/components/customs/admin/title-page';
-import { CheckCircle, Mail, UserCheck, Wrench } from 'lucide-react';
-import Image from 'next/image';
-import { Button } from '@heroui/react';
-import { MessageSquare } from 'lucide-react';
-import { LogItem } from '@/components/customs/admin/log-item';
 import AttachmentCard from '@/components/customs/admin/attachment-card';
-import ImgMeja from '@/public/assets/images/meja.jpeg';
-import { useSearchParams } from 'next/navigation';
 import { ReportDetailCard } from '@/components/customs/admin/report-detail-card';
 import { ReportLogCard } from '@/components/customs/admin/report-log-card';
 import { ConfirmationModal } from '@/components/customs/admin/confirmation-modal';
 import { RejectionModal } from '@/components/customs/admin/rejection-modal';
 import { UploadProofModal } from '@/components/customs/admin/upload-proof-modal';
+
+import ImgMeja from '@/public/assets/images/meja.jpeg';
 import { api } from '@/lib/axios';
 import { downloadImage } from '@/lib/helpers/downloadImg';
-
-
-
-const logs = [
-    {
-        icon: CheckCircle,
-        title: "Laporan Diverifikasi",
-        description: "Status diubah dari 'Menunggu' ke 'Diverifikasi'",
-        actor: "Sistem Otomatis",
-        date: "24 Okt",
-        time: "09:46",
-        iconClassName: "bg-primary/20 text-primary",
-    },
-    {
-        icon: UserCheck,
-        title: "Ditugaskan ke Tim Teknis",
-        description: "Tiket diteruskan ke Departemen Pemeliharaan Bangunan",
-        actor: "Admin Utama",
-        date: "24 Okt",
-        time: "10:15",
-        iconClassName: "bg-foreground/20",
-    },
-    {
-        icon: Mail,
-        title: "Pesan Terkirim",
-        description: "Konfirmasi Feedback dikirim ke pelapor",
-        actor: "Admin Utama",
-        date: "24 Okt",
-        time: "11:30",
-        iconClassName: "bg-foreground/20",
-    },
-];
+import { useUploadThing } from '@/lib/uploadthing';
 
 
 export default function ReportDetailPage() {
     const params = useParams();
     const searchParams = useSearchParams();
     const status = searchParams.get('status');
+
     const [modal, setModal] = useState<'verify' | 'process' | 'rejected' | 'upload' | null>(null);
-
     const [reportDetail, setReportDetail] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false); 
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
-    // Fetch detail laporan
+    const { startUpload } = useUploadThing('imageUploader');
+
     const fetchDetailReport = async () => {
         setLoading(true);
         try {
             const res = await api.get(`/admin/reports/${params.reportNumber}`);
             setReportDetail(res?.data?.data);
+            console.log(res?.data?.data);
         } catch (error) {
             console.error('Gagal mengambil data detail laporan:', error);
         } finally {
@@ -82,35 +52,37 @@ export default function ReportDetailPage() {
         }
     }, [params?.reportNumber]);
 
-    // Fungsi utama untuk update status ke API
     const handleUpdateStatus = async (newStatus: string, note?: string, file?: File | null) => {
         setIsUpdating(true);
+
         try {
-            let payload: any;
-            let headers = {};
-    
-            // Jika ada file (dari UploadProofModal), gunakan FormData
+            let imageUrl: string | undefined = undefined;
+
             if (file) {
-                const formData = new FormData();
-                formData.append('status', newStatus);
-                if (note) formData.append('note', note);
-                formData.append('file', file);
-                
-                payload = formData;
-                headers = { 'Content-Type': 'multipart/form-data' };
-            } else {
-                // Jika tidak ada file (Verifikasi / Proses / Tolak), gunakan JSON biasa
-                payload = { status: newStatus, note };
-                headers = { 'Content-Type': 'application/json' };
+                const uploadResult = await startUpload([file]);
+
+                if (!uploadResult || uploadResult.length === 0) {
+                    throw new Error("Gagal mengunggah gambar bukti perbaikan ke server");
+                }
+
+                imageUrl = uploadResult[0].ufsUrl || uploadResult[0].url;
             }
-    
+
+            const payload = {
+                status: newStatus,
+                note: note,
+                imageUrl: imageUrl
+            };
+
             await api.patch(`/admin/reports/${params.reportNumber}/update-status`, payload, {
-                headers
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             setModal(null);
             await fetchDetailReport();
-        } catch (error) {
+
+
+        } catch (error: any) {
             console.error('Gagal memperbarui status laporan:', error);
         } finally {
             setIsUpdating(false);
@@ -120,30 +92,34 @@ export default function ReportDetailPage() {
     return (
         <div className="flex flex-col gap-5">
             {reportDetail?.status === 'PENDING' ? (
-                <TitlePage title={reportDetail?.title} desc='' isReport verificationAction={() => setModal('verify')} rejectAction={() => setModal('rejected')} />
+                <TitlePage loading={loading} title={reportDetail?.title} desc='' isReport verificationAction={() => setModal('verify')} rejectAction={() => setModal('rejected')} />
             ) : reportDetail?.status === 'VERIFIED' ? (
-                <TitlePage title={reportDetail?.title} desc='' isReport processAction={() => setModal('process')} />
+                <TitlePage loading={loading} title={reportDetail?.title} desc='' isReport processAction={() => setModal('process')} />
             ) : reportDetail?.status === 'IN_PROGRESS' ? (
-                <TitlePage title={reportDetail?.title} desc='' isReport completedAction={() => setModal('upload')} />
+                <TitlePage loading={loading} title={reportDetail?.title} desc='' isReport completedAction={() => setModal('upload')} />
             ) : (
-                <TitlePage title={reportDetail?.title} desc='' />
+                <TitlePage loading={loading} title={reportDetail?.title} desc='' />
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <div className="col-span-1 lg:col-span-2 flex flex-col gap-5">
                     <ReportDetailCard
+                        loading={loading}
                         category={reportDetail?.category}
                         submittedAt={reportDetail?.createdAt}
-                        reporterInitial="BS"
+                        reporterInitial={reportDetail?.user?.name}
                         description={reportDetail?.description}
                         location={reportDetail?.location}
-                        reporter="Budi Setiawan (Mahasiswa - 20210082)"
+                        reporter={`${reportDetail?.user?.name} (${reportDetail?.user?.role === 'STUDENT'
+                            ? 'Mahasiswa'
+                            : 'Admin'
+                            } - ${reportDetail?.user?.nim_nip || '-'})`}
                     />
-                    <ReportLogCard logs={logs} /> 
+                    <ReportLogCard loading={loading} logs={reportDetail?.logs} />
                 </div>
 
                 <div className="col-span-1 flex flex-col gap-5">
-                    <AttachmentCard title='Bukti foto (PROOF)'>
+                    <AttachmentCard loading={loading} title='Bukti foto (PROOF)'>
                         <Image
                             alt='Lampiran Sebelum'
                             src={reportDetail?.imageBefore || ImgMeja}
@@ -164,39 +140,37 @@ export default function ReportDetailPage() {
                     </AttachmentCard>
 
                     {reportDetail?.status === 'RESOLVED' && (
-                        <AttachmentCard title='Bukti Perbaikan'>
+                        <AttachmentCard loading={loading} title='Bukti Perbaikan'>
                             <Image
                                 alt='Lampiran Sesudah'
-                                src={reportDetail?.imageAfter || ImgMeja} // Disambungkan dengan data API jika ada
+                                src={reportDetail?.imageAfter || ImgMeja}
                                 width={500}
                                 height={500}
-                                className='w-full sm:max-w-64 rounded-md'
+                                className='w-full sm:max-w-64 rounded-md object-cover'
                             />
-                            <div className='w-full flex flex-col gap-1'>
+                            <div className='w-full flex flex-col gap-1 mt-2'>
                                 <div className='w-full justify-start items-center flex gap-2'>
                                     <MessageSquare size={21} className='text-primary' />
                                     <p className='uppercase font-semibold text-sm tracking-[1.4px]'>Pesan Perbaikan</p>
                                 </div>
-                                <p className='text-foreground text-sm'>
-                                    {/* Ambil catatan dari log terakhir / yang berstatus RESOLVED */}
-                                    {reportDetail?.auditLogs?.find((log: any) => log.status === 'RESOLVED')?.note || 'Perbaikan telah selesai dilakukan.'}
+                                <p className='text-foreground text-sm w-full'>
+                                    {reportDetail?.resolvedNote || 'Perbaikan telah selesai dilakukan.'}
                                 </p>
                             </div>
                         </AttachmentCard>
                     )}
 
                     {reportDetail?.status === 'REJECTED' && (
-                        <AttachmentCard isRejected title='Pesan Penolakan'>
-                            <p className='text-foreground text-sm'>
-                                {/* Ambil pesan penolakan dari data balikan API */}
-                                {reportDetail?.auditLogs?.find((log: any) => log.status === 'REJECTED')?.note || 'Laporan ditolak.'}
+                        <AttachmentCard loading={loading} isRejected title='Pesan Penolakan'>
+                            <p className='text-foreground text-sm w-full'>
+                                {reportDetail?.rejectionReason || 'Laporan ditolak.'}
                             </p>
                         </AttachmentCard>
                     )}
                 </div>
             </div>
 
-            {/* Modals Terintegrasi dengan Handle API */}
+            {/* Modals */}
             <ConfirmationModal
                 open={modal === 'verify'}
                 onClose={() => setModal(null)}
@@ -227,8 +201,8 @@ export default function ReportDetailPage() {
 
             <UploadProofModal
                 open={modal === 'upload'}
-                onClose={() => setModal(null)}
-                isLoading={isUpdating} // Kirim state loading
+                onClose={() => !isUpdating && setModal(null)}
+                isLoading={isUpdating}
                 onConfirm={(file, message) => handleUpdateStatus('RESOLVED', message, file)}
             />
         </div>
