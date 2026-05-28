@@ -34,7 +34,7 @@ const STATUS_CONFIG = {
         auditTitle: 'Proses Perbaikan',
         auditDescription:
             'Tim teknisi sedang melakukan proses penanganan laporan.',
-        activityType: ActivityLog_type.REPORT_UPDATED,
+        activityType: ActivityLog_type.REPORT_IN_PROGRESS,
         activityTitle: 'Mengubah Status Laporan',
     },
 
@@ -55,152 +55,106 @@ const STATUS_CONFIG = {
     },
 } as const;
 
-export async function PATCH(
-    request: NextRequest,
-    { params }: Params
-) {
+export async function PATCH(request: NextRequest, { params }: Params) {
     try {
         const session = await auth();
 
         if (!session?.user?.id) {
-            return NextResponse.json(
-                {
-                    message: 'Unauthorized',
-                },
-                {
-                    status: 401,
-                }
-            );
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
         const { reportNumber } = await params;
-
-        const decodedReportNumber =
-            decodeURIComponent(reportNumber);
+        const decodedReportNumber = decodeURIComponent(reportNumber);
 
         const body = await request.json();
 
-        const {
-            status,
-            note,
-        }: {
-            status: Status;
-            note?: string;
-        } = body;
+        const { status, note, imageUrl }: { status: Status; note?: string; imageUrl?: string } = body;
 
         const allowedStatus = Object.values(Status);
 
         if (!allowedStatus.includes(status)) {
+            return NextResponse.json({ message: 'Status tidak valid' }, { status: 400 });
+        }
+
+        if (status === 'REJECTED' && !note) {
             return NextResponse.json(
-                {
-                    message: 'Status tidak valid',
-                },
-                {
-                    status: 400,
-                }
+                { message: 'Alasan penolakan wajib diisi' },
+                { status: 400 }
+            );
+        }
+
+        if (status === 'RESOLVED' && !note) {
+            return NextResponse.json(
+                { message: 'Pesan penyelesaian wajib diisi' },
+                { status: 400 }
             );
         }
 
         const config = STATUS_CONFIG[status];
 
-        const updatedReport = await prisma.$transaction(
-            async (tx) => {
+        const updatedReport = await prisma.$transaction(async (tx) => {
+            
+            const updateData: any = {
+                status,
+                adminId: session.user.id,
+            };
 
-                /**
-                 * 1. Update Report
-                 */
-                const report = await tx.report.update({
-                    where: {
-                        reportNumber:
-                            decodedReportNumber,
-                    },
-                    data: {
-                        status,
-                        adminId: session.user.id,
-                    },
-                });
-
-                /**
-                 * 2. Create Audit Trail
-                 * Untuk timeline detail report
-                 */
-                await tx.auditLog.create({
-                    data: {
-                        reportId: report.id,
-
-                        status,
-
-                        note:
-                            note ||
-                            config.auditDescription,
-                    },
-                });
-
-                /**
-                 * 3. Create Activity Log
-                 * Untuk card aktivitas terakhir admin
-                 */
-                await tx.activityLog.create({
-                    data: {
-                        id: crypto.randomUUID(),
-
-                        userId: session.user.id,
-
-                        reportId: report.id,
-
-                        type: config.activityType,
-
-                        title: `${config.activityTitle} ${report.reportNumber}`,
-
-                        description:
-                            note ||
-                            config.auditDescription,
-
-                        metadata: {
-                            reportNumber:
-                                report.reportNumber,
-
-                            status,
-
-                            roomCode:
-                                report.roomCode,
-
-                            location:
-                                report.location,
-                        },
-                    },
-                });
-
-                return report;
+            if (status === 'REJECTED') {
+                updateData.rejectionReason = note;
             }
-        );
+            
+            if (status === 'RESOLVED') {
+                updateData.resolvedNote = note;
+            }
+
+            if (imageUrl) {
+                updateData.imageAfter = imageUrl; 
+            }
+
+            const report = await tx.report.update({
+                where: {
+                    reportNumber: decodedReportNumber,
+                },
+                data: updateData,
+            });
+
+            await tx.auditLog.create({
+                data: {
+                    reportId: report.id,
+                    status,
+                    note: note || config.auditDescription,
+                },
+            });
+
+            await tx.activityLog.create({
+                data: {
+                    id: crypto.randomUUID(),
+                    userId: session.user.id,
+                    reportId: report.id,
+                    type: config.activityType,
+                    title: `${config.activityTitle} ${report.reportNumber}`,
+                    description: note || config.auditDescription,
+                    metadata: {
+                        reportNumber: report.reportNumber,
+                        status,
+                        roomCode: report.roomCode,
+                        location: report.location,
+                    },
+                },
+            });
+
+            return report;
+        });
 
         return NextResponse.json(
-            {
-                message:
-                    'Status report berhasil diperbarui',
-
-                data: updatedReport,
-            },
-            {
-                status: 200,
-            }
+            { message: 'Status report berhasil diperbarui', data: updatedReport },
+            { status: 200 }
         );
     } catch (error) {
-
-        console.error(
-            'UPDATE REPORT STATUS ERROR:',
-            error
-        );
-
+        console.error('UPDATE REPORT STATUS ERROR:', error);
         return NextResponse.json(
-            {
-                message:
-                    'Terjadi kesalahan server',
-            },
-            {
-                status: 500,
-            }
+            { message: 'Terjadi kesalahan server' },
+            { status: 500 }
         );
     }
 }
