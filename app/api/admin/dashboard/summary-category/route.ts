@@ -24,7 +24,7 @@ export async function GET() {
     
         return NextResponse.json({ categories });
     }catch (error) {
-        console.error("Dashboard statistic error:", error);
+        console.error("Dashboard summary category error:", error);
 
         return NextResponse.json({error: "Internal Server Error",},{ status: 500 });
     }
