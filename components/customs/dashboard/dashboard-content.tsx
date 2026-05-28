@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/axios';
 import { format, isToday, isYesterday } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-
+import { Skeleton } from '@heroui/react';
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
 import StatWidget from './widgets/stat-widget';
 import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
@@ -108,9 +108,33 @@ export default function DashboardContent() {
     const renderReportCards = (filteredReports: any[]) => {
         if (isLoading) {
             return (
-                <div className='flex flex-col gap-6 animate-pulse'>
-                    <div className='w-full h-36 bg-zinc-100 rounded-2xl'></div>
-                    <div className='w-full h-36 bg-zinc-100 rounded-2xl'></div>
+                <div className='flex flex-col gap-6'>
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                        <div key={idx} className='w-full bg-white border border-zinc-100 rounded-2xl shadow-sm p-4 md:p-5 flex flex-col gap-5'>
+                            <div className='flex justify-between items-start gap-4'>
+                                <div className='flex items-center gap-4 w-full'>
+                                    <Skeleton className='h-14 w-14 md:h-16 md:w-16 rounded-xl shrink-0' />
+                                    <div className='flex flex-col gap-3 w-full'>
+                                        <Skeleton className='h-4 w-3/4 rounded-lg' />
+                                        <Skeleton className='h-3 w-1/3 rounded-lg' />
+                                    </div>
+                                </div>
+                                <Skeleton className='h-6 w-20 rounded-full shrink-0' />
+                            </div>
+                            <div className='space-y-3 mt-2'>
+                                <div className='flex justify-between'>
+                                    <Skeleton className='h-2 w-12 rounded-full' />
+                                    <Skeleton className='h-2 w-24 rounded-full' />
+                                    <Skeleton className='h-2 w-12 rounded-full' />
+                                </div>
+                                <Skeleton className='h-2.5 w-full rounded-full' />
+                            </div>
+                            <div className='bg-zinc-50/50 p-3 rounded-xl border border-zinc-100 flex flex-col sm:flex-row justify-between sm:items-center gap-3'>
+                                <Skeleton className='h-4 w-2/3 sm:w-1/3 rounded-lg' />
+                                <Skeleton className='h-4 w-1/2 sm:w-1/4 rounded-lg' />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             );
         }
