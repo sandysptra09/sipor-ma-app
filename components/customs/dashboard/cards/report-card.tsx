@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
 
-export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI';
+export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI' | 'DITOLAK';
 
 export interface ReportCardProps {
     id: string;
@@ -55,6 +55,12 @@ export default function ReportCard({
             chipBg: 'bg-[#A7E9D1]',
             chipText: 'text-[#0A6F66]',
             label: 'SELESAI',
+            progressValue: 100,
+        },
+        DITOLAK: {
+            chipBg: 'bg-red-100',
+            chipText: 'text-destructive',
+            label: 'DITOLAK',
             progressValue: 100,
         }
     };
@@ -114,8 +120,8 @@ export default function ReportCard({
                             <span className={status === 'PROSES' || status === 'SELESAI' ? 'text-[#0A6F66] text-center' : 'text-zinc-400 text-center'}>
                                 SEDANG DIPROSES
                             </span>
-                            <span className={status === 'SELESAI' ? 'text-[#0A6F66] text-right' : 'text-zinc-400 text-right'}>
-                                SELESAI
+                            <span className={status === 'SELESAI' ? 'text-[#0A6F66] text-right' : status === 'DITOLAK' ? 'text-destructive text-right' : 'text-zinc-400 text-right'}>
+                                {status === 'DITOLAK' ? 'DITOLAK' : 'SELESAI'}
                             </span>
                         </div>
 
@@ -125,7 +131,7 @@ export default function ReportCard({
                             className='w-full'
                         >
                             <ProgressBar.Track className='h-2 bg-zinc-200/60 rounded-full border-none'>
-                                <ProgressBar.Fill className='bg-[#0A6F66] rounded-full' />
+                                <ProgressBar.Fill className={`${status === 'DITOLAK' ? 'bg-destructive' : 'bg-[#0A6F66]'} rounded-full`} />
                             </ProgressBar.Track>
                         </ProgressBar>
                     </div>

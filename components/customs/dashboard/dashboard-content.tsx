@@ -96,6 +96,15 @@ export default function DashboardContent() {
                     actionText: 'Lihat Dokumentasi Perbaikan',
                     actionType: 'primary' as const,
                 };
+            case 'REJECTED':
+                return {
+                    status: 'DITOLAK' as ReportStatus,
+                    messageIcon: <Clock4 size={18} className='text-destructive' />,
+                    messageText: 'Laporan Ditolak Admin',
+                    actionIcon: <LuFileText size={18} />,
+                    actionText: 'Lihat Alasan Penolakan',
+                    actionType: 'danger' as const,
+                };
             default:
                 return {
                     status: 'PENDING' as ReportStatus,
@@ -269,7 +278,7 @@ export default function DashboardContent() {
         {
             id: 'pending',
             label: 'Pending',
-            content: renderReportCards(reports.filter(r => r.status === 'PENDING' || r.status === 'REJECTED'))
+            content: renderReportCards(reports.filter(r => r.status === 'PENDING'))
         },
         {
             id: 'proses',
