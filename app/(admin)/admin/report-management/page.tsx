@@ -9,9 +9,13 @@ import { api } from "@/lib/axios";
 import { columns } from "./columns";
 
 export default function ReportManagementPage() {
+
+    const [buildingOptions, setBuildingOptions] = useState<any[]>([])
     const [reportData, setReportData] = useState<any[]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
+
     const [loading, setLoading] = useState<boolean>(true);
+    const [buildingLoading, setBuildingLoading] = useState<boolean>(true);
     const [refetch, setRefetch] = useState(0);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +40,7 @@ export default function ReportManagementPage() {
     };
 
     const fetchReportsData = async () => {
-        setLoading(true);
+        setLoading(true); 
         try {
             const params = new URLSearchParams();
 
@@ -69,6 +73,22 @@ export default function ReportManagementPage() {
         }
     };
 
+    const fetchBuildingsData = async () => {
+        setBuildingLoading(true);
+        try {
+            const res = await api.get(`/admin/options/buildings`);
+            setBuildingOptions(res?.data?.data);
+        } catch (error) {
+            console.error('Gagal mengambil data laporan:', error);
+        } finally {
+            setBuildingLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchBuildingsData();
+    }, []);
+
     useEffect(() => {
         fetchReportsData();
     }, [currentPage, rowsPerPage, refetch]);
@@ -78,6 +98,8 @@ export default function ReportManagementPage() {
             <TitlePage title="Manajemen Laporan" desc="Kelola dan pantau status pemeliharaan fasilitas kampus" />
 
             <ReportFilter
+                loading={buildingLoading}
+                buildingOptions={buildingOptions}
                 startDate={startDate}
                 endDate={endDate}
                 selectedGedung={selectedGedung}
