@@ -59,6 +59,8 @@ model Report {
   category      String
   imageBefore   String
   imageAfter    String?
+  resolvedNote  String?        @db.Text
+  rejectionReason  String?     @db.Text
   status        Status         @default(PENDING)
   priority      Priority       @default(MEDIUM)
   isVerified    Boolean        @default(false)
@@ -185,6 +187,7 @@ enum MessageRole {
 enum ActivityLog_type {
   REPORT_CREATED
   REPORT_UPDATED
+  REPORT_IN_PROGRESS
   REPORT_VERIFIED
   REPORT_REJECTED
   REPORT_RESOLVED
