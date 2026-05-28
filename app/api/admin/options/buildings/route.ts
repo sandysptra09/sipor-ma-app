@@ -1,5 +1,3 @@
-// api/helpers/buildings/route.ts
-
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
@@ -21,7 +19,10 @@ export async function GET() {
             {
                 message: 'Berhasil mengambil list building',
 
-                data: buildings.map((item) => item.building),
+                data: buildings.map((item) => ({
+                    label: item.building,
+                    name: item.building,
+                })),
             },
             {
                 status: 200,
