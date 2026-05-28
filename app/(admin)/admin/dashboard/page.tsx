@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SummaryCardReport from "@/components/customs/admin/summary-card-report";
 import RecentActivityCard from "@/components/customs/admin/recent-activity-card";
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
@@ -222,6 +222,33 @@ export default function Page() {
     const indexOfFirstItem = indexOfLastItem - rowsPerPage;
     const currentData = dataList.slice(indexOfFirstItem, indexOfLastItem);
 
+    interface DashboardStatistic {
+        incoming: number;
+        inProgress: number;
+        completed: number;
+    }
+
+    const [data, setData] = useState<DashboardStatistic | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+
+        async function fetchDashboardStatistic() {
+            const res = await fetch(`/api/admin/dashboard/statistic`);
+            const json = await res.json();
+            setData(json);
+            setIsLoading(false);
+        }
+
+        fetchDashboardStatistic();
+    }, []);
+
+    if (isLoading || !data) return <div className='justify-center flex'>
+        <p className='text-[10px] font-bold tracking-widest text-[#0A6F66] mb-2 uppercase'>
+            Loading....
+        </p>
+    </div>;
+
     return (
         <div className="grid grid-cols-6 gap-[20px]">
             {/* Row 1: Summary Cards */}
@@ -229,25 +256,25 @@ export default function Page() {
                 className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
                 subTitle="Testing"
-                count={1222}
+                count={data.incoming}
                 type="incoming"
                 loading={false}
                 description={<><TrendingUp size={14} /> +12% dari bulan lalu</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
-                title={"Laporan Keluar"}
+                title={"Sedang Dikerjakan"}
                 subTitle="Testing"
-                count={1222}
+                count={data.inProgress}
                 type="in-progress"
                 loading={false}
                 description={<><Clock size={14} /> Estimasi selesai: 3 hari</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
-                title={"Laporan Masuk"}
+                title={"Selesai Bulan Ini"}
                 subTitle="Testing"
-                count={1222}
+                count={data.completed}
                 type="completed"
                 loading={false}
                 description={<><BadgeCheck size={14} /> 12.4% Tingkat Kepuasan</>}
