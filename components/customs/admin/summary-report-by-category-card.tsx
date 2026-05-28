@@ -1,20 +1,41 @@
-import React from 'react';
 import { Card, ProgressBar } from '@heroui/react';
 import { Dot } from 'lucide-react';
+import React, { useState, useEffect } from "react";
 
 interface SummaryReportByCategoryCardProps {
   className?: string;
 }
 
-const categoryData = [
-  { name: 'AC (Air Conditioner)', count: 412, value: 85 },
-  { name: 'Kelistrikan', count: 298, value: 65 },
-  { name: 'Furniture & Interior', count: 185, value: 40 },
-  { name: 'Sanitasi & Air', count: 245, value: 55 },
-  { name: 'Infrastruktur Jalan', count: 332, value: 75 },
-];
 
 export default function SummaryReportByCategoryCard({ className }: SummaryReportByCategoryCardProps) {
+
+  interface categorySummary {
+        name: string;
+        count: number;
+        value: number;
+    }
+
+    const [data, setData] = useState<categorySummary[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+
+        async function fetchDashboardStatistic() {
+            const res = await fetch(`/api/admin/dashboard/summary-category`);
+            const json = await res.json();
+            setData(json.categories ?? []);
+            setIsLoading(false);
+        }
+    
+        fetchDashboardStatistic();
+    }, []);
+    
+    if (isLoading || !data) return <div className='justify-center flex'>
+        <p className='text-[10px] font-bold tracking-widest text-[#0A6F66] mb-2 uppercase'>
+            Loading....
+        </p>
+    </div>;
+
   return (
     <Card className={`p-8 rounded-lg shadow-md ring-0 ${className}`}>
       {/* Header Section */}
@@ -34,7 +55,7 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
 
       {/* Content Section */}
       <div className='flex flex-col gap-6'>
-        {categoryData.map((item, index) => (
+        {data?.map((item, index) => (
           <div key={index} className="w-full space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-semibold text-foreground">{item.name}</span>
