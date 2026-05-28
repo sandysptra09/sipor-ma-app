@@ -86,7 +86,12 @@ export default function AdminLayout({
 
                                         const isLast = index === pathnames.length - 1;
 
-                                        const label = value.toLowerCase() === 'admin' ? 'Admin Dashboard' : formatString(value);
+                                        const decodedValue = decodeURIComponent(value);
+
+                                        const label =
+                                            decodedValue.toLowerCase() === 'admin'
+                                                ? 'Admin Dashboard'
+                                                : formatString(decodedValue);
 
                                         return (
                                             <React.Fragment key={href}>

@@ -69,7 +69,7 @@ export const columns = [
         width: "80px", 
         render: (item: any) => (
             <Link
-                href={`/admin/report-management/${item.id}`}
+                href={`/admin/report-management/${encodeURIComponent(item.reportNumber)}`}
                 className="inline-flex items-center justify-center p-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors cursor-pointer"
             >
                 <Eye size={22} />
