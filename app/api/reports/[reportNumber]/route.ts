@@ -38,3 +38,21 @@ export async function GET(req: Request, context: { params: Promise<{ reportNumbe
         return NextResponse.json({ message: "Terjadi kesalahan pada server" }, { status: 500 });
     }
 }
+
+// DELETE API
+export async function DELETE(req: Request, context: { params: Promise<{ reportNumber: string }> }) {
+    try {
+        const params = await context.params;
+        const searchNumber = formatReportNumber(params.reportNumber);
+
+        // Menghapus data berdasarkan reportNumber
+        await prisma.report.delete({
+            where: { reportNumber: searchNumber }
+        });
+
+        return NextResponse.json({ message: "Laporan berhasil dibatalkan dan dihapus" }, { status: 200 });
+    } catch (error) {
+        console.error('[DELETE_REPORT_ERROR]', error);
+        return NextResponse.json({ message: "Gagal menghapus laporan" }, { status: 500 });
+    }
+}
