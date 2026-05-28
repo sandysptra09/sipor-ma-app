@@ -12,7 +12,7 @@ export const columns = [
     {
         id: "fasilitas",
         name: "NAMA FASILITAS",
-        width: "350px",
+        width: "250px",
         render: (item: any) => (
             <div className="flex flex-col w-full whitespace-normal pr-4">
                 <span className="font-semibold text-black">{item.title}</span>
@@ -23,7 +23,7 @@ export const columns = [
     {
         id: "gedung",
         name: "GEDUNG",
-        width: "300px",
+        width: "250px",
         render: (item: any) => (
             <div className="flex items-start gap-2 w-full whitespace-normal pr-4">
                 <MapPin size={14} className="text-default-400 flex-shrink-0 mt-0.5" />
