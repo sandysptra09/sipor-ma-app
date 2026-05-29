@@ -96,3 +96,68 @@ export async function GET(request: NextRequest) {
         );
     }
 }
+
+export async function PATCH(request: NextRequest) {
+    try {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { message: 'Unauthorized. Silakan login terlebih dahulu.' },
+                { status: 401 }
+            );
+        }
+
+        const adminId = session.user.id;
+
+        const body = await request.json();
+        const { id, isRead } = body;
+
+        if (!id) {
+            return NextResponse.json(
+                { message: 'ID Notifikasi (id) wajib disertakan dalam request body.' },
+                { status: 400 }
+            );
+        }
+
+        const existingNotification = await prisma.notification.findUnique({
+            where: { id: id }
+        });
+
+        if (!existingNotification) {
+            return NextResponse.json(
+                { message: 'Notifikasi tidak ditemukan.' },
+                { status: 404 }
+            );
+        }
+
+        if (existingNotification.userId !== adminId) {
+            return NextResponse.json(
+                { message: 'Forbidden. Anda tidak memiliki akses ke notifikasi ini.' },
+                { status: 403 }
+            );
+        }
+
+        const updatedStatus = typeof isRead === 'boolean' ? isRead : true;
+
+        const updatedNotification = await prisma.notification.update({
+            where: { id: id },
+            data: { isRead: updatedStatus }
+        });
+
+        return NextResponse.json(
+            { 
+                message: 'Status notifikasi berhasil diperbarui', 
+                data: updatedNotification 
+            },
+            { status: 200 }
+        );
+
+    } catch (error) {
+        console.error('Error updating notification status:', error);
+        return NextResponse.json(
+            { message: 'Terjadi kesalahan internal pada server saat memperbarui notifikasi.' },
+            { status: 500 }
+        );
+    }
+}
