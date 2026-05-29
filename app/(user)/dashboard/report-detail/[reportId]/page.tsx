@@ -11,7 +11,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Skeleton } from "@heroui/react"; 
+import { Skeleton } from "@heroui/react";
 
 import AuditItem from '@/components/customs/report-detail/audit-trail';
 import ReportCardReporter from '@/components/customs/report-detail/transparancy-card-reporter';
@@ -19,10 +19,13 @@ import ReportCardSarpras from '@/components/customs/report-detail/transparancy-c
 import InformasiLaporan from '@/components/customs/report-detail/informasi-laporan';
 import { ArrowLeft, FileText, History, Loader2 } from "lucide-react";
 
+import { format } from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
+
 export default function ReportDetailPage() {
     const params = useParams();
     const router = useRouter();
-    
+
     const [report, setReport] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -31,12 +34,12 @@ export default function ReportDetailPage() {
             try {
                 const res = await fetch(`/api/reports/${params.reportId}`);
                 if (!res.ok) throw new Error("Gagal mengambil data");
-                
+
                 const data = await res.json();
                 setReport(data);
             } catch (error) {
                 console.error("Error:", error);
-                router.push('/dashboard'); 
+                router.push('/dashboard');
             } finally {
                 setIsLoading(false);
             }
@@ -46,6 +49,22 @@ export default function ReportDetailPage() {
             fetchReportDetail();
         }
     }, [params.reportId, router]);
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'PENDING': return { text: 'PENDING', bg: 'bg-yellow-100 text-yellow-700' };
+            case 'VERIFIED':
+            case 'IN_PROGRESS': return { text: 'SEDANG DIPROSES', bg: 'bg-teal-100 text-primary' };
+            case 'RESOLVED': return { text: 'SELESAI', bg: 'bg-[#A7E9D1] text-[#0A6F66]' };
+            case 'REJECTED': return { text: 'DITOLAK', bg: 'bg-red-100 text-red-700' };
+            default: return { text: status, bg: 'bg-gray-100 text-gray-700' };
+        }
+    };
+
+    const formatDateTime = (dateString: string) => {
+        if (!dateString) return "-";
+        return format(new Date(dateString), "dd MMM yyyy, HH:mm", { locale: localeId });
+    };
 
     // SKELETON
     if (isLoading) {
@@ -65,10 +84,10 @@ export default function ReportDetailPage() {
                         <div className='flex-[2.8]'>
                             <div className='flex flex-col md:flex-row gap-6'>
                                 <div className="w-full md:w-1/2 h-80 rounded-2xl overflow-hidden shadow-sm">
-                                   <Skeleton className="h-full w-full" />
+                                    <Skeleton className="h-full w-full" />
                                 </div>
                                 <div className="w-full md:w-1/2 h-80 rounded-2xl overflow-hidden shadow-sm">
-                                   <Skeleton className="h-full w-full" />
+                                    <Skeleton className="h-full w-full" />
                                 </div>
                             </div>
 
@@ -105,7 +124,7 @@ export default function ReportDetailPage() {
                                     ))}
                                 </div>
                             </div>
-                            
+
                             <div className="w-full h-40 rounded-lg overflow-hidden">
                                 <Skeleton className="h-full w-full" />
                             </div>
@@ -116,6 +135,8 @@ export default function ReportDetailPage() {
         );
     }
 
+    const badgeConfig = getStatusBadge(report?.status);
+
     return (
         <div className='w-full bg-card py-8 lg:py-10 pt-10'>
             <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8'>
@@ -123,7 +144,7 @@ export default function ReportDetailPage() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
@@ -140,43 +161,41 @@ export default function ReportDetailPage() {
                 </div>
 
                 <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3'>
-                    <h1 className='text-primary font-bold text-2xl sm:text-3xl lg:text-4xl leading-tight'>
+                    <h1 className='text-primary font-bold text-xl sm:text-3xl lg:text-4xl leading-tight'>
                         Detail Dokumentasi Perbaikan
                     </h1>
-                    
-                    <div className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider ${
-                        report?.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                        report?.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                        report?.status === 'RESOLVED' ? 'bg-[#A7E9D1] text-[#0A6F66]' :
-                        'bg-teal-100 text-primary' 
-                    }`}>
-                        {report?.status.replace('_', ' ')}
+
+                    <div className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider w-fit shrink-0 ${badgeConfig.bg}`}>
+                        {badgeConfig.text}
                     </div>
                 </div>
 
                 <div className='flex flex-col lg:flex-row gap-6 mt-6'>
-                    {/* Kolom Kiri */}
                     <div className='flex-[2.8]'>
-                        <div className='flex flex-col md:flex-row gap-6'>
-                            <ReportCardReporter
-                                image={report?.imageBefore || "https://mahesasyawala.github.io/siporma/assets/images/before-repair.png"}
-                                state="SEBELUM"
-                                content={report?.description || "Deskripsi tidak tersedia."}
-                                reporter={report?.user?.name || "Mahasiswa"}
-                                timestamp={new Date(report?.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            />
+                        <div className='flex flex-col md:flex-row items-stretch gap-6'>
+                            <div className="w-full md:w-1/2 flex flex-col">
+                                <ReportCardReporter
+                                    image={report?.imageBefore}
+                                    state="SEBELUM"
+                                    content={report?.description}
+                                    reporter={report?.user?.name || "Mahasiswa"}
+                                    timestamp={formatDateTime(report?.createdAt)}
+                                />
+                            </div>
 
-                            {/* teks dan gambar menyesuaikan */}
-                            <ReportCardSarpras
-                                
-                                image={report?.imageAfter || "https://placehold.co/600x400/f4f4f5/a1a1aa?text=Belum+Ada+Dokumentasi"}
-                                state="SESUDAH"
-                                
-                                content={report?.imageAfter ? "Semua komponen sepenuhnya diganti dan kembali berfungsi dengan baik." : "Laporan masih dalam antrean. Menunggu tindak lanjut dan dokumentasi perbaikan dari tim Sarpras."}
-                                sarpras={report?.admin?.name || "Menunggu Admin"}
-                                
-                                timestamp={report?.imageAfter ? new Date(report?.updatedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-"}
-                            />
+                            <div className="w-full md:w-1/2 flex flex-col">
+                                <ReportCardSarpras
+                                    image={report?.status === 'RESOLVED' ? report?.imageAfter : "https://placehold.co/600x400/f4f4f5/a1a1aa?text=Belum+Ada+Dokumentasi"}
+                                    state="SESUDAH"
+                                    content={
+                                        report?.status === 'RESOLVED' ? "Semua komponen sepenuhnya diganti dan kembali berfungsi dengan baik." :
+                                            report?.status === 'REJECTED' ? "Laporan ditolak oleh sistem/admin dan tidak akan ditindaklanjuti." :
+                                                "Laporan masih dalam antrean. Menunggu tindak lanjut dan dokumentasi perbaikan dari tim Sarpras."
+                                    }
+                                    sarpras={report?.status === 'RESOLVED' || report?.status === 'REJECTED' ? (report?.admin?.name || "Admin Sarpras") : "Menunggu Admin"}
+                                    timestamp={report?.status === 'RESOLVED' ? formatDateTime(report?.updatedAt) : "Menunggu Proses"}
+                                />
+                            </div>
                         </div>
 
                         <div className='mt-5'>
@@ -215,7 +234,7 @@ export default function ReportDetailPage() {
                         <div>
                             <InformasiLaporan
                                 id={report?.reportNumber}
-                                location={report?.roomCode}
+                                location={report?.location}
                                 category={report?.category}
                                 priority={report?.priority}
                             />
