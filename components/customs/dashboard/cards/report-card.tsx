@@ -21,6 +21,7 @@ export interface ReportCardProps {
     actionType?: 'neutral' | 'danger' | 'primary';
     delay?: number;
     roomCode?: string;
+    onCancelClick?: (id: string) => void;
 }
 
 export default function ReportCard({
@@ -35,7 +36,8 @@ export default function ReportCard({
     actionText,
     actionType = 'neutral',
     delay = 0,
-    roomCode
+    roomCode,
+    onCancelClick,
 }: ReportCardProps) {
 
     const statusConfig = {
@@ -142,13 +144,23 @@ export default function ReportCard({
                             <span>{messageText}</span>
                         </div>
 
-                        <Link
-                            href={`/dashboard/report-detail/${cleanReportId}`}
-                            className={`flex items-center gap-2 text-[12px] md:text-[13px] ${actionTextColor} hover:opacity-70 transition-opacity`}
-                        >
-                            {actionIcon}
-                            {actionText}
-                        </Link>
+                        {actionText === 'Batalkan Laporan' ? (
+                            <div
+                                onClick={() => onCancelClick && onCancelClick(id)}
+                                className={`flex items-center gap-2 text-[12px] md:text-[13px] cursor-pointer ${actionTextColor} hover:opacity-70 transition-opacity`}
+                            >
+                                {actionIcon}
+                                {actionText}
+                            </div>
+                        ) : (
+                            <Link
+                                href={`/dashboard/report-detail/${cleanReportId}`}
+                                className={`flex items-center gap-2 text-[12px] md:text-[13px] ${actionTextColor} hover:opacity-70 transition-opacity`}
+                            >
+                                {actionIcon}
+                                {actionText}
+                            </Link>
+                        )}
                     </div>
 
                 </Card.Content>

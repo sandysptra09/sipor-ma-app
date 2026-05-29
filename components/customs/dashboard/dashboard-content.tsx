@@ -14,6 +14,7 @@ import { Clock4, History } from 'lucide-react';
 import { LuFileText, LuCircleCheckBig } from 'react-icons/lu';
 import { TbRosetteDiscountCheckFilled } from 'react-icons/tb';
 import { MdOutlineEngineering, MdOutlineInsertComment } from 'react-icons/md';
+import CancelReportModal from './modals/cancel-report-modal';
 
 const notificationData: NotificationItem[] = [
     {
@@ -44,18 +45,22 @@ export default function DashboardContent() {
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 5;
 
-    useEffect(() => {
-        const fetchReports = async () => {
-            try {
-                const response = await api.get('/reports');
-                setReports(response.data.data);
-            } catch (error) {
-                console.error('Gagal mengambil data laporan:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [selectedReportIdToCancel, setSelectedReportIdToCancel] = useState<string | null>(null);
 
+    const fetchReports = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get('/reports');
+            setReports(response.data.data);
+        } catch (error) {
+            console.error('Gagal mengambil data laporan:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchReports();
     }, []);
 
@@ -115,6 +120,17 @@ export default function DashboardContent() {
                     actionType: 'neutral' as const,
                 };
         }
+    };
+
+    const handleOpenCancelModal = (id: string) => {
+        setSelectedReportIdToCancel(id);
+        setIsCancelModalOpen(true);
+    };
+
+    const handleCancelSuccess = () => {
+        setIsCancelModalOpen(false);
+        setSelectedReportIdToCancel(null);
+        fetchReports();
     };
 
     const renderReportCards = (filteredReports: any[]) => {
@@ -207,6 +223,7 @@ export default function DashboardContent() {
                                 actionType={actionType}
                                 delay={index * 0.05}
                                 roomCode={report.roomCode}
+                                onCancelClick={handleOpenCancelModal}
                             />
                         )
                     })}
@@ -273,7 +290,7 @@ export default function DashboardContent() {
         {
             id: 'semua',
             label: 'Semua Laporan',
-            content: renderReportCards(reports)
+            content: renderReportCards(reports.filter(r => r.status !== 'CANCELED'))
         },
         {
             id: 'pending',
@@ -293,39 +310,50 @@ export default function DashboardContent() {
     ], [reports, isLoading, currentPage]);
 
     return (
-        <div className='flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full'>
+        <>
 
-            <div className='contents lg:flex lg:flex-col lg:col-span-8 lg:gap-8'>
+            <div className='flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full'>
 
-                <div className='order-1 flex flex-col mb-2 lg:mb-0'>
-                    <h1 className='font-heading text-2xl font-extrabold text-[#181C1C] md:text-4xl'>Dashboard</h1>
-                    <p className='mt-2 text-sm font-normal leading-relaxed text-foreground md:text-base'>
-                        Pantau langsung status fasilitas sarana kampus dalam satu dashboard yang real-time dan terpercaya.
-                    </p>
+                <div className='contents lg:flex lg:flex-col lg:col-span-8 lg:gap-8'>
+
+                    <div className='order-1 flex flex-col mb-2 lg:mb-0'>
+                        <h1 className='font-heading text-2xl font-extrabold text-[#181C1C] md:text-4xl'>Dashboard</h1>
+                        <p className='mt-2 text-sm font-normal leading-relaxed text-foreground md:text-base'>
+                            Pantau langsung status fasilitas sarana kampus dalam satu dashboard yang real-time dan terpercaya.
+                        </p>
+                    </div>
+
+                    <div className='order-3 w-full'>
+                        <ReportFilterTabs items={tabItems} onTabChange={handleTabChange} />
+                    </div>
+
                 </div>
 
-                <div className='order-3 w-full'>
-                    <ReportFilterTabs items={tabItems} onTabChange={handleTabChange} />
+                <div className='contents lg:flex lg:flex-col lg:col-span-4 lg:gap-6'>
+
+                    <div className='order-2 w-full'>
+                        <StatWidget />
+                    </div>
+
+                    <div className='order-4 w-full'>
+                        <NotificationWidget items={notificationData} />
+                    </div>
+
+                    <div className='order-5 w-full'>
+                        <HelpWidget />
+                    </div>
+
                 </div>
 
             </div>
 
-            <div className='contents lg:flex lg:flex-col lg:col-span-4 lg:gap-6'>
+            <CancelReportModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                reportId={selectedReportIdToCancel}
+                onSuccess={handleCancelSuccess}
+            />
 
-                <div className='order-2 w-full'>
-                    <StatWidget />
-                </div>
-
-                <div className='order-4 w-full'>
-                    <NotificationWidget items={notificationData} />
-                </div>
-
-                <div className='order-5 w-full'>
-                    <HelpWidget />
-                </div>
-
-            </div>
-
-        </div>
+        </>
     );
 }
