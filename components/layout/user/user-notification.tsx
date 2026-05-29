@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUserStore } from '@/store/useUserStore';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
 import { getPusherClient } from '@/lib/pusher-client';
 import { formatDistanceToNow } from 'date-fns';
@@ -16,11 +17,14 @@ interface Notification {
     message: string;
     isRead: boolean;
     createdAt: string;
+    reportId?: string | null;
+    report?: { reportNumber: string } | null;
 }
 
 export default function UserNotification() {
 
     const { user } = useUserStore();
+    const router = useRouter();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -62,6 +66,25 @@ export default function UserNotification() {
         };
     }, [user?.id]);
 
+    const handleNotificationClick = async (notif: Notification) => {
+        if (!notif.isRead) {
+            try {
+                await api.patch(`/notifications/${notif.id}`);
+                setNotifications((prev) =>
+                    prev.map((n) => n.id === notif.id ? { ...n, isRead: true } : n)
+                );
+            } catch (error) {
+                console.error('Gagal update status notifikasi', error);
+            }
+        }
+
+        if (notif.report?.reportNumber) {
+            const cleanId = notif.report.reportNumber.replace('#', '');
+            router.push(`/dashboard/report-detail/${cleanId}`);
+        }
+    };
+
+    const unreadNotifications = notifications.filter(n => !n.isRead);
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     return (
@@ -100,19 +123,21 @@ export default function UserNotification() {
                             <Dropdown.Item key='loading' textValue='Loading'>
                                 <p className='text-center text-sm text-muted-foreground py-4'>Memuat...</p>
                             </Dropdown.Item>
-                        ) : notifications.length === 0 ? (
+                            // 🔥 FIX: Pengecekan length pakai unreadNotifications
+                        ) : unreadNotifications.length === 0 ? (
                             <Dropdown.Item key='empty' textValue='Kosong'>
-                                <p className='text-center text-sm text-muted-foreground py-4'>Belum ada notifikasi.</p>
+                                <p className='text-center text-sm text-muted-foreground py-4'>Belum ada notifikasi baru.</p>
                             </Dropdown.Item>
                         ) : (
-                            notifications.map((notif) => (
+                            unreadNotifications.map((notif) => (
                                 <Dropdown.Item
                                     key={notif.id}
                                     textValue={notif.title}
-                                    className={`mb-1 ${!notif.isRead ? 'bg-primary/5' : ''}`}
+                                    className="mb-1 bg-primary/5"
+                                    onPress={() => handleNotificationClick(notif)}
                                 >
                                     <div className='flex flex-col gap-1 py-1'>
-                                        <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
+                                        <p className="text-sm font-bold text-primary">
                                             {notif.title}
                                         </p>
                                         <p className='whitespace-normal text-xs text-muted-foreground leading-relaxed'>

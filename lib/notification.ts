@@ -6,9 +6,10 @@ interface SendNotificationParams {
     title: string;
     message: string;
     reportId?: string;
+    reportNumber?: string;
 }
 
-export async function sendNotification({ userId, title, message, reportId }: SendNotificationParams) {
+export async function sendNotification({ userId, title, message, reportId, reportNumber }: SendNotificationParams) {
     try {
         const notification = await prisma.notification.create({
             data: {
@@ -21,6 +22,11 @@ export async function sendNotification({ userId, title, message, reportId }: Sen
 
         const channelName = `user-${userId}-notifications`;
         const eventName = 'new-notification';
+
+        const payload = {
+            ...notification,
+            report: reportNumber ? { reportNumber } : null
+        };
 
         await pusherServer.trigger(channelName, eventName, notification);
 
