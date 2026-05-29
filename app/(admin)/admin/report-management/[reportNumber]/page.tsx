@@ -28,7 +28,7 @@ export default function ReportDetailPage() {
 
     const [modal, setModal] = useState<'verify' | 'process' | 'rejected' | 'upload' | null>(null);
     const [reportDetail, setReportDetail] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [isUpdating, setIsUpdating] = useState(false);
 
     const { startUpload } = useUploadThing('imageUploader');
