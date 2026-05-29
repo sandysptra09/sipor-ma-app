@@ -48,7 +48,7 @@ export async function GET(req: Request, context: { params: Promise<{ reportNumbe
     }
 }
 
-export async function DELETE(req: Request, context: { params: Promise<{ reportNumber: string }> }) {
+export async function PATCH(req: Request, context: { params: Promise<{ reportNumber: string }> }) {
     try {
         const session = await auth();
         if (!session?.user?.id) {
@@ -57,6 +57,9 @@ export async function DELETE(req: Request, context: { params: Promise<{ reportNu
 
         const params = await context.params;
         const searchNumber = formatReportNumber(params.reportNumber);
+        
+        const body = await req.json();
+        const cancelReason = body.reason || "Dibatalkan oleh mahasiswa yang bersangkutan.";
 
         const existingReport = await prisma.report.findUnique({
             where: { reportNumber: searchNumber }
@@ -74,13 +77,32 @@ export async function DELETE(req: Request, context: { params: Promise<{ reportNu
             return NextResponse.json({ message: "Laporan yang sudah diproses tidak dapat dibatalkan." }, { status: 400 });
         }
 
-        await prisma.report.delete({
-            where: { reportNumber: searchNumber }
-        });
+        await prisma.$transaction([
+            prisma.report.update({
+                where: { id: existingReport.id },
+                data: { status: 'CANCELED' }
+            }),
+            prisma.auditLog.create({
+                data: {
+                    reportId: existingReport.id,
+                    status: 'CANCELED',
+                    note: `Dibatalkan oleh Pelapor. Alasan: ${cancelReason}`
+                }
+            }),
+            prisma.activityLog.create({
+                data: {
+                    userId: session.user.id,
+                    reportId: existingReport.id,
+                    title: 'Laporan Dibatalkan',
+                    description: `Laporan ${searchNumber} dibatalkan oleh pelapor.`,
+                    type: 'REPORT_CANCELED'
+                }
+            })
+        ]);
 
-        return NextResponse.json({ message: "Laporan berhasil dibatalkan dan dihapus" }, { status: 200 });
+        return NextResponse.json({ message: "Laporan berhasil dibatalkan" }, { status: 200 });
     } catch (error) {
-        console.error('[DELETE_REPORT_ERROR]', error);
+        console.error('[CANCEL_REPORT_ERROR]', error);
         return NextResponse.json(
             { message: "Gagal membatalkan laporan" }, 
             { status: 500 });
