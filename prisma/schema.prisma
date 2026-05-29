@@ -50,29 +50,29 @@ model Account {
 }
 
 model Report {
-  id            String         @id @default(uuid())
-  reportNumber  String         @unique
-  title         String
-  description   String         @db.Text
-  location      String
-  roomCode      String
-  category      String
-  imageBefore   String
-  imageAfter    String?
-  resolvedNote  String?        @db.Text
-  rejectionReason  String?     @db.Text
-  status        Status         @default(PENDING)
-  priority      Priority       @default(MEDIUM)
-  isVerified    Boolean        @default(false)
-  userId        String
-  adminId       String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  ActivityLog   ActivityLog[]
-  logs          AuditLog[]
-  notifications Notification[]
-  admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
-  user          User           @relation(fields: [userId], references: [id])
+  id              String         @id @default(uuid())
+  reportNumber    String         @unique
+  title           String
+  description     String         @db.Text
+  location        String
+  roomCode        String
+  category        String
+  imageBefore     String
+  imageAfter      String?
+  status          Status         @default(PENDING)
+  priority        Priority       @default(MEDIUM)
+  isVerified      Boolean        @default(false)
+  userId          String
+  adminId         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  rejectionReason String?        @db.Text
+  resolvedNote    String?        @db.Text
+  ActivityLog     ActivityLog[]
+  logs            AuditLog[]
+  notifications   Notification[]
+  admin           User?          @relation("AdminAssignment", fields: [adminId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
 
   @@index([adminId], map: "Report_adminId_fkey")
   @@index([userId], map: "Report_userId_fkey")
