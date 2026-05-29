@@ -29,7 +29,7 @@ export default function InformasiLaporan({ id, location, category, priority }: I
     };
 
     return (
-        <div className="bg-white p-5 rounded-lg shadow-md w-full flex flex-col gap-5">
+        <div className="bg-white p-5 rounded-lg shadow-sm w-full flex flex-col gap-5 border border-zinc-100">
             <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                 <span>Informasi Laporan</span>
             </div>
