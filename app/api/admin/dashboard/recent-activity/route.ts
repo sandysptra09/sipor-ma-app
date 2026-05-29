@@ -50,21 +50,25 @@ export async function GET(request: NextRequest) {
 
         const formattedData = recentActivities.map(log => {
             let displayDescription = '';
-
+        
             if (log.type === 'REPORT_REJECTED') {
-                displayDescription = log.Report?.rejectionReason || 'Tidak ada alasan penolakan disertakan.';
-            } 
-            else if (log.type === 'REPORT_RESOLVED') {
-                displayDescription = log.Report?.resolvedNote || 'Laporan telah diselesaikan.';
-            } 
-            else {
-                displayDescription = log.Report?.description || 'Tidak ada deskripsi.';
+                displayDescription =
+                    log.Report?.rejectionReason ||
+                    'Tidak ada alasan penolakan disertakan.';
+            } else if (log.type === 'REPORT_RESOLVED') {
+                displayDescription =
+                    log.Report?.resolvedNote ||
+                    'Laporan telah diselesaikan.';
+            } else {
+                displayDescription =
+                    log.Report?.description ||
+                    'Tidak ada deskripsi.';
             }
-
+        
             return {
                 id: log.id,
-                reportNumber:log.Report?.reportNumber,
-                type: log.type,
+                reportNumber: log.Report?.reportNumber,
+                type: log.type.replace('REPORT_', ''),
                 createdAt: log.createdAt,
                 description: displayDescription,
                 reportTitle: log.Report?.title,
