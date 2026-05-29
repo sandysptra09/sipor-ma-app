@@ -13,6 +13,7 @@ import {
 
 export interface ReportData {
   id: string | number;
+  reportNumber: string | number;
   type: 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING';
   user: string;
   title: string;
@@ -72,7 +73,7 @@ export default function ReportNotificationCard({
           currentData.map((item) => (
             <ReportItem
               key={item.id}
-              id={item.id}
+              id={encodeURIComponent(item.reportNumber)}
               user={item.user}
               title={item.title}
               location={item.location}
