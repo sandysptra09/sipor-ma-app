@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         const recentActivities = await prisma.activityLog.findMany({
             where: whereCondition,
             distinct: ['reportId'],  
-            take: 5, 
+            take: 3, 
             orderBy: {
                 createdAt: 'desc',  
             },
