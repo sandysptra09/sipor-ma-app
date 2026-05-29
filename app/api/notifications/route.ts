@@ -21,6 +21,11 @@ export async function GET() {
             orderBy: {
                 createdAt: 'desc', 
             },
+            include: {
+               report: {
+                    select: { reportNumber: true }
+                }
+            }
         });
 
         return NextResponse.json(notifications, { status: 200 });
