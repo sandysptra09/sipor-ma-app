@@ -15,18 +15,16 @@ export async function GET(request: NextRequest) {
 
         const isAdmin = session.user.role === 'ADMIN'; 
         
-        // Membangun kondisi where
-        // Tambahkan kondisi agar hanya log yang terhubung ke Report yang ditarik
         const whereCondition = isAdmin 
             ? { reportId: { not: null } } 
             : { userId: session.user.id, reportId: { not: null } };
 
         const recentActivities = await prisma.activityLog.findMany({
             where: whereCondition,
-            distinct: ['reportId'],  // 🔴 KUNCI: Hanya ambil 1 log unik per laporan
+            distinct: ['reportId'],  
             take: 5, 
             orderBy: {
-                createdAt: 'desc',   // Karena diurutkan menurun, distinct akan otomatis mengambil log yang paling baru
+                createdAt: 'desc',  
             },
             select: {
                 id: true,
