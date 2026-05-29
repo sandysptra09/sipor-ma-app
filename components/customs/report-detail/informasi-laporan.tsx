@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import Image from "next/image";
-import { Hash } from "lucide-react";
+import { Hash, MapPin, LayoutGrid, CircleAlert } from "lucide-react";
 
 export interface InformasiLaporanProps {
     id: string;
@@ -10,55 +10,73 @@ export interface InformasiLaporanProps {
 }
 
 export default function InformasiLaporan({ id, location, category, priority }: InformasiLaporanProps) {
+
+    const getPriorityStyle = (p: string) => {
+        switch (p?.toUpperCase()) {
+            case 'HIGH': return 'text-red-600';
+            case 'MEDIUM': return 'text-yellow-600';
+            case 'LOW': return 'text-gray-600';
+            default: return 'text-gray-600';
+        }
+    };
+
+    const getPriorityIconColor = (p: string) => {
+        switch (p?.toUpperCase()) {
+            case 'HIGH': return 'text-red-500';
+            case 'MEDIUM': return 'text-yellow-500';
+            default: return 'text-gray-500';
+        }
+    };
+
     return (
         <div className="bg-white p-5 rounded-lg shadow-md w-full flex flex-col gap-5">
-            <div className="text-sm">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                 <span>Informasi Laporan</span>
             </div>
 
             <div className="flex flex-col gap-4 text-white items-start">
-                <div className="flex flex-row gap-4">
-                    <div className="bg-primary/20 rounded-sm px-2 py-2 text-primary">
+                <div className="flex flex-row items-start gap-4">
+                    <div className="bg-accent rounded-sm px-2 py-2 text-primary shrink-0">
                         {<Hash size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-xs font-semibold tracking-wide uppercase">ID LAPORAN</span>
-                        <p className="text-[#181C1C]/60 text-xs">
+                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">ID LAPORAN</span>
+                        <p className="text-xs font-medium text-primary">
                             {id}
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-row gap-4">
-                    <div className="bg-primary/20 rounded-sm px-2 py-2 text-primary">
-                        {<Hash size={15} />}
+                <div className="flex flex-row items-start gap-4">
+                    <div className="bg-accent rounded-sm px-2 py-2 text-primary shrink-0">
+                        {<MapPin size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-xs font-semibold tracking-wide uppercase">Lokasi Spesifik</span>
-                        <p className="text-[#181C1C]/60 text-xs">
+                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Lokasi Spesifik</span>
+                        <p className="text-foreground text-xs font-medium">
                             {location}
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-row gap-4">
-                    <div className="bg-primary/20 rounded-sm px-2 py-2 text-primary">
-                        {<Hash size={15} />}
+                <div className="flex flex-row items-start gap-4 ">
+                    <div className="bg-accent rounded-sm px-2 py-2 text-primary shrink-0">
+                        {<LayoutGrid size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-xs font-semibold tracking-wide uppercase">Kategori Fasilitas</span>
-                        <p className="text-[#181C1C]/60 text-xs">
+                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Kategori Fasilitas</span>
+                        <p className="text-foreground text-xs font-medium">
                             {category}
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-row gap-4">
-                    <div className="bg-primary/20 rounded-sm px-2 py-2 text-primary">
-                        {<Hash size={15} />}
+                <div className="flex flex-row items-start gap-4">
+                    <div className="bg-accent rounded-sm px-2 py-2 text-danger shrink-0">
+                        {<CircleAlert size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-xs font-semibold tracking-wide uppercase">Prioritas Laporan</span>
-                        <p className="text-[#181C1C]/60 text-xs">
+                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Prioritas Laporan</span>
+                        <span className={`text-[10px] w-fit font-bold rounded uppercase tracking-wider ${getPriorityStyle(priority)}`}>
                             {priority}
-                        </p>
+                        </span>
                     </div>
                 </div>
 
