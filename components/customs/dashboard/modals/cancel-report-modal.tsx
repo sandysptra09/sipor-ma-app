@@ -29,7 +29,7 @@ export default function CancelReportModal({ isOpen, onClose, reportId, onSuccess
             });
 
             if (res.status === 200) {
-                toast.warning(`Laporan ${reportId} berhasil dibatalkan`, {
+                toast.danger(`Laporan ${reportId} berhasil dibatalkan`, {
                     description: <span className='text-zinc-600'>Tim Sarpras tidak akan melanjutkan peninjauan.</span>
                 });
 
@@ -37,7 +37,7 @@ export default function CancelReportModal({ isOpen, onClose, reportId, onSuccess
             }
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Terjadi kesalahan sistem saat membatalkan laporan.';
-            toast.danger('Gagal Membatalkan', {
+            toast.info('Gagal Membatalkan', {
                 description: <span className='text-zinc-600'>{errorMessage}</span>
             });
         } finally {
