@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SummaryCardReport from "@/components/customs/admin/summary-card-report";
 import RecentActivityCard from "@/components/customs/admin/recent-activity-card";
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
@@ -8,6 +8,7 @@ import { CustomTableReport } from "@/components/customs/admin/custom-table-repor
 import { BadgeCheck, Clock, MapPin, TrendingUp, Eye } from "lucide-react";
 import { Chip } from "@heroui/react";
 import Link from "next/link";
+import { api } from "@/lib/axios";
 
 const columns = [
     {
@@ -222,6 +223,26 @@ export default function Page() {
     const indexOfFirstItem = indexOfLastItem - rowsPerPage;
     const currentData = dataList.slice(indexOfFirstItem, indexOfLastItem);
 
+    const [recentActivity, setRecentActivity] = useState<any>([])
+    const [recentActivityLoading, setRecentActivityLoading] = useState<boolean>(false)
+
+    const fetchRecentActivityData = async () => {
+        setRecentActivityLoading(true);
+        try {
+            const res = await api.get(`/admin/dashboard/recent-activity`);
+            setRecentActivity(res?.data?.data);
+            console.log(res);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setRecentActivityLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchRecentActivityData();
+    }, [])
+
     return (
         <div className="grid grid-cols-6 gap-[20px]">
             {/* Row 1: Summary Cards */}
@@ -256,6 +277,8 @@ export default function Page() {
             {/* Row 2: Charts & Activities */}
             <RecentActivityCard
                 className='col-span-6 md:col-span-3'
+                data={recentActivity}
+                loading={recentActivityLoading}
             />
             <SummaryReportByCategoryCard
                 className='col-span-6 md:col-span-3'
