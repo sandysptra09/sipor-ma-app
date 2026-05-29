@@ -13,7 +13,7 @@ export default function ReportManagementPage() {
     const [reportData, setReportData] = useState<any[]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [buildingLoading, setBuildingLoading] = useState<boolean>(false);
     const [refetch, setRefetch] = useState(0);
 
