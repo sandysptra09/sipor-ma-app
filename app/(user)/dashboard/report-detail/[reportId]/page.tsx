@@ -17,10 +17,13 @@ import AuditItem from '@/components/customs/report-detail/audit-trail';
 import ReportCardReporter from '@/components/customs/report-detail/transparancy-card-reporter';
 import ReportCardSarpras from '@/components/customs/report-detail/transparancy-card-sapras';
 import InformasiLaporan from '@/components/customs/report-detail/informasi-laporan';
+import ReportPDF from '@/components/customs/report-detail/report-pdf';
 import { ArrowLeft, FileText, History, Loader2 } from "lucide-react";
 
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { pdf } from '@react-pdf/renderer';
+
 
 export default function ReportDetailPage() {
     const params = useParams();
@@ -65,6 +68,20 @@ export default function ReportDetailPage() {
         if (!dateString) return "-";
         return format(new Date(dateString), "dd MMM yyyy, HH:mm", { locale: localeId });
     };
+
+    //pdf renderer
+    async function generatePDF() {
+        const blob = await pdf(
+            <ReportPDF report={report} formatDateTime={formatDateTime} />
+        ).toBlob();
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Laporan-${report?.reportNumber ?? 'detail'}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 
     // SKELETON
     if (isLoading) {
@@ -322,7 +339,9 @@ export default function ReportDetailPage() {
                     </div>
 
                     <div className='w-full sm:w-auto'>
-                        <button className='w-full py-3 px-6 sm:px-10 text-white justify-center items-center text-sm font-medium bg-primary rounded-md flex gap-3 hover:bg-primary/90 transition-colors'>
+                        <button className='w-full py-3 px-6 sm:px-10 text-white justify-center items-center text-sm font-medium bg-primary rounded-md flex gap-3 hover:bg-primary/90 transition-colors'
+                            onClick={generatePDF}
+                        >
                             <FileText size={15} />
                             Unduh Bukti Laporan(PDF)
                         </button>
