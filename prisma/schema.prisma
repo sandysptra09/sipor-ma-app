@@ -50,27 +50,29 @@ model Account {
 }
 
 model Report {
-  id            String         @id @default(uuid())
-  reportNumber  String         @unique
-  title         String
-  description   String         @db.Text
-  location      String
-  roomCode      String
-  category      String
-  imageBefore   String
-  imageAfter    String?
-  status        Status         @default(PENDING)
-  priority      Priority       @default(MEDIUM)
-  isVerified    Boolean        @default(false)
-  userId        String
-  adminId       String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  activityLogs  ActivityLog[]
-  logs          AuditLog[]
-  notifications Notification[]
-  admin         User?          @relation("AdminAssignment", fields: [adminId], references: [id])
-  user          User           @relation(fields: [userId], references: [id])
+  id              String         @id @default(uuid())
+  reportNumber    String         @unique
+  title           String
+  description     String         @db.Text
+  location        String
+  roomCode        String
+  category        String
+  imageBefore     String
+  imageAfter      String?
+  status          Status         @default(PENDING)
+  priority        Priority       @default(MEDIUM)
+  isVerified      Boolean        @default(false)
+  userId          String
+  adminId         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  rejectionReason String?        @db.Text
+  resolvedNote    String?        @db.Text
+  activityLogs    ActivityLog[]
+  logs            AuditLog[]
+  notifications   Notification[]
+  admin           User?          @relation("AdminAssignment", fields: [adminId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
 
   @@index([adminId], map: "Report_adminId_fkey")
   @@index([userId], map: "Report_userId_fkey")
@@ -142,16 +144,16 @@ model Notification {
 }
 
 model ActivityLog {
-  id          String       @id @default(cuid())
+  id          String           @id @default(cuid())
   userId      String
   reportId    String?
   title       String
-  description String?      @db.Text
-  type        ActivityType
+  description String?          @db.Text
+  type        ActivityLog_type
   metadata    Json?
-  createdAt   DateTime     @default(now())
-  report      Report?      @relation(fields: [reportId], references: [id])
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+  report      Report?          @relation(fields: [reportId], references: [id])
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([reportId])
@@ -169,6 +171,7 @@ enum Status {
   IN_PROGRESS
   RESOLVED
   REJECTED
+  CANCELED
 }
 
 enum Priority {
@@ -182,12 +185,14 @@ enum MessageRole {
   ASSISTANT
 }
 
-enum ActivityType {
+enum ActivityLog_type {
   REPORT_CREATED
   REPORT_UPDATED
+  REPORT_IN_PROGRESS
   REPORT_VERIFIED
   REPORT_REJECTED
   REPORT_RESOLVED
+  REPORT_CANCELED
   ROOM_UPDATED
   PROFILE_UPDATED
 }
