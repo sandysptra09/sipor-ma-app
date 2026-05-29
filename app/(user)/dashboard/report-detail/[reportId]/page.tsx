@@ -138,7 +138,7 @@ export default function ReportDetailPage() {
     const badgeConfig = getStatusBadge(report?.status);
 
     return (
-        <div className='w-full bg-card py-8 lg:py-10 pt-10'>
+        <div className='w-full bg-background py-8 lg:py-10 pt-10'>
             <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8'>
                 <div className='mb-5 overflow-x-auto'>
                     <Breadcrumb>
@@ -210,20 +210,75 @@ export default function ReportDetailPage() {
                                 </div>
 
                                 <div>
-                                    {report?.logs && report.logs.length > 0 ? (
-                                        report.logs.map((log: any, index: number) => (
-                                            <AuditItem
-                                                key={log.id}
-                                                title={`Status: ${log.status.replace('_', ' ')}`}
-                                                description={log.note || "Sistem mencatat perubahan status pada laporan."}
-                                                timestamp={new Date(log.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                                isCompleted={true}
-                                                isLast={index === report.logs.length - 1}
-                                            />
-                                        ))
-                                    ) : (
-                                        <p className="text-sm text-gray-500">Belum ada riwayat proses.</p>
-                                    )}
+                                    {(() => {
+                                        const masterTimeline = [
+                                            {
+                                                statusKey: 'PENDING',
+                                                title: 'Laporan Terkirim',
+                                                defaultDesc: 'Sistem menerima laporan dan memberikan nomor antrean otomatis kepada pelapor.'
+                                            },
+                                            {
+                                                statusKey: 'VERIFIED',
+                                                title: 'Verifikasi Admin',
+                                                defaultDesc: 'Laporan dinyatakan valid oleh tim Sarpras. Koordinasi awal dengan vendor/teknisi dimulai.'
+                                            },
+                                            {
+                                                statusKey: 'IN_PROGRESS',
+                                                title: 'Proses Perbaikan',
+                                                defaultDesc: 'Tim teknisi sedang melakukan penanganan fisik di lokasi kejadian.'
+                                            },
+                                            {
+                                                statusKey: 'RESOLVED',
+                                                title: 'Selesai',
+                                                defaultDesc: 'Masalah teratasi sepenuhnya, pengujian berhasil, dan dokumentasi penyelesaian diunggah.'
+                                            }
+                                        ];
+
+                                        if (report?.status === 'REJECTED') {
+                                            const pendingLog = report.logs?.find((l: any) => l.status === 'PENDING');
+                                            const rejectLog = report.logs?.find((l: any) => l.status === 'REJECTED');
+
+                                            return (
+                                                <>
+                                                    <AuditItem
+                                                        title="Laporan Terkirim"
+                                                        description="Sistem menerima laporan dari mahasiswa."
+                                                        timestamp={pendingLog ? formatDateTime(pendingLog.createdAt) : formatDateTime(report?.createdAt)}
+                                                        isPast={true}
+                                                    />
+                                                    <AuditItem
+                                                        title="Laporan Ditolak"
+                                                        description={rejectLog?.note || "Laporan ditolak oleh sistem/admin dan tidak akan ditindaklanjuti."}
+                                                        timestamp={rejectLog ? formatDateTime(rejectLog.createdAt) : formatDateTime(report?.updatedAt)}
+                                                        isActive={true}
+                                                        isLast={true}
+                                                    />
+                                                </>
+                                            )
+                                        }
+
+                                        const dbLogs = report?.logs || [];
+                                        const lastDbLog = dbLogs[dbLogs.length - 1];
+                                        const activeStatusKey = lastDbLog ? lastDbLog.status : 'PENDING';
+
+                                        return masterTimeline.map((step, index) => {
+                                            const logData = dbLogs.find((l: any) => l.status === step.statusKey);
+                                            const isCurrentStepActive = step.statusKey === activeStatusKey;
+                                            const isStepPast = !isCurrentStepActive && Boolean(logData);
+
+                                            return (
+                                                <AuditItem
+                                                    key={step.statusKey}
+                                                    title={step.title}
+                                                    description={logData?.note || step.defaultDesc}
+                                                    timestamp={logData ? formatDateTime(logData.createdAt) : ""}
+                                                    isActive={isCurrentStepActive}
+                                                    isPast={isStepPast}
+                                                    isLast={index === masterTimeline.length - 1}
+                                                />
+                                            );
+                                        });
+                                    })()}
                                 </div>
                             </div>
                         </div>
