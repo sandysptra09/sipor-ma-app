@@ -38,7 +38,7 @@ export async function GET(req: Request, context: { params: Promise<{ reportNumbe
         }
 
         if (report.userId !== session.user.id) {
-             return NextResponse.json({ message: "Anda tidak memiliki akses ke laporan ini" }, { status: 403 });
+            return NextResponse.json({ message: "Anda tidak memiliki akses ke laporan ini" }, { status: 403 });
         }
 
         return NextResponse.json(report, { status: 200 });
