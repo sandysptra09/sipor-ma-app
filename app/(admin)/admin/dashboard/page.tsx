@@ -243,11 +243,6 @@ export default function Page() {
         fetchDashboardStatistic();
     }, []);
 
-    if (isLoading || !data) return <div className='justify-center flex'>
-        <p className='text-[10px] font-bold tracking-widest text-[#0A6F66] mb-2 uppercase'>
-            Loading....
-        </p>
-    </div>;
 
     return (
         <div className="grid grid-cols-6 gap-[20px]">
@@ -256,27 +251,27 @@ export default function Page() {
                 className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
                 subTitle="Testing"
-                count={data.incoming}
+                count={data?.incoming || 0}
                 type="incoming"
-                loading={false}
+                loading={isLoading}
                 description={<><TrendingUp size={14} /> +12% dari bulan lalu</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
                 title={"Sedang Dikerjakan"}
                 subTitle="Testing"
-                count={data.inProgress}
+                count={data?.inProgress || 0}
                 type="in-progress"
-                loading={false}
+                loading={isLoading}
                 description={<><Clock size={14} /> Estimasi selesai: 3 hari</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
                 title={"Selesai Bulan Ini"}
                 subTitle="Testing"
-                count={data.completed}
+                count={data?.completed || 0}
                 type="completed"
-                loading={false}
+                loading={isLoading}
                 description={<><BadgeCheck size={14} /> 12.4% Tingkat Kepuasan</>}
             />
 
