@@ -40,7 +40,7 @@ export default function InformasiLaporan({ id, location, category, priority }: I
                         {<Hash size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">ID LAPORAN</span>
+                        <span className="text-[#181C1C]/80 text-[11px] font-medium tracking-wide uppercase">ID LAPORAN</span>
                         <p className="text-xs font-medium text-primary">
                             {id}
                         </p>
@@ -51,7 +51,7 @@ export default function InformasiLaporan({ id, location, category, priority }: I
                         {<MapPin size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Lokasi Spesifik</span>
+                        <span className="text-[#181C1C]/80 text-[11px] font-medium tracking-wide uppercase">Lokasi Spesifik</span>
                         <p className="text-foreground text-xs font-medium">
                             {location}
                         </p>
@@ -62,7 +62,7 @@ export default function InformasiLaporan({ id, location, category, priority }: I
                         {<LayoutGrid size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Kategori Fasilitas</span>
+                        <span className="text-[#181C1C]/80 text-[11px] font-medium tracking-wide uppercase">Kategori Fasilitas</span>
                         <p className="text-foreground text-xs font-medium">
                             {category}
                         </p>
@@ -73,7 +73,7 @@ export default function InformasiLaporan({ id, location, category, priority }: I
                         {<CircleAlert size={15} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#181C1C]/80 text-[11px] font-semibold tracking-wide uppercase">Prioritas Laporan</span>
+                        <span className="text-[#181C1C]/80 text-[11px] font-medium tracking-wide uppercase">Prioritas Laporan</span>
                         <span className={`text-[10px] w-fit font-bold rounded uppercase tracking-wider ${getPriorityStyle(priority)}`}>
                             {priority}
                         </span>
