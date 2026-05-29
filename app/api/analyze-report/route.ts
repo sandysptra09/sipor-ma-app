@@ -136,7 +136,8 @@ export async function POST(req: Request) {
                         userId: admin.id,
                         title: '🚨 Laporan Baru Masuk!',
                         message: `Laporan ${newReport.priority} dari ${fullLocation}: ${aiResult.titleSuggestion}`,
-                        reportId: newReport.id
+                        reportId: newReport.id,
+                        reportNumber: newReportNumber
                     })
                 )
             );
