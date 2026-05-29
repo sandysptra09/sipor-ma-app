@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import prisma from "@/lib/prisma"; 
 
-// memastikan format reportNumber
 const formatReportNumber = (rawId: string) => {
     let cleanId = decodeURIComponent(rawId).toUpperCase();
     if (!cleanId.startsWith('#')) {
@@ -10,11 +10,14 @@ const formatReportNumber = (rawId: string) => {
     return cleanId;
 };
 
-// API GET 
 export async function GET(req: Request, context: { params: Promise<{ reportNumber: string }> }) {
     try {
-        const params = await context.params;
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+        }
 
+        const params = await context.params;
         const searchNumber = formatReportNumber(params.reportNumber);
 
         const report = await prisma.report.findUnique({
@@ -22,14 +25,20 @@ export async function GET(req: Request, context: { params: Promise<{ reportNumbe
                 reportNumber: searchNumber 
             },
             include: {
-                logs: true, 
-                user: true, 
-                admin: true 
+                logs: {
+                    orderBy: { createdAt: 'asc' } 
+                }, 
+                user: { select: { name: true } }, 
+                admin: { select: { name: true } } 
             }
         });
 
         if (!report) {
             return NextResponse.json({ message: "Laporan tidak ditemukan" }, { status: 404 });
+        }
+
+        if (report.userId !== session.user.id) {
+             return NextResponse.json({ message: "Anda tidak memiliki akses ke laporan ini" }, { status: 403 });
         }
 
         return NextResponse.json(report, { status: 200 });
