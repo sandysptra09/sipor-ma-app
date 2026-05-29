@@ -2,10 +2,12 @@ import React from 'react'
 import { Card, Skeleton } from "@heroui/react";
 import ReportItem from './report-item';
 
+type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING';
+
 export interface ActivityData {
     id: string;
     reportNumber: string;
-    type: string;
+    type: ReportItemType;
     createdAt: string;
     description: string;
     reportTitle: string;
@@ -25,17 +27,6 @@ export default function RecentActivityCard({
     loading = false 
 }: RecentActivityCardProps) {
     
-    const mapTypeToStatus = (type: string) => {
-        switch(type) {
-            case 'REPORT_REJECTED': return 'rejected';
-            case 'REPORT_RESOLVED': return 'completed';
-            case 'REPORT_IN_PROGRESS': return 'process';
-            case 'REPORT_VERIFIED': return 'verified';
-            case 'REPORT_CREATED': return 'pending';
-            default: return 'pending';
-        }
-    }
-
     return (
         <Card className={`p-8 rounded-lg shadow-md ${className}`}>
             <Card.Header>
@@ -68,7 +59,7 @@ export default function RecentActivityCard({
                             user={report.reporterName}
                             title={report.reportTitle || 'Tanpa Judul'}
                             location={report.room || 'Lokasi tidak diketahui'}
-                            type={mapTypeToStatus(report.type) as any} 
+                            type={report.type || 'PENDING'} 
                             description={report.description}
                             datetime={report.createdAt}
                         />
