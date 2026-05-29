@@ -339,7 +339,7 @@ export default function ReportDetailPage() {
                     </div>
 
                     <div className='w-full sm:w-auto'>
-                        <button className='w-full py-3 px-6 sm:px-10 text-white justify-center items-center text-sm font-medium bg-primary rounded-md flex gap-3 hover:bg-primary/90 transition-colors'
+                        <button className='w-full py-3 px-6 sm:px-10 text-white justify-center items-center text-sm font-medium bg-primary rounded-md flex gap-3 hover:bg-primary/90 transition-colors cursor-pointer'
                             onClick={generatePDF}
                         >
                             <FileText size={15} />
