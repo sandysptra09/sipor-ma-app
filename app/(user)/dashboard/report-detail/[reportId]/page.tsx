@@ -338,13 +338,24 @@ export default function ReportDetailPage() {
                         </Link>
                     </div>
 
-                    <div className='w-full sm:w-auto'>
-                        <button className='w-full py-3 px-6 sm:px-10 text-white justify-center items-center text-sm font-medium bg-primary rounded-md flex gap-3 hover:bg-primary/90 transition-colors cursor-pointer'
-                            onClick={generatePDF}
+                    <div className='w-full sm:w-auto flex flex-col items-end gap-2'>
+                        <button
+                            className={`w-full py-3 px-6 sm:px-10 flex justify-center items-center text-sm font-medium rounded-md gap-3 transition-colors ${report?.status === 'RESOLVED'
+                                ? 'bg-primary text-white hover:bg-primary/90 cursor-pointer shadow-sm'
+                                : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                                }`}
+                            onClick={report?.status === 'RESOLVED' ? generatePDF : undefined}
+                            disabled={report?.status !== 'RESOLVED'}
                         >
                             <FileText size={15} />
                             Unduh Bukti Laporan(PDF)
                         </button>
+
+                        {report?.status !== 'RESOLVED' && (
+                            <span className="text-[10px] text-zinc-400 font-medium italic pr-1">
+                                *PDF hanya tersedia untuk laporan yang sudah Selesai.
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>
