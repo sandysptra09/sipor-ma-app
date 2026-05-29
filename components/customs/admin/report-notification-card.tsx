@@ -11,14 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ReportData {
+export interface ReportData {
   id: string | number;
-  type: 'completed' | 'process' | 'rejected' | 'verified' | 'pending';
+  type: 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING';
   user: string;
   title: string;
   location: string;
   datetime: Date | string | number;
   description: string;
+  isRead?: boolean; 
   icon?: React.ReactNode;
 }
 
@@ -40,11 +41,9 @@ export default function ReportNotificationCard({
   onRowsPerPageChange,
 }: ReportNotificationCardProps) {
 
-  const indexOfLastItem = currentPage * rowsPerPage;
-  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-
-  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
-
+  const currentData = data; 
+  
+  const indexOfFirstItem = (currentPage - 1) * rowsPerPage;
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
   const endIdx = Math.min(currentPage * rowsPerPage, totalRecords);
 
@@ -68,20 +67,18 @@ export default function ReportNotificationCard({
 
   return (
     <div className="w-full bg-white rounded-lg shadow-md ring-0 overflow-hidden border border-gray-100 p-8">
-
-      {/* List Content */}
       <div className="flex flex-col">
         {currentData.length > 0 ? (
           currentData.map((item) => (
             <ReportItem
               key={item.id}
               id={item.id}
-              type={item.type}
               user={item.user}
               title={item.title}
               location={item.location}
               datetime={item.datetime}
               description={item.description}
+              isRead={item.isRead}
               icon={item.icon}
             />
           ))
@@ -92,7 +89,6 @@ export default function ReportNotificationCard({
         )}
       </div>
 
-      {/* Footer */}
       <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4 border-t bg-white">
         <div className="flex items-center gap-4">
           <Select
@@ -118,7 +114,6 @@ export default function ReportNotificationCard({
           </p>
         </div>
 
-        {/* Pagination Buttons */}
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
