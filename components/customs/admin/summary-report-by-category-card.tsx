@@ -14,6 +14,14 @@ interface CategorySummary {
   value: number;
 }
 
+const VALID_CATEGORIES = [
+  "AC",
+  "Kelistrikan",
+  "Furnitur & Interior",
+  "Sanitasi & Air",
+  "Infrastruktur Jalan"
+];
+
 export default function SummaryReportByCategoryCard({ className }: SummaryReportByCategoryCardProps) {
     const [data, setData] = useState<CategorySummary[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +31,22 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
             try {
                 const res = await fetch(`/api/admin/dashboard/summary-category`);
                 const json = await res.json();
-                setData(json.categories ?? []);
+                const fetchedCategories: CategorySummary[] = json.categories ?? [];
+
+                const mergedData = VALID_CATEGORIES.map((categoryName) => {
+                    const found = fetchedCategories.find(c => c.name === categoryName);
+                    return {
+                        name: categoryName,
+                        count: found ? found.count : 0,
+                        value: found ? found.value : 0,
+                    };
+                });
+
+                setData(mergedData);
             } catch (error) {
                 console.error("Gagal mengambil data statistik kategori:", error);
+                
+                setData(VALID_CATEGORIES.map(name => ({ name, count: 0, value: 0 })));
             } finally {
                 setIsLoading(false);
             }
@@ -52,7 +73,7 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
 
       <div className='flex flex-col gap-6'>
         {isLoading ? (
-          Array.from({ length: 4 }).map((_, index) => (
+          Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="w-full space-y-3">
               <div className="flex justify-between items-center">
                 <Skeleton className="h-4 w-1/4 rounded-lg" />
@@ -61,7 +82,7 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
               <Skeleton className="h-4 w-full rounded-full" />
             </div>
           ))
-        ) : data && data.length > 0 ? (
+        ) : (
           data.map((item, index) => (
             <div key={index} className="w-full space-y-2">
               <div className="flex justify-between items-center">
@@ -76,10 +97,6 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
               </ProgressBar>
             </div>
           ))
-        ) : (
-          <div className="text-center py-6 text-sm text-muted-foreground">
-            Belum ada data kategori.
-          </div>
         )}
       </div>
     </Card>
