@@ -48,7 +48,6 @@ export async function GET(request: NextRequest) {
                         reportNumber: true,
                         title: true,
                         roomCode: true,
-                        status: true,
                         user: {
                             select: {
                                 name: true, 
@@ -64,7 +63,6 @@ export async function GET(request: NextRequest) {
             return {
                 id: notif.id,
                 reportNumber: notif.report?.reportNumber, 
-                type: notif.report?.status,
                 datetime: notif.createdAt,
                 description: notif.message, 
                 title: notif.title,         
