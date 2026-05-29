@@ -2,21 +2,40 @@
 
 import { Card, Chip } from '@heroui/react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { useUserStore } from '@/store/useUserStore';
 
-export interface StatData {
+interface StatData {
     total: number;
     chipText: string;
     proses: number;
     selesai: number;
 }
 
-interface StatWidgetProps {
-    data: StatData;
-}
+export default function StatWidget() {
+    // const formatNumber = (num: number) => (num < 10 ? `0${num}` : num);
+    const userId = useUserStore((state) => state.user?.id);
+    const [data, setData] = useState<StatData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-export default function StatWidget({ data }: StatWidgetProps) {
+    useEffect(() => {
+        if (!userId) return;
 
-    const formatNumber = (num: number) => (num < 10 ? `0${num}` : num);
+        async function fetchDashboardStatistic() {
+            const res = await fetch(`/api/dashboard/statistic?userId=${userId}`);
+            const json = await res.json();
+            setData(json);
+            setIsLoading(false);
+        }
+
+        fetchDashboardStatistic();
+    }, [userId]);
+
+    if (isLoading || !data) return <div className='justify-center flex'>
+                                        <p className='text-[10px] font-bold tracking-widest text-[#0A6F66] mb-2 uppercase'>
+                                            Loading....
+                                        </p>
+                                    </div>;
 
     return (
         <motion.div
@@ -45,7 +64,7 @@ export default function StatWidget({ data }: StatWidgetProps) {
                                 Proses
                             </p>
                             <h4 className='text-2xl font-bold text-[#4C6860]'>
-                                {formatNumber(data.proses)}
+                                {data.proses}
                             </h4>
                         </Card.Content>
                     </Card>
@@ -56,7 +75,7 @@ export default function StatWidget({ data }: StatWidgetProps) {
                                 Selesai
                             </p>
                             <h4 className='text-2xl font-bold text-[#004C3F]'>
-                                {formatNumber(data.selesai)}
+                                {data.selesai}
                             </h4>
                         </Card.Content>
                     </Card>

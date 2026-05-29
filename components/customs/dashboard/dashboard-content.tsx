@@ -1,7 +1,7 @@
 'use client';
 
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
-import StatWidget, { StatData } from './widgets/stat-widget';
+import StatWidget from './widgets/stat-widget';
 import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
 import HelpWidget from './widgets/help-widget';
 import ReportCard from './cards/report-card';
@@ -121,12 +121,6 @@ const tabItems: TabItem[] = [
     }
 ];
 
-const statData: StatData = {
-    total: 24,
-    chipText: '+3 Bulan Ini',
-    proses: 8,
-    selesai: 16
-};
 
 const notificationData: NotificationItem[] = [
     {
@@ -172,7 +166,7 @@ export default function DashboardContent() {
             <div className='contents lg:flex lg:flex-col lg:col-span-4 lg:gap-6'>
 
                 <div className='order-2 w-full'>
-                    <StatWidget data={statData} />
+                    <StatWidget />
                 </div>
 
                 <div className='order-4 w-full'>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import SummaryCardReport from "@/components/customs/admin/summary-card-report";
 import RecentActivityCard from "@/components/customs/admin/recent-activity-card";
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
@@ -215,7 +215,16 @@ const dataList = [
     },
 ];
 
+interface DashboardStatistic {
+    incoming: number;
+    inProgress: number;
+    completed: number;
+}
 export default function Page() {
+
+    const [data, setData] = useState<DashboardStatistic | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -224,7 +233,7 @@ export default function Page() {
     const currentData = dataList.slice(indexOfFirstItem, indexOfLastItem);
 
     const [recentActivity, setRecentActivity] = useState<any>([])
-    const [recentActivityLoading, setRecentActivityLoading] = useState<boolean>(false)
+    const [recentActivityLoading, setRecentActivityLoading] = useState<boolean>(true)
 
     const fetchRecentActivityData = async () => {
         setRecentActivityLoading(true);
@@ -243,6 +252,19 @@ export default function Page() {
         fetchRecentActivityData();
     }, [])
 
+    useEffect(() => {
+
+        async function fetchDashboardStatistic() {
+            const res = await fetch(`/api/admin/dashboard/statistic`);
+            const json = await res.json();
+            setData(json);
+            setIsLoading(false);
+        }
+
+        fetchDashboardStatistic();
+    }, []);
+
+
     return (
         <div className="grid grid-cols-6 gap-[20px]">
             {/* Row 1: Summary Cards */}
@@ -250,27 +272,27 @@ export default function Page() {
                 className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
                 subTitle="Testing"
-                count={1222}
+                count={data?.incoming || 0}
                 type="incoming"
-                loading={false}
+                loading={isLoading}
                 description={<><TrendingUp size={14} /> +12% dari bulan lalu</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
-                title={"Laporan Keluar"}
+                title={"Sedang Dikerjakan"}
                 subTitle="Testing"
-                count={1222}
+                count={data?.inProgress || 0}
                 type="in-progress"
-                loading={false}
+                loading={isLoading}
                 description={<><Clock size={14} /> Estimasi selesai: 3 hari</>}
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
-                title={"Laporan Masuk"}
+                title={"Selesai Bulan Ini"}
                 subTitle="Testing"
-                count={1222}
+                count={data?.completed || 0}
                 type="completed"
-                loading={false}
+                loading={isLoading}
                 description={<><BadgeCheck size={14} /> 12.4% Tingkat Kepuasan</>}
             />
 
