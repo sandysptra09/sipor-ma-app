@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import Image from "next/image";
-import { ClipboardClock,User,Timer} from "lucide-react";
+import { ClipboardClock, User, Timer } from "lucide-react";
 
 export interface ReportCardReporterProps {
     image: string;
@@ -12,7 +12,7 @@ export interface ReportCardReporterProps {
 
 export default function ReportCardReporter({ image, state, content, reporter, timestamp }: ReportCardReporterProps) {
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden w-full">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden w-full flex flex-col h-full">
             <div className="bg-primary px-4 py-3 flex items-center gap-2 text-white">
                 {<ClipboardClock size={24} />}
                 <span className="text-white text-sm font-semibold tracking-wide uppercase">Laporan Anda</span>
@@ -25,19 +25,19 @@ export default function ReportCardReporter({ image, state, content, reporter, ti
                 </span>
             </div>
 
-            <div className="px-4 pt-4 pb-2">
-                <p className="text-gray-800 text-xs leading-relaxed">
+            <div className="px-4 pt-4 pb-2 flex-1">
+                <p className="text-gray-800 text-xs leading-relaxed italic">
                     "{content}"
                 </p>
             </div>
 
-            <div className="px-4 py-3 flex items-center justify-between text-xs text-gray-500  mt-2">
-                <div className="flex items-center gap-1">
-                    {<User size={15} />}
-                    <span>Pelapor: {reporter}</span>
+            <div className="px-4 py-3 flex items-center justify-between text-xs text-gray-500 mt-2 shrink-0 border-t border-zinc-50">
+                <div className="flex items-center gap-1.5 truncate">
+                    <User size={15} className="shrink-0" />
+                    <span className="truncate">Pelapor: {reporter}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                    {<Timer size={15} />}
+                <div className="flex items-center gap-1.5 shrink-0">
+                    <Timer size={15} />
                     <span>{timestamp}</span>
                 </div>
             </div>
