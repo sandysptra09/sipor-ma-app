@@ -107,6 +107,24 @@ export async function POST(req: Request) {
             }
         });
 
+        await prisma.auditLog.create({
+            data: {
+                reportId: newReport.id,
+                status: 'PENDING',
+                note: 'Sistem menerima laporan dan memberikan nomor antrean otomatis kepada pelapor.'
+            }
+        });
+
+        await prisma.activityLog.create({
+            data: {
+                userId: session.user.id,
+                reportId: newReport.id,
+                title: 'Laporan Baru Dibuat',
+                description: `Laporan ${newReportNumber} berhasil disubmit.`,
+                type: 'REPORT_CREATED'
+            }
+        });
+
         try {
             const admins = await prisma.user.findMany({
                 where: { role: 'ADMIN' }
