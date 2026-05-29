@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
+import { sendNotification } from '@/lib/notification'; 
 
 import {
     Status,
@@ -20,6 +21,7 @@ const STATUS_CONFIG = {
             'Laporan berhasil dikirim dan sedang menunggu verifikasi admin.',
         activityType: ActivityLog_type.REPORT_CREATED,
         activityTitle: 'Membuat Laporan',
+        notificationTitle: 'Laporan Diterima',
     },
 
     VERIFIED: {
@@ -28,6 +30,7 @@ const STATUS_CONFIG = {
             'Laporan telah diverifikasi oleh admin dan siap diproses.',
         activityType: ActivityLog_type.REPORT_VERIFIED,
         activityTitle: 'Memverifikasi Laporan',
+        notificationTitle: 'Laporan Diverifikasi',
     },
 
     IN_PROGRESS: {
@@ -36,6 +39,7 @@ const STATUS_CONFIG = {
             'Tim teknisi sedang melakukan proses penanganan laporan.',
         activityType: ActivityLog_type.REPORT_IN_PROGRESS,
         activityTitle: 'Mengubah Status Laporan',
+        notificationTitle: 'Laporan Diproses',
     },
 
     RESOLVED: {
@@ -44,6 +48,7 @@ const STATUS_CONFIG = {
             'Laporan telah selesai ditangani dan dinyatakan selesai.',
         activityType: ActivityLog_type.REPORT_RESOLVED,
         activityTitle: 'Menyelesaikan Laporan',
+        notificationTitle: 'Laporan Selesai',
     },
 
     REJECTED: {
@@ -52,6 +57,7 @@ const STATUS_CONFIG = {
             'Laporan ditolak oleh admin karena tidak memenuhi kriteria.',
         activityType: ActivityLog_type.REPORT_REJECTED,
         activityTitle: 'Menolak Laporan',
+        notificationTitle: 'Laporan Ditolak',
     },
 } as const;
 
@@ -145,6 +151,17 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
             return report;
         });
+
+        try {
+            await sendNotification({
+                userId: updatedReport.userId, 
+                title: `📢 ${config.notificationTitle}`,
+                message: `Laporan kamu (${updatedReport.reportNumber}) saat ini berstatus: ${config.auditTitle}. ${note ? `Catatan: ${note}` : ''}`,
+                reportId: updatedReport.id
+            });
+        } catch (pushError) {
+            console.error('Gagal mengirim notifikasi Pusher ke user:', pushError);
+        }
 
         return NextResponse.json(
             { message: 'Status report berhasil diperbarui', data: updatedReport },
