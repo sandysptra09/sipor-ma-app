@@ -72,7 +72,7 @@ export default function ReportManagementPage() {
             setReportData(data);
             setTotalRecords(pagination.totalData);
 
-            toast.success(message || "Data laporan berhasil dimuat")
+            toast.success(message ?? "Data laporan berhasil dimuat")
         } catch (error) {
             console.error('Gagal mengambil data laporan:', error);
             toast.danger("Data laporan gagal dimuat")
