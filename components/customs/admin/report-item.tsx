@@ -18,7 +18,7 @@ import {
 import { formatDistanceToNowStrict } from 'date-fns'
 import { cn } from "@/lib/utils";
 
-type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING';
+type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING' | 'CANCELED';
 
 interface ReportItemProps {
     id: string | number;
@@ -58,6 +58,7 @@ export default function ReportItem({
         RESOLVED: { icon: <Check size={20} />, badge: 'selesai', theme: 'text-primary bg-primary/20' },
         IN_PROGRESS: { icon: <Hammer size={20} />, badge: 'diproses', theme: 'text-blue-500 bg-blue-500/20' },
         REJECTED: { icon: <TriangleAlert size={20} />, badge: 'ditolak', theme: 'text-red-600 bg-red-500/20' },
+        CANCELED: { icon: <TriangleAlert size={20} />, badge: 'dibatalkan', theme: 'text-red-600 bg-red-500/20' },
         VERIFIED: { icon: <BadgeCheck size={20} />, badge: 'diverifikasi', theme: 'text-amber-500 bg-amber-500/20' },
         PENDING: { icon: <ClipboardClock size={20} />, badge: 'pending', theme: 'text-gray-500 bg-gray-500/20' },
 

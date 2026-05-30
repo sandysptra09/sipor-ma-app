@@ -6,14 +6,15 @@ import {
     Wrench,
     CheckCircle2,
     FileText,
-    CircleX
+    CircleX,
+    Ban
 } from "lucide-react"
 import { Skeleton } from "@heroui/react"
 
 export interface ReportLog {
     id?: string
     reportId?: string
-    status: 'PENDING' | 'VERIFIED' | 'IN_PROGRESS' | 'RESOLVED' | 'REJECTED' | string
+    status: 'PENDING' | 'VERIFIED' | 'IN_PROGRESS' | 'RESOLVED' | 'REJECTED' | 'CANCELED' | string
     note: string
     createdAt: string
 }
@@ -35,6 +36,8 @@ const getStatusTitle = (status: string) => {
             return 'Kerusakan Telah Diperbaiki'
         case 'REJECTED':
             return 'Laporan Ditolak'
+        case 'CANCELED':
+            return 'Laporan Dibatalkan'
         default:
             return status
     }
@@ -52,6 +55,8 @@ const getStatusIcon = (status: string) => {
             return CheckCircle2
         case 'REJECTED':
             return CircleX
+        case 'CANCELED':
+            return Ban
         default:
             return FileText
     }
@@ -117,7 +122,7 @@ export function ReportLogCard({ logs = [], loading = false }: ReportLogCardProps
                             ? "text-emerald-600 bg-emerald-100"
                             : "";
 
-                        return (
+                        return (    
                             <LogItem
                                 key={log?.id || `log-${index}`}
                                 icon={getStatusIcon(log?.status)}

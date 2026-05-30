@@ -9,7 +9,7 @@ import { BadgeCheck, Clock, MapPin, TrendingUp, Eye } from "lucide-react";
 import { Chip } from "@heroui/react";
 import Link from "next/link";
 import { api } from "@/lib/axios";
-import { columns } from "../report-management/columns";
+import { columns } from "./columns";
 
 interface DashboardStatistic {
     incoming: number;

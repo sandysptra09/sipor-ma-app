@@ -52,6 +52,7 @@ export const columns = [
                 IN_PROGRESS: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
                 PENDING: { color: "text-gray-600 bg-gray-500/20", label: "MENUNGGU" },
                 VERIFIED: { color: "text-amber-500 bg-amber-500/20", label: "DIVERIFIKASI" },
+                CANCELED: { color: "text-white bg-red-600", label: "DIBATALKAN" },
             };
 
             const current = statusConfig[item.status?.toUpperCase()] || statusConfig.PENDING;

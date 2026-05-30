@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
 import { CheckCircle, Wrench, MessageSquare } from 'lucide-react';
-import { Button} from '@heroui/react'; 
+import { Button } from '@heroui/react';
 
 import TitlePage from '@/components/customs/admin/title-page';
 import AttachmentCard from '@/components/customs/admin/attachment-card';
@@ -164,6 +164,14 @@ export default function ReportDetailPage() {
                         <AttachmentCard loading={loading} isRejected title='Pesan Penolakan'>
                             <p className='text-foreground text-sm w-full'>
                                 {reportDetail?.rejectionReason || 'Laporan ditolak.'}
+                            </p>
+                        </AttachmentCard>
+                    )}
+
+                    {reportDetail?.status === 'CANCELED' && (
+                        <AttachmentCard loading={loading} isRejected title='Pesan Pembatalan'>
+                            <p className='text-foreground text-sm w-full'>
+                                {reportDetail?.logs[0]?.note || 'Laporan ditolak.'}
                             </p>
                         </AttachmentCard>
                     )}

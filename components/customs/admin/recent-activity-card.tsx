@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, Skeleton } from "@heroui/react";
 import ReportItem from './report-item';
 
-type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING';
+type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING' | 'CANCELED';
 
 export interface ActivityData {
     id: string;
