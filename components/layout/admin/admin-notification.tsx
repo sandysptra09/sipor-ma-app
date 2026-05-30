@@ -13,6 +13,7 @@ import { getSession } from 'next-auth/react';
 
 interface Notification {
     id: string;
+    report: any;
     title: string;
     message: string;
     isRead: boolean;
@@ -25,6 +26,22 @@ export default function AdminNotification() {
 
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleNotificationClick = (id: string, isRead: boolean) => {
+        if (isRead === false && typeof window !== 'undefined') {
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((n) =>
+                    n.id === id ? { ...n, isRead: true } : n
+                )
+            );
+
+            fetch('/api/admin/notifications', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, isRead: true })
+            }).catch(error => console.error('Gagal update status read:', error));
+        }
+    };
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -71,7 +88,7 @@ export default function AdminNotification() {
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
     const displayedNotifications = notifications.slice(0, 4);
-
+    console.log(notifications);
     if (isNotificationPage) {
         return (
             <div
@@ -145,7 +162,7 @@ export default function AdminNotification() {
                                     textValue={notif.title}
                                     className={`mb-1 min-h-fit ${!notif.isRead ? 'bg-primary/5' : ''}`}
                                 >
-                                    <div className='flex flex-col gap-1 py-1'>
+                                    <Link onClick={() => handleNotificationClick(notif.id, notif.isRead)} href={`/admin/report-management/${encodeURIComponent(notif.report.reportNumber)}`} className='flex flex-col gap-1 py-1'>
                                         <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
                                             {notif.title}
                                         </p>
@@ -158,7 +175,7 @@ export default function AdminNotification() {
                                                 locale: id
                                             })}
                                         </p>
-                                    </div>
+                                    </Link>
                                 </Dropdown.Item>
                             ))
                         )}
