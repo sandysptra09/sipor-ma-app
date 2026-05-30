@@ -80,7 +80,7 @@ export async function GET(
 
         return NextResponse.json(
             {
-                message: 'Berhasil mengambil detail report',
+                message: 'Berhasil mengambil detail laporan',
                 data: report,
             },
             {
