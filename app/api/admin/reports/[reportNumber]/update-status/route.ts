@@ -173,7 +173,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         }
 
         return NextResponse.json(
-            { message: 'Status report berhasil diperbarui', data: updatedReport },
+            { message: 'Status laporan berhasil diperbarui', data: updatedReport },
             { status: 200 }
         );
     } catch (error) {
