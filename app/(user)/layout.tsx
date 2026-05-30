@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/providers/smooth-scroll-provider";
 import MainNavbar from "@/components/layout/user/main-navbar";
 import MainFooter from "@/components/layout/user/main-footer";
 
+import MobileFAB from "@/components/layout/user/mobile-fab";
+
 export default async function UserLayout({
     children,
 }: {
@@ -23,6 +25,8 @@ export default async function UserLayout({
                 {children}
                 <MainFooter />
             </SmoothScroll>
+
+            <MobileFAB />
         </main>
     );
 }
