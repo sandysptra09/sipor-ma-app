@@ -59,7 +59,7 @@ model Report {
   category        String
   imageBefore     String
   imageAfter      String?
-  status          Status         @default(PENDING)
+  status          Report_status  @default(PENDING)
   priority        Priority       @default(MEDIUM)
   isVerified      Boolean        @default(false)
   userId          String
@@ -165,14 +165,6 @@ enum Role {
   ADMIN
 }
 
-enum Status {
-  PENDING
-  VERIFIED
-  IN_PROGRESS
-  RESOLVED
-  REJECTED
-}
-
 enum Priority {
   LOW
   MEDIUM
@@ -191,6 +183,16 @@ enum ActivityLog_type {
   REPORT_VERIFIED
   REPORT_REJECTED
   REPORT_RESOLVED
+  REPORT_CANCELED
   ROOM_UPDATED
   PROFILE_UPDATED
+}
+
+enum Report_status {
+  PENDING
+  VERIFIED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+  CANCELED
 }
