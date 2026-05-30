@@ -153,16 +153,25 @@ model ActivityLog {
   metadata    Json?
   createdAt   DateTime         @default(now())
   report      Report?          @relation(fields: [reportId], references: [id])
-  User        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([createdAt])
-  @@index([reportId])
   @@index([userId])
+  @@index([reportId])
+  @@index([createdAt])
 }
 
 enum Role {
   STUDENT
   ADMIN
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+  CANCELED
 }
 
 enum Priority {
@@ -186,13 +195,4 @@ enum ActivityLog_type {
   REPORT_CANCELED
   ROOM_UPDATED
   PROFILE_UPDATED
-}
-
-enum Status {
-  PENDING
-  VERIFIED
-  IN_PROGRESS
-  RESOLVED
-  REJECTED
-  CANCELED
 }
