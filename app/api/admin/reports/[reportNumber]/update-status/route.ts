@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 import { sendNotification } from '@/lib/notification'; 
 
 import {
-    Status,
+    Report_status,
     ActivityLog_type,
 } from '@/lib/generated/prisma/client';
 
@@ -59,6 +59,15 @@ const STATUS_CONFIG = {
         activityTitle: 'Menolak Laporan',
         notificationTitle: 'Laporan Ditolak',
     },
+
+    CANCELED: {
+        auditTitle: 'Laporan Dibatalkan',
+        auditDescription:
+            'Laporan dibatalkan oleh admin karena tidak memenuhi kriteria.',
+        activityType: ActivityLog_type.REPORT_CANCELED,
+        activityTitle: 'Membatalkan Laporan',
+        notificationTitle: 'Laporan Dibatalkan',
+    },
 } as const;
 
 export async function PATCH(request: NextRequest, { params }: Params) {
@@ -74,9 +83,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
         const body = await request.json();
 
-        const { status, note, imageUrl }: { status: Status; note?: string; imageUrl?: string } = body;
+        const { status, note, imageUrl }: { status: Report_status; note?: string; imageUrl?: string } = body;
 
-        const allowedStatus = Object.values(Status);
+        const allowedStatus = Object.values(Report_status);
 
         if (!allowedStatus.includes(status)) {
             return NextResponse.json({ message: 'Status tidak valid' }, { status: 400 });
