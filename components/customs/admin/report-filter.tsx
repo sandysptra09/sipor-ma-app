@@ -201,6 +201,7 @@ export function ReportFilter({
                                 {[
                                     { id: "RESOLVED", label: "Selesai" },
                                     { id: "REJECTED", label: "Ditolak" },
+                                    { id: "CANCELED", label: "Dibatalkan" },
                                     { id: "IN_PROGRESS", label: "Diproses" },
                                     { id: "PENDING", label: "Menunggu" },
                                     { id: "VERIFIED", label: "Diverifikasi" },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
-import { Prisma, Status } from '@/lib/generated/prisma/client';
+import { Prisma, Report_status } from '@/lib/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
     try {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
                 // filter status
                 status
                     ? {
-                          status: status as Status,
+                          status: status as Report_status,
                       }
                     : {},
 
