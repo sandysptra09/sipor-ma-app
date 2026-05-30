@@ -19,6 +19,7 @@ import ImgMeja from '@/public/assets/images/meja.jpeg';
 import { api } from '@/lib/axios';
 import { downloadImage } from '@/lib/helpers/downloadImg';
 import { useUploadThing } from '@/lib/uploadthing';
+import { toast } from "@heroui/react";
 
 
 export default function ReportDetailPage() {
@@ -37,10 +38,11 @@ export default function ReportDetailPage() {
         setLoading(true);
         try {
             const res = await api.get(`/admin/reports/${params.reportNumber}`);
-            setReportDetail(res?.data?.data);
-            console.log(res?.data?.data);
+            setReportDetail(res?.data?.data); 
+            toast.success(res?.data?.message ?? "Detail laporan berhasil dimuat")
         } catch (error) {
             console.error('Gagal mengambil data detail laporan:', error);
+            toast.danger("Detail laporan gagal dimuat")
         } finally {
             setLoading(false);
         }
@@ -74,16 +76,20 @@ export default function ReportDetailPage() {
                 imageUrl: imageUrl
             };
 
-            await api.patch(`/admin/reports/${params.reportNumber}/update-status`, payload, {
+            const res =  await api.patch(`/admin/reports/${params.reportNumber}/update-status`, payload, {
                 headers: { 'Content-Type': 'application/json' }
             });
 
             setModal(null);
+
+            toast.success(res?.data?.message ?? "Detail laporan berhasil dimuat")
+
             await fetchDetailReport();
 
 
         } catch (error: any) {
             console.error('Gagal memperbarui status laporan:', error);
+            toast.danger("Status laporan gagal diperbarui")
         } finally {
             setIsUpdating(false);
         }
