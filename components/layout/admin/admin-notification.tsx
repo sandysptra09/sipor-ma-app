@@ -114,7 +114,7 @@ export default function AdminNotification() {
                                 <Dropdown.Item
                                     key={notif.id}
                                     textValue={notif.title}
-                                    className={`mb-1 ${!notif.isRead ? 'bg-primary/5' : ''}`}
+                                    className={`mb-1 min-h-fit ${!notif.isRead ? 'bg-primary/5' : ''}`}
                                 >
                                     <div className='flex flex-col gap-1 py-1'>
                                         <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
