@@ -3,8 +3,6 @@ import { Plus_Jakarta_Sans, Poppins } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 
-import { ToastProvider } from '@heroui/react';
-
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-heading',
@@ -38,7 +36,6 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ToastProvider placement='top' />
         {children}
       </body>
     </html>

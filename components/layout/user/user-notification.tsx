@@ -56,7 +56,7 @@ export default function UserNotification() {
         channel.bind('new-notification', (newNotif: Notification) => {
             setNotifications((prev) => [newNotif, ...prev]);
 
-            toast.info(newNotif.title, {
+            toast(newNotif.title, {
                 description: <span className='text-foreground'>{newNotif.message}</span>,
             });
         });
