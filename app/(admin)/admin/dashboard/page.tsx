@@ -6,10 +6,9 @@ import RecentActivityCard from "@/components/customs/admin/recent-activity-card"
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
 import { CustomTableReport } from "@/components/customs/admin/custom-table-report";
 import { BadgeCheck, Clock, MapPin, TrendingUp, Eye } from "lucide-react";
-import { Chip } from "@heroui/react";
-import Link from "next/link";
 import { api } from "@/lib/axios";
 import { columns } from "./columns";
+import { toast } from "@heroui/react";
 
 interface DashboardStatistic {
     incoming: number;
@@ -23,7 +22,7 @@ export default function Page() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    
+
     const [reportData, setReportData] = useState<any[]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
     const [tableLoading, setTableLoading] = useState<boolean>(true);
@@ -31,39 +30,35 @@ export default function Page() {
     const [recentActivity, setRecentActivity] = useState<any>([])
     const [recentActivityLoading, setRecentActivityLoading] = useState<boolean>(true)
 
-    useEffect(() => {
-        async function fetchDashboardStatistic() {
-            try {
-                const res = await fetch(`/api/admin/dashboard/statistic`);
-                const json = await res.json();
-                setData(json);
-            } catch (error) {
-                console.error('Gagal mengambil statistik', error);
-            } finally {
-                setIsLoading(false);
-            }
+    async function fetchDashboardStatistic() {
+        try {
+            const res = await fetch(`/api/admin/dashboard/statistic`);
+            const json = await res.json();
+            setData(json);
+        } catch (error) {
+            console.error('Gagal mengambil statistik', error);
+            toast.danger("Gagal memuat statistik dashboard", {
+                description: "Terjadi kesalahan saat mengambil data statistik."
+            });
+        } finally {
+            setIsLoading(false);
         }
-        fetchDashboardStatistic();
-    }, []);
+    }
 
     const fetchRecentActivityData = async () => {
-        setRecentActivityLoading(true);
         try {
             const res = await api.get(`/admin/dashboard/recent-activity`);
             setRecentActivity(res?.data?.data);
         } catch (error) {
             console.error(error);
+            toast.danger("Gagal memuat aktivitas terbaru");
         } finally {
             setRecentActivityLoading(false);
         }
     }
 
-    useEffect(() => {
-        fetchRecentActivityData();
-    }, [])
 
     const fetchTableData = async () => {
-        setTableLoading(true);
         try {
             const params = new URLSearchParams();
             params.append('page', currentPage.toString());
@@ -74,12 +69,46 @@ export default function Page() {
 
             setReportData(data);
             setTotalRecords(pagination.totalData);
+
         } catch (error) {
             console.error('Gagal mengambil data laporan untuk tabel:', error);
+            toast.danger("Gagal memuat data laporan");
         } finally {
             setTableLoading(false);
         }
     };
+
+    // fetch intial data
+    useEffect(() => {
+        const loadDashboard = async () => {
+            try {
+                setIsLoading(true);
+                setRecentActivityLoading(true);
+                setTableLoading(true);
+
+                await Promise.all([
+                    fetchDashboardStatistic(),
+                    fetchRecentActivityData(),
+                    fetchTableData(),
+                ]);
+
+                toast.success("Dashboard berhasil dimuat");
+            } catch (error) {
+                console.error(error);
+
+                toast.danger("Gagal memuat dashboard", {
+                    description:
+                        "Terjadi kesalahan saat mengambil data dashboard.",
+                });
+            } finally {
+                setIsLoading(false);
+                setRecentActivityLoading(false);
+                setTableLoading(false);
+            }
+        };
+
+        loadDashboard();
+    }, []);
 
     useEffect(() => {
         fetchTableData();
