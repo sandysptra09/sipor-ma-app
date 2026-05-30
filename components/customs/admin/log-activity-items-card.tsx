@@ -1,59 +1,79 @@
-import React from 'react'
-import { Card } from '@heroui/react'
-import { Clock } from 'lucide-react'
+import React from 'react';
+import { Card, Skeleton } from '@heroui/react';
+import { ActivityLogData } from '@/app/(admin)/admin/profile/intefaces';
 
-interface ActivityItem {
-  title: string
-  time: string
-  device: string
+interface LogActivityItemsCardProps {
+  logs?: ActivityLogData[];
+  isLoading: boolean;
 }
 
-const activities: ActivityItem[] = [
-  {
-    title: 'Menyetujui Laporan CF-8821',
-    time: '12 Menit yang lalu',
-    device: 'Desktop Chrome',
-  },
-  {
-    title: 'Mengubah Status Gedung Baru – 04.005',
-    time: '1 Jam yang lalu',
-    device: 'Desktop Chrome',
-  },
-]
+const timeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-export default function LogActivityItemsCard() {
+  if (diffInSeconds < 60) return `${diffInSeconds} detik yang lalu`;
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} menit yang lalu`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} jam yang lalu`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays} hari yang lalu`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  return `${diffInMonths} bulan yang lalu`;
+};
+
+export default function LogActivityItemsCard({ logs = [], isLoading }: LogActivityItemsCardProps) {
+
+  if (isLoading) {
+    return (
+      <Card className="w-full bg-white shadow-sm border-none rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Skeleton className="w-32 h-6 rounded-lg" />
+        </div>
+        <div className="flex flex-col">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start gap-3 py-3">
+              <Skeleton className="mt-1.5 w-2 h-2 rounded-full shrink-0" />
+              <div className="flex flex-col gap-2 w-full">
+                <Skeleton className="w-3/4 h-4 rounded-lg" />
+                <Skeleton className="w-1/2 h-3 rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className='w-full bg-white shadow-sm border-none rounded-2xl p-6'>
+    <Card className="w-full bg-white shadow-sm border-none rounded-2xl p-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        {/* <div className="bg-[#E6F4F3] rounded-xl p-2 flex items-center justify-center">
-          <Clock size={20} className="text-[#0A6F66]" />
-        </div> */}
+      <div className="flex items-center gap-3 mb-1">
         <h3 className="font-bold text-base text-[#181C1C]">Aktivitas Terakhir</h3>
       </div>
 
       {/* Activity List */}
       <div className="flex flex-col">
-        {activities.map((item, index) => (
-          <div
-            key={index}
-            className={`flex items-start gap-3 py-3 ${
-              index < activities.length - 1 ? '' : ''
-            }`}
-          >
-            {/* Dot indicator */}
-            <span className="mt-1.5 w-2 h-2 rounded-full bg-primary/30 shrink-0" />
+        {logs.length === 0 ? (
+          <p className="text-sm text-gray-400 py-4">Belum ada aktivitas tercatat.</p>
+        ) : (
+          logs.map((item, index) => (
+            <div key={item.id} className="flex items-start gap-3 py-3">
+              {/* Dot indicator */}
+              <span className="mt-1.5 w-2 h-2 rounded-full bg-primary/30 shrink-0" />
 
-            {/* Content */}
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold text-[#181C1C]">{item.title}</span>
-              <span className="text-xs text-gray-400">
-                {item.time} – {item.device}
-              </span>
+              {/* Content */}
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-semibold text-[#181C1C]">{item.title}</span>
+                <span className="text-xs text-gray-400">
+                  {timeAgo(item.createdAt)} – {item.type.replace('_', ' ')}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </Card>
-  )
+  );
 }

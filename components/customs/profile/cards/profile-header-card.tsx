@@ -12,7 +12,7 @@ interface ProfileHeaderCardProps {
     role?: string | null;
     email?: string | null;
     createdAt?: string | null;
-    setOpenUpload:(isOpen: boolean) => void;
+    setOpenUpload: (isOpen: boolean) => void;
 }
 
 export default function ProfileHeaderCard({
@@ -48,11 +48,11 @@ export default function ProfileHeaderCard({
                     ) : (
                         <Avatar className="size-24 md:size-28 text-large ring-2 ring-offset ring-[#0A6F66]">
                             <Avatar.Image
-                                src={img}
-                                alt={fullName}
+                                src={img || "https://webcodeft.com/wp-content/uploads/2021/11/dummy-user.png"}
+                                alt={fullName || "User Avatar"}
                             />
                             <Avatar.Fallback className="bg-linear-to-br from-[#0A6F66] to-[#A7E9D1] text-white font-bold text-2xl">
-                                {getInitials(fullName)}
+                                {getInitials(fullName || '')}
                             </Avatar.Fallback>
                         </Avatar>
                     )}
@@ -64,7 +64,7 @@ export default function ProfileHeaderCard({
                             isIconOnly
                             className='absolute bottom-0 right-0 rounded-full bg-[#0A6F66] text-white size-8 md:size-10 border-2 border-white hover:bg-[#07534c] shadow-sm'
                             aria-label='Ganti Foto Profil'
-                            onClick={()=>setOpenUpload(true)}
+                            onClick={() => setOpenUpload(true)}
                         >
                             <Camera size={16} />
                         </Button>
