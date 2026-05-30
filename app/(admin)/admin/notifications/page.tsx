@@ -3,7 +3,8 @@
 import ReportNotificationCard, { ReportData } from '@/components/customs/admin/report-notification-card';
 import TitlePage from '@/components/customs/admin/title-page'
 import React, { useState, useEffect } from 'react'
-import { Skeleton, Card } from '@heroui/react'; 
+import { Skeleton, Card, toast } from '@heroui/react';
+import { api } from '@/lib/axios';
 
 export default function AdminNotificationsPage() {
     // States untuk data dan meta
@@ -18,18 +19,27 @@ export default function AdminNotificationsPage() {
     useEffect(() => {
         const fetchNotifications = async () => {
             setIsLoading(true);
+
             try {
-                const res = await fetch(`/api/admin/notifications?page=${currentPage}&limit=${rowsPerPage}`);
-                const responseJson = await res.json();
-                
-                if (res.ok && responseJson.data) {
-                    setData(responseJson.data);
-                    setTotalRecords(responseJson.meta?.totalRecords || 0);
-                } else {
-                    console.error("Gagal mengambil data notifikasi:", responseJson.message);
-                }
+                const res = await api.get("/admin/notifications", {
+                    params: {
+                        page: currentPage,
+                        limit: rowsPerPage,
+                    },
+                });
+
+                const { data, meta, message } = res.data;
+
+                setData(data || []);
+                setTotalRecords(meta?.totalRecords || 0);
+                toast.success(message ?? "Data notifikasi berhasil dimuat")
+
             } catch (error) {
-                console.error("Terjadi kesalahan sistem saat fetch notifikasi:", error);
+                console.error(
+                    "Terjadi kesalahan sistem saat fetch notifikasi:",
+                    error
+                );
+                toast.danger("Data notifikasi gagal dimuat")
             } finally {
                 setIsLoading(false);
             }
@@ -44,7 +54,7 @@ export default function AdminNotificationsPage() {
 
     const handleRowsChange = (rows: number) => {
         setRowsPerPage(rows);
-        setCurrentPage(1); 
+        setCurrentPage(1);
     };
 
     return (
@@ -84,7 +94,7 @@ export default function AdminNotificationsPage() {
                     currentPage={currentPage}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handlePageChange}
-                    onRowsPerPageChange={handleRowsChange}  
+                    onRowsPerPageChange={handleRowsChange}
                 />
             )}
         </div>
