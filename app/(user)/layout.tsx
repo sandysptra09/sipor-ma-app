@@ -26,7 +26,7 @@ export default async function UserLayout({
                 <MainFooter />
             </SmoothScroll>
 
-            <MobileFAB />
+            {session?.user && <MobileFAB />}
         </main>
     );
 }
