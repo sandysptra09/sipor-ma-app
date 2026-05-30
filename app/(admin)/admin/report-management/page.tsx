@@ -6,6 +6,7 @@ import { ReportFilter } from "@/components/customs/admin/report-filter";
 import TitlePage from "@/components/customs/admin/title-page";
 import { api } from "@/lib/axios";
 import { columns } from "./columns";
+import { toast } from "@heroui/react";
 
 export default function ReportManagementPage() {
 
@@ -66,12 +67,16 @@ export default function ReportManagementPage() {
 
             const res = await api.get(`/admin/reports?${params.toString()}`);
 
-            const { data, pagination } = res.data;
+            const { data, pagination, message } = res.data;
 
             setReportData(data);
             setTotalRecords(pagination.totalData);
+
+            toast.success(message || "Data laporan berhasil dimuat")
         } catch (error) {
             console.error('Gagal mengambil data laporan:', error);
+            toast.danger("Data laporan gagal dimuat")
+
         } finally {
             setLoading(false);
         }
