@@ -1,233 +1,22 @@
 "use client";
 
-import { id } from "date-fns/locale";
-import { format } from "date-fns";
 import { CustomTableReport } from '@/components/customs/admin/custom-table-report'
-import { Chip, DateField, ListBox, Select } from '@heroui/react';
-
-import { Button } from '@/components/ui/button';
-import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-
-import { Calendar as CalendarIcon, Eye, Funnel, FunnelX, MapPin } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReportFilter } from "@/components/customs/admin/report-filter";
-import Link from "next/link";
 import TitlePage from "@/components/customs/admin/title-page";
-
-
-const columns = [
-    {
-        id: "report_id",
-        name: "REPORT ID",
-        render: (item: any) => <span className="font-semibold text-teal-600 text-[12px]">{item.report_id}</span>
-    },
-    {
-        id: "fasilitas",
-        name: "NAMA FASILITAS",
-        render: (item: any) => (
-            <div className="flex flex-col">
-                <span className="font-semibold text-black">{item.nama}</span>
-                <span className="text-xs text-default-400">{item.deskripsi}</span>
-            </div>
-        )
-    },
-    {
-        id: "gedung",
-        name: "GEDUNG",
-        render: (item: any) => (
-            <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-default-400" />
-                <span className="text-xs">{item.lokasi}</span>
-            </div>
-        )
-    },
-    {
-        id: "kategori",
-        name: "KATEGORI",
-        render: (item: any) => (
-            <Chip size="sm" className="bg-primary/10 text-primary font-semibold text-[10px] px-3 py-0.5 rounded-md">
-                {item.kategori}
-            </Chip>
-        )
-    },
-    {
-        id: "status",
-        name: "STATUS",
-        render: (item: any) => {
-            const statusConfig: any = {
-                completed: { color: "text-white bg-primary", label: "SELESAI" },
-                rejected: { color: "text-white bg-red-600", label: "DITOLAK" },
-                process: { color: "text-blue-600 bg-blue-500/20", label: "DIPROSES" },
-                pending: { color: "text-gray-600 bg-gray-500/20", label: "MENUNGGU" },
-                verified: { color: "text-amber-500 bg-amber-500/20", label: "DIVERIFIKASI" },
-            };
-            const current = statusConfig[item.status] || statusConfig.MENUNGGU;
-            return (
-                <Chip size="sm" className={`font-semibold text-[10px] px-2.5 py-0.5      ${current.color}`}>
-                    {current.label}
-                </Chip>
-            );
-        }
-    },
-    {
-        id: "aksi",
-        name: "AKSI",
-        render: (item: any) => (
-            <Link
-                href={`/admin/report-management/${item.id}?status=${item.status}`}
-                className="inline-flex items-center justify-center p-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors cursor-pointer"
-            >
-                <Eye size={22} />
-            </Link>
-        )
-    },
-];
-
-const dataList = [
-    {
-        id: "1",
-        report_id: "#FAC-2024-001",
-        nama: "Meja Dosen",
-        deskripsi: "Kaki kaki nya patah",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "completed",
-    },
-    {
-        id: "2",
-        report_id: "#FAC-2024-042",
-        nama: "Washtafel",
-        deskripsi: "Air tidak mengalir",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "SANITASI",
-        status: "rejected",
-    },
-    {
-        id: "3",
-        report_id: "#FAC-2024-058",
-        nama: "AC Matiasdas",
-        deskripsi: "AC mati tidak terasa dingin",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "AC",
-        status: "pending",
-    },
-    {
-        id: "4",
-        report_id: "#FAC-2024-089",
-        nama: "Lampu Mati",
-        deskripsi: "Lampu pada ruangan mati",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "KELISTRIKAN",
-        status: "process",
-    },
-    {
-        id: "5",
-        report_id: "#FAC-2024-102",
-        nama: "Smart Boarasdasdd",
-        deskripsi: "Pena digital hilang",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "verified",
-    }, {
-        id: "11",
-        report_id: "#FAC-2024-001",
-        nama: "Meja Doseasdasdasdn",
-        deskripsi: "Kaki kaki nya patah",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "completed",
-    },
-    {
-        id: "21",
-        report_id: "#FAC-2024-042",
-        nama: "Washtafelasdas",
-        deskripsi: "Air tidak mengalir",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "SANITASI",
-        status: "rejected",
-    },
-    {
-        id: "13",
-        report_id: "#FAC-2024-058",
-        nama: "AC Matiasdasd",
-        deskripsi: "AC mati tidak terasa dingin",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "AC",
-        status: "pending",
-    },
-    {
-        id: "41",
-        report_id: "#FAC-2024-089",
-        nama: "Lampu Matiadsas",
-        deskripsi: "Lampu pada ruangan mati",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "KELISTRIKAN",
-        status: "process",
-    },
-    {
-        id: "51",
-        report_id: "#FAC-2024-102",
-        nama: "Smart Boardass",
-        deskripsi: "Pena digital hilang",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "verified",
-    },
-    {
-        id: "12",
-        report_id: "#FAC-2024-001",
-        nama: "Meja Dosensdsd",
-        deskripsi: "Kaki kaki nya patah",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "completed",
-    },
-    {
-        id: "22",
-        report_id: "#FAC-2024-042",
-        nama: "Washtafeassal",
-        deskripsi: "Air tidak mengalir",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "SANITASI",
-        status: "rejected",
-    },
-    {
-        id: "32",
-        report_id: "#FAC-2024-058",
-        nama: "AC Mataai",
-        deskripsi: "AC mati tidak terasa dingin",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "AC",
-        status: "pending",
-    },
-    {
-        id: "222",
-        report_id: "#FAC-2024-089",
-        nama: "Lampu Matisss",
-        deskripsi: "Lampu pada ruangan mati",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "KELISTRIKAN",
-        status: "process",
-    },
-    {
-        id: "25",
-        report_id: "#FAC-2024-102",
-        nama: "Smart Board",
-        deskripsi: "Pena digital hilang",
-        lokasi: "Gedung Baru, 04.005",
-        kategori: "FURNITURE",
-        status: "verified",
-    },
-];
+import { api } from "@/lib/axios";
+import { columns } from "./columns";
+import { toast } from "@heroui/react";
 
 export default function ReportManagementPage() {
+
+    const [buildingOptions, setBuildingOptions] = useState<any[]>([])
+    const [reportData, setReportData] = useState<any[]>([]);
+    const [totalRecords, setTotalRecords] = useState(0);
+
+    const [loading, setLoading] = useState<boolean>(true);
+    const [buildingLoading, setBuildingLoading] = useState<boolean>(false);
+    const [refetch, setRefetch] = useState(0);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -235,38 +24,97 @@ export default function ReportManagementPage() {
     const [endDate, setEndDate] = useState<Date>();
     const [selectedGedung, setSelectedGedung] = useState<string>("");
     const [selectedStatus, setSelectedStatus] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>(""); 
 
     const handleReset = () => {
         setStartDate(undefined);
         setEndDate(undefined);
         setSelectedGedung("");
         setSelectedStatus("");
+        setSearchQuery(""); 
         setCurrentPage(1);
+        setRefetch(prev => prev + 1);
     };
 
     const handleFilter = () => {
         setCurrentPage(1);
+        setRefetch(prev => prev + 1);
     };
 
-    const filteredData = dataList.filter((item) => {
-        if (selectedGedung && !item.lokasi.toLowerCase().includes(selectedGedung.replace("gedung-", "gedung "))) return false;
-        if (selectedStatus && item.status.toLowerCase() !== selectedStatus) return false;
-        return true;
-    });
+    const fetchReportsData = async () => {
+        setLoading(true); 
+        try {
+            const params = new URLSearchParams();
 
-    const indexOfLastItem = currentPage * rowsPerPage;
-    const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-    const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+            params.append('page', currentPage.toString());
+            params.append('limit', rowsPerPage.toString());
+
+            if (searchQuery) {
+                params.append('keyword', searchQuery);
+            }
+            if (selectedGedung) {
+                params.append('building', selectedGedung.replace("gedung-", "gedung "));
+            }
+            if (selectedStatus) {
+                params.append('status', selectedStatus.toUpperCase());
+            }
+            if (startDate) {
+                params.append('startDate', startDate.toISOString());
+            }
+            if (endDate) {
+                params.append('endDate', endDate.toISOString());
+            }
+
+            const res = await api.get(`/admin/reports?${params.toString()}`);
+
+            const { data, pagination, message } = res.data;
+
+            setReportData(data);
+            setTotalRecords(pagination.totalData);
+
+            toast.success(message ?? "Data laporan berhasil dimuat")
+        } catch (error) {
+            console.error('Gagal mengambil data laporan:', error);
+            toast.danger("Data laporan gagal dimuat")
+
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchBuildingsData = async () => {
+        setBuildingLoading(true);
+        try {
+            const res = await api.get(`/admin/options/buildings`);
+            setBuildingOptions(res?.data?.data);
+        } catch (error) {
+            console.error('Gagal mengambil data laporan:', error);
+        } finally {
+            setBuildingLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchBuildingsData();
+    }, []);
+
+    useEffect(() => {
+        fetchReportsData();
+    }, [currentPage, rowsPerPage, refetch]);
 
     return (
         <div className='flex flex-col gap-8'>
-            <TitlePage title="Manajemen Laporan" desc="Kelola dan pantau status pemeliharaan fasilitas kampus"/>
+            <TitlePage title="Manajemen Laporan" desc="Kelola dan pantau status pemeliharaan fasilitas kampus" />
 
             <ReportFilter
+                loading={buildingLoading}
+                buildingOptions={buildingOptions}
                 startDate={startDate}
                 endDate={endDate}
                 selectedGedung={selectedGedung}
                 selectedStatus={selectedStatus}
+                searchQuery={searchQuery} 
+                onSearchChange={setSearchQuery} 
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onGedungChange={setSelectedGedung}
@@ -276,9 +124,10 @@ export default function ReportManagementPage() {
             />
 
             <CustomTableReport
+                loading={loading}
                 columns={columns}
-                data={currentData}
-                totalRecords={dataList.length}
+                data={reportData}
+                totalRecords={totalRecords}
                 currentPage={currentPage}
                 rowsPerPage={rowsPerPage}
                 onPageChange={(page) => setCurrentPage(page)}

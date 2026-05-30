@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i19lrgwsvc.ufs.sh',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

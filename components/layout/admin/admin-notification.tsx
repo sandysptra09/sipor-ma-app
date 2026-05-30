@@ -6,13 +6,14 @@ import { getPusherClient } from '@/lib/pusher-client';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import Link from 'next/link';
-
+import { usePathname } from "next/navigation";
 import { Badge, Dropdown, toast } from '@heroui/react';
 import { Bell } from 'lucide-react';
 import { getSession } from 'next-auth/react';
 
 interface Notification {
     id: string;
+    report: any;
     title: string;
     message: string;
     isRead: boolean;
@@ -20,8 +21,27 @@ interface Notification {
 }
 
 export default function AdminNotification() {
+    const pathname = usePathname();
+    const isNotificationPage = pathname === "/admin/notifications";
+
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleNotificationClick = (id: string, isRead: boolean) => {
+        if (isRead === false && typeof window !== 'undefined') {
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((n) =>
+                    n.id === id ? { ...n, isRead: true } : n
+                )
+            );
+
+            fetch('/api/admin/notifications', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, isRead: true })
+            }).catch(error => console.error('Gagal update status read:', error));
+        }
+    };
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -68,6 +88,32 @@ export default function AdminNotification() {
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
     const displayedNotifications = notifications.slice(0, 4);
+    console.log(notifications);
+    if (isNotificationPage) {
+        return (
+            <div
+                className="flex h-10 w-10 items-center justify-center "
+                aria-label="Halaman Notifikasi"
+            >
+                <Badge.Anchor>
+                    <Bell
+                        size={20}
+                        className="text-primary fill-current"
+                    />
+
+                    {unreadCount > 0 && (
+                        <Badge
+                            color="danger"
+                            size="sm"
+                            className="border-2 border-white"
+                        >
+                            <Badge.Label>{unreadCount}</Badge.Label>
+                        </Badge>
+                    )}
+                </Badge.Anchor>
+            </div>
+        );
+    }
 
     return (
         <Dropdown>
@@ -114,9 +160,9 @@ export default function AdminNotification() {
                                 <Dropdown.Item
                                     key={notif.id}
                                     textValue={notif.title}
-                                    className={`mb-1 ${!notif.isRead ? 'bg-primary/5' : ''}`}
+                                    className={`mb-1 min-h-fit ${!notif.isRead ? 'bg-primary/5' : ''}`}
                                 >
-                                    <div className='flex flex-col gap-1 py-1'>
+                                    <Link onClick={() => handleNotificationClick(notif.id, notif.isRead)} href={`/admin/report-management/${encodeURIComponent(notif.report.reportNumber)}`} className='flex flex-col gap-1 py-1'>
                                         <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
                                             {notif.title}
                                         </p>
@@ -129,7 +175,7 @@ export default function AdminNotification() {
                                                 locale: id
                                             })}
                                         </p>
-                                    </div>
+                                    </Link>
                                 </Dropdown.Item>
                             ))
                         )}

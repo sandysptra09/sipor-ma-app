@@ -20,6 +20,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "next-auth/react";
 import AdminNotification from "@/components/layout/admin/admin-notification";
+import { ToastProvider } from '@heroui/react';
 
 export default function AdminLayout({
     children,
@@ -54,6 +55,9 @@ export default function AdminLayout({
     return (
         <>
             <SidebarProvider>
+
+                <ToastProvider placement='top end' />
+
                 <AppSidebar />
                 <SidebarInset className="bg-white/80">
                     <header className="sticky z-50 top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
@@ -86,7 +90,12 @@ export default function AdminLayout({
 
                                         const isLast = index === pathnames.length - 1;
 
-                                        const label = value.toLowerCase() === 'admin' ? 'Admin Dashboard' : formatString(value);
+                                        const decodedValue = decodeURIComponent(value);
+
+                                        const label =
+                                            decodedValue.toLowerCase() === 'admin'
+                                                ? 'Admin Dashboard'
+                                                : formatString(decodedValue);
 
                                         return (
                                             <React.Fragment key={href}>

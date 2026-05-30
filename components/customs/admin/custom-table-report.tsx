@@ -17,10 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@heroui/react";
 
 interface Column {
   id: string;
   name: string;
+  width?: string;
   render?: (item: any) => React.ReactNode;
 }
 
@@ -30,6 +32,7 @@ interface CustomTableReportProps {
   totalRecords: number;
   rowsPerPage: number;
   currentPage: number;
+  loading?: boolean;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rows: number) => void;
 }
@@ -40,6 +43,7 @@ export function CustomTableReport({
   totalRecords,
   rowsPerPage,
   currentPage,
+  loading,
   onPageChange,
   onRowsPerPageChange,
 }: CustomTableReportProps) {
@@ -73,8 +77,13 @@ export function CustomTableReport({
             <TableRow className="hover:bg-transparent">
               {columns.map((column) => (
                 <TableHead
+                  style={{
+                    width: column.width,
+                    minWidth: column.width,
+                    maxWidth: column.width
+                  }}
                   key={column.id}
-                  className="text-[#64748B] font-semibold text-xs uppercase py-4 px-6 tracking-[1px] whitespace-nowrap"
+                  className="text-[#64748B] font-semibold text-xs uppercase p-4 tracking-[1px] whitespace-nowrap"
                 >
                   {column.name}
                 </TableHead>
@@ -82,14 +91,55 @@ export function CustomTableReport({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length > 0 ? (
+            {loading ? (
+              Array.from({ length: rowsPerPage }).map((_, rowIndex) => (
+                <TableRow
+                  key={rowIndex}
+                  className="border-b last:border-none"
+                >
+                  {columns.map((column, colIndex) => (
+                    <TableCell
+                      key={`${rowIndex}-${colIndex}`}
+                      className="py-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        {/* Avatar / Badge Skeleton Optional */}
+                        {colIndex === 0 && (
+                          <Skeleton
+                            animationType="shimmer"
+                            className="h-10 w-10 rounded-full shrink-0"
+                          />
+                        )}
+
+                        <div className="flex-1 space-y-2">
+                          <Skeleton
+                            animationType="shimmer"
+                            className="h-4 w-full rounded-lg"
+                          />
+
+                          {colIndex % 2 === 0 && (
+                            <Skeleton
+                              animationType="shimmer"
+                              className="h-3 w-2/3 rounded-lg"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : data.length > 0 ? (
               data.map((item, index) => (
                 <TableRow
                   key={item.id || index}
                   className="border-b last:border-none hover:bg-slate-50/50 transition-colors"
                 >
                   {columns.map((column) => (
-                    <TableCell key={column.id} className="py-4 px-6 text-sm">
+                    <TableCell
+                      key={column.id}
+                      className="p-4 text-sm"
+                    >
                       {column.render
                         ? column.render(item)
                         : (item[column.id] ?? "-")}
@@ -161,11 +211,10 @@ export function CustomTableReport({
                   variant={currentPage === page ? "default" : "ghost"}
                   size="sm"
                   onClick={() => onPageChange(page as number)}
-                  className={`h-9 w-9 p-0 font-bold ${
-                    currentPage === page
-                      ? "bg-primary text-white shadow-sm hover:bg-primary/80"
-                      : "text-slate-500 hover:bg-slate-100"
-                  }`}
+                  className={`h-9 w-9 p-0 font-bold ${currentPage === page
+                    ? "bg-primary text-white shadow-sm hover:bg-primary/80"
+                    : "text-slate-500 hover:bg-slate-100"
+                    }`}
                 >
                   {page}
                 </Button>

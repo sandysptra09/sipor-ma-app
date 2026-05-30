@@ -7,7 +7,6 @@ interface LogItemProps {
     icon: LucideIcon;
     title: string;
     description: string;
-    actor: string;
     date: string;
     time: string;
     iconClassName?: string;
@@ -18,7 +17,6 @@ export function LogItem({
     icon: Icon,
     title,
     description,
-    actor,
     date,
     time,
     iconClassName,
@@ -28,7 +26,7 @@ export function LogItem({
         <div className={cn("flex items-start gap-4 ", className)}>
             {/* Icon */}
             <div className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-xl shrink-0 bg-primary/20",
+                "flex items-center justify-center w-10 h-10 rounded-xl shrink-0 bg-slate-100 text-slate-500", 
                 iconClassName
             )}>
                 <Icon size={18} />
@@ -39,7 +37,7 @@ export function LogItem({
                 <p className="text-sm font-semibold text-[#181C1C]">{title}</p>
                 <p className="text-xs text-slate-500">{description}</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">
-                    OLEH: <span className="uppercase">{actor}</span> • {date}, {time}
+                    {date}, {time} 
                 </p>
             </div>
         </div>

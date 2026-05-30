@@ -135,6 +135,7 @@ model Notification {
   isRead    Boolean  @default(false)
   userId    String
   reportId  String?
+  reportNumber  String?
   createdAt DateTime @default(now())
   report    Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

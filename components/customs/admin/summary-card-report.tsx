@@ -1,16 +1,13 @@
 import React from 'react'
-import { Card } from "@heroui/react";
-import Link from 'next/link';
-import { Archive, CircleCheckBig, InboxIcon, Wrench } from 'lucide-react';
+import { Card, Skeleton } from "@heroui/react";
+import { CircleCheckBig, InboxIcon, Wrench } from 'lucide-react';
 
-// type 
 type ReportStatus = 'incoming' | 'in-progress' | 'completed';
 
-// interface SummaryCardReport
 interface SummaryCardReportProps {
   className?: string;
   title: string;
-  subTitle: string;
+  subTitle?: string; 
   count: number;
   type: ReportStatus;
   loading: boolean;
@@ -41,18 +38,33 @@ export default function SummaryCardReport({ className, title, count, type, loadi
   }[type];
 
   return (
-    <Card className={`rounded-lg shadow-md ring-0 p-5 ${type === 'in-progress' ? 'border-l-4 border-[#FBBF24]' : ""}  ${className ? className : ''}`}>
+    <Card className={`rounded-lg shadow-md ring-0 p-5 ${type === 'in-progress' && !loading ? 'border-l-4 border-[#FBBF24]' : ""}  ${className ? className : ''}`}>
       <div className="flex justify-between items-start gap-4">
-        <div className='flex flex-col gap-1'>
-          <Card.Title className="text-sm">{title ? title : 'Laporan Masuk'}</Card.Title>
-          <p className={`text-4xl font-bold font-heading ${statusStyle.title}`}>{count}</p>
-          <div className={`text-xs font-semibold flex items-center gap-1 ${statusStyle.subTitle}`}>
-            {description}
-          </div>
-        </div>
-        <div className={`flex-shrink-0 flex justify-center items-center rounded-lg ${statusStyle.iconBg} w-12 h-12`}>
-          {statusStyle.icon}
-        </div>
+        
+        {loading ? (
+          <>
+            <div className='flex flex-col gap-2 w-full mt-1'>
+              <Skeleton className="h-4 w-28 rounded-md" />
+              <Skeleton className="h-10 w-16 rounded-md my-1" />
+              <Skeleton className="h-3 w-32 rounded-md" />
+            </div>
+            <Skeleton className="flex-shrink-0 w-12 h-12 rounded-lg" />
+          </>
+        ) : (
+          <>
+            <div className='flex flex-col gap-1'>
+              <Card.Title className="text-sm">{title ? title : 'Laporan Masuk'}</Card.Title>
+              <p className={`text-4xl font-bold font-heading ${statusStyle.title}`}>{count}</p>
+              <div className={`text-xs font-semibold flex items-center gap-1 ${statusStyle.subTitle}`}>
+                {description}
+              </div>
+            </div>
+            <div className={`flex-shrink-0 flex justify-center items-center rounded-lg ${statusStyle.iconBg} w-12 h-12`}>
+              {statusStyle.icon}
+            </div>
+          </>
+        )}
+
       </div>
     </Card>
   );
