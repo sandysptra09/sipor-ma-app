@@ -38,7 +38,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ToastProvider placement='top' />
+        {/* <ToastProvider placement='top' /> */}
         {children}
       </body>
     </html>
