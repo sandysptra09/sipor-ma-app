@@ -6,7 +6,7 @@ import { getPusherClient } from '@/lib/pusher-client';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import Link from 'next/link';
-
+import { usePathname } from "next/navigation";
 import { Badge, Dropdown, toast } from '@heroui/react';
 import { Bell } from 'lucide-react';
 import { getSession } from 'next-auth/react';
@@ -20,6 +20,9 @@ interface Notification {
 }
 
 export default function AdminNotification() {
+    const pathname = usePathname();
+    const isNotificationPage = pathname === "/admin/notifications";
+
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -68,6 +71,32 @@ export default function AdminNotification() {
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
     const displayedNotifications = notifications.slice(0, 4);
+
+    if (isNotificationPage) {
+        return (
+            <div
+                className="flex h-10 w-10 items-center justify-center "
+                aria-label="Halaman Notifikasi"
+            >
+                <Badge.Anchor>
+                    <Bell
+                        size={20}
+                        className="text-primary fill-current"
+                    />
+
+                    {unreadCount > 0 && (
+                        <Badge
+                            color="danger"
+                            size="sm"
+                            className="border-2 border-white"
+                        >
+                            <Badge.Label>{unreadCount}</Badge.Label>
+                        </Badge>
+                    )}
+                </Badge.Anchor>
+            </div>
+        );
+    }
 
     return (
         <Dropdown>
