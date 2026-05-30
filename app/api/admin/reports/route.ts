@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(
             {
-                message: 'Berhasil mengambil data reports',
+                message: 'Berhasil mengambil data laporan',
 
                 data: reports,
 
