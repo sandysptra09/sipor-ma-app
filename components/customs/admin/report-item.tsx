@@ -18,7 +18,7 @@ import {
 import { formatDistanceToNowStrict } from 'date-fns'
 import { cn } from "@/lib/utils";
 
-type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING' | 'CANCELED';
+type ReportItemType = 'RESOLVED' | 'IN_PROGRESS' | 'REJECTED' | 'VERIFIED' | 'PENDING' | 'CANCELED' | string ;
 
 interface ReportItemProps {
     id: string | number;

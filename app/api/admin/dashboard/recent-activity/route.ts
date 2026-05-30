@@ -13,11 +13,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const isAdmin = session.user.role === 'ADMIN'; 
-        
-        const whereCondition = isAdmin 
-            ? { reportId: { not: null } } 
-            : { userId: session.user.id, reportId: { not: null } };
+        const whereCondition = { userId: session.user.id, reportId: { not: null } };
 
         const recentActivities = await prisma.activityLog.findMany({
             where: whereCondition,
@@ -30,7 +26,7 @@ export async function GET(request: NextRequest) {
                 id: true,
                 type: true,
                 createdAt: true,
-                Report: {
+                report: {
                     select: {
                         reportNumber:true,
                         title: true,
@@ -53,27 +49,27 @@ export async function GET(request: NextRequest) {
         
             if (log.type === 'REPORT_REJECTED') {
                 displayDescription =
-                    log.Report?.rejectionReason ||
+                    log.report?.rejectionReason ||
                     'Tidak ada alasan penolakan disertakan.';
             } else if (log.type === 'REPORT_RESOLVED') {
                 displayDescription =
-                    log.Report?.resolvedNote ||
+                    log.report?.resolvedNote ||
                     'Laporan telah diselesaikan.';
             } else {
                 displayDescription =
-                    log.Report?.description ||
+                    log.report?.description ||
                     'Tidak ada deskripsi.';
             }
         
             return {
                 id: log.id,
-                reportNumber: log.Report?.reportNumber,
+                reportNumber: log.report?.reportNumber,
                 type: log.type.replace('REPORT_', ''),
                 createdAt: log.createdAt,
                 description: displayDescription,
-                reportTitle: log.Report?.title,
-                room: log.Report?.roomCode,
-                reporterName: log.Report?.user?.name || 'Tidak diketahui',
+                reportTitle: log.report?.title,
+                room: log.report?.roomCode,
+                reporterName: log.report?.user?.name || 'Tidak diketahui',
             };
         });
 

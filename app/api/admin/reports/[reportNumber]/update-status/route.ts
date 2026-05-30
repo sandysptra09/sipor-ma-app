@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 import { sendNotification } from '@/lib/notification'; 
 
 import {
-    Report_status,
+    Status,
     ActivityLog_type,
 } from '@/lib/generated/prisma/client';
 
@@ -83,9 +83,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
         const body = await request.json();
 
-        const { status, note, imageUrl }: { status: Report_status; note?: string; imageUrl?: string } = body;
+        const { status, note, imageUrl }: { status: Status; note?: string; imageUrl?: string } = body;
 
-        const allowedStatus = Object.values(Report_status);
+        const allowedStatus = Object.values(Status);
 
         if (!allowedStatus.includes(status)) {
             return NextResponse.json({ message: 'Status tidak valid' }, { status: 400 });

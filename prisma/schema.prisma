@@ -22,7 +22,7 @@ model User {
   studyProgram   String?
   campusEmail    String?        @unique
   accounts       Account[]
-  ActivityLog    ActivityLog[]
+  activityLogs   ActivityLog[]
   chatSessions   ChatSession[]
   notifications  Notification[]
   assignments    Report[]       @relation("AdminAssignment")
@@ -59,7 +59,7 @@ model Report {
   category        String
   imageBefore     String
   imageAfter      String?
-  status          Report_status  @default(PENDING)
+  status          Status         @default(PENDING)
   priority        Priority       @default(MEDIUM)
   isVerified      Boolean        @default(false)
   userId          String
@@ -68,7 +68,7 @@ model Report {
   updatedAt       DateTime       @updatedAt
   rejectionReason String?        @db.Text
   resolvedNote    String?        @db.Text
-  ActivityLog     ActivityLog[]
+  activityLogs    ActivityLog[]
   logs            AuditLog[]
   notifications   Notification[]
   admin           User?          @relation("AdminAssignment", fields: [adminId], references: [id])
@@ -144,7 +144,7 @@ model Notification {
 }
 
 model ActivityLog {
-  id          String           @id
+  id          String           @id @default(cuid())
   userId      String
   reportId    String?
   title       String
@@ -152,7 +152,7 @@ model ActivityLog {
   type        ActivityLog_type
   metadata    Json?
   createdAt   DateTime         @default(now())
-  Report      Report?          @relation(fields: [reportId], references: [id])
+  report      Report?          @relation(fields: [reportId], references: [id])
   User        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
@@ -188,7 +188,7 @@ enum ActivityLog_type {
   PROFILE_UPDATED
 }
 
-enum Report_status {
+enum Status {
   PENDING
   VERIFIED
   IN_PROGRESS
