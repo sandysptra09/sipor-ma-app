@@ -42,7 +42,7 @@ export default function AttachmentCard({ isRejected, title, loading = false, chi
                     {title}
                 </p>
             </CardHeader>
-            <CardContent className='px-6 pt-6 w-full h-full flex flex-col items-center gap-6 pb-8'>
+            <CardContent className='px-6 w-full h-full flex flex-col items-center gap-6 pb-8'>
                 {children}
             </CardContent>
         </Card>
