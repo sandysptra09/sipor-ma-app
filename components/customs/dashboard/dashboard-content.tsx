@@ -7,40 +7,22 @@ import { id as localeId } from 'date-fns/locale';
 import { Skeleton, Pagination } from '@heroui/react';
 import ReportFilterTabs, { TabItem } from './tabs/report-filter-tab';
 import StatWidget from './widgets/stat-widget';
-import NotificationWidget, { NotificationItem } from './widgets/notification-widget';
+import ActivityWidget, { ActivityItem } from './widgets/activity-widget';
 import HelpWidget from './widgets/help-widget';
 import ReportCard, { ReportStatus } from './cards/report-card';
-import { Clock4, History } from 'lucide-react';
-import { LuFileText, LuCircleCheckBig } from 'react-icons/lu';
+import { Clock4 } from 'lucide-react';
+import { LuFileText } from 'react-icons/lu';
 import { TbRosetteDiscountCheckFilled } from 'react-icons/tb';
-import { MdOutlineEngineering, MdOutlineInsertComment } from 'react-icons/md';
+import { MdOutlineEngineering } from 'react-icons/md';
 import CancelReportModal from './modals/cancel-report-modal';
-
-const notificationData: NotificationItem[] = [
-    {
-        id: 1,
-        icon: <History size={16} strokeWidth={2.5} />,
-        message: <>Status laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-001</span> diperbarui ke Sedang Diproses.</>,
-        time: '1 JAM YANG LALU'
-    },
-    {
-        id: 2,
-        icon: <LuCircleCheckBig size={16} strokeWidth={2.5} />,
-        message: <>Selamat! Laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-002</span> telah dinyatakan selesai.</>,
-        time: 'KEMARIN'
-    },
-    {
-        id: 3,
-        icon: <MdOutlineInsertComment size={16} />,
-        message: <>Admin memberikan komentar pada laporan <span className='text-[#0A6F66] font-semibold'>#REP-2026-003</span> terkait lokasi.</>,
-        time: '3 HARI YANG LALU'
-    }
-];
 
 export default function DashboardContent() {
 
     const [reports, setReports] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [activities, setActivities] = useState<ActivityItem[]>([]);
+    const [isLoadingActivities, setIsLoadingActivities] = useState(true);
 
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 5;
@@ -60,8 +42,21 @@ export default function DashboardContent() {
         }
     };
 
+    const fetchActivities = async () => {
+        setIsLoadingActivities(true);
+        try {
+            const response = await api.get('/activities');
+            setActivities(response.data);
+        } catch (error) {
+            console.error('Gagal mengambil data aktivitas:', error);
+        } finally {
+            setIsLoadingActivities(false);
+        }
+    };
+
     useEffect(() => {
         fetchReports();
+        fetchActivities();
     }, []);
 
     const formatReportDate = (dateString: string) => {
@@ -131,6 +126,7 @@ export default function DashboardContent() {
         setIsCancelModalOpen(false);
         setSelectedReportIdToCancel(null);
         fetchReports();
+        fetchActivities();
     };
 
     const renderReportCards = (filteredReports: any[]) => {
@@ -336,7 +332,7 @@ export default function DashboardContent() {
                     </div>
 
                     <div className='order-4 w-full'>
-                        <NotificationWidget items={notificationData} />
+                        <ActivityWidget items={activities} isLoading={isLoadingActivities} />
                     </div>
 
                     <div className='order-5 w-full'>
