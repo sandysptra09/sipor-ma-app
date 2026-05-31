@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
-import { sendNotification } from '@/lib/notification'; 
+import { sendNotification } from '@/lib/notification';
+import { sendStatusUpdateEmail } from '@/lib/mail';
 
 import {
     Status,
@@ -108,7 +109,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         const config = STATUS_CONFIG[status];
 
         const updatedReport = await prisma.$transaction(async (tx) => {
-            
+
             const updateData: any = {
                 status,
                 adminId: session.user.id,
@@ -117,13 +118,13 @@ export async function PATCH(request: NextRequest, { params }: Params) {
             if (status === 'REJECTED') {
                 updateData.rejectionReason = note;
             }
-            
+
             if (status === 'RESOLVED') {
                 updateData.resolvedNote = note;
             }
 
             if (imageUrl) {
-                updateData.imageAfter = imageUrl; 
+                updateData.imageAfter = imageUrl;
             }
 
             const report = await tx.report.update({
@@ -131,6 +132,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
                     reportNumber: decodedReportNumber,
                 },
                 data: updateData,
+                include: {
+                    user: true,
+                }
             });
 
             await tx.auditLog.create({
@@ -163,13 +167,23 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
         try {
             await sendNotification({
-                userId: updatedReport.userId, 
+                userId: updatedReport.userId,
                 title: `📢 ${config.notificationTitle}`,
                 message: `Laporan kamu (${updatedReport.reportNumber}) saat ini berstatus: ${config.auditTitle}. ${note ? `Catatan: ${note}` : ''}`,
                 reportId: updatedReport.id
             });
         } catch (pushError) {
             console.error('Gagal mengirim notifikasi Pusher ke user:', pushError);
+        }
+
+        if (updatedReport.user.email) {
+            sendStatusUpdateEmail({
+                to: updatedReport.user.email,
+                name: updatedReport.user.name || 'Mahasiswa',
+                reportNumber: updatedReport.reportNumber,
+                title: updatedReport.title,
+                newStatus: status
+            }).catch(emailErr => console.error('Gagal memicu email background:', emailErr));
         }
 
         return NextResponse.json(
