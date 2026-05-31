@@ -4,10 +4,10 @@ import TermsContent from '@/components/customs/terms-and-conditions/main-content
 
 export default function TermsAndConditionsPage() {
     return (
-        <div  className='w-full py-20 lg:py-28'>
+        <div className='min-h-screen w-full bg-background py-10 md:py-12'>
             <div className='mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:px-8'>
-                <div className='hidden lg:block lg:w-[280px] self-start sticky top-48'>
-                    <SidebarTerms/>
+                <div className='hidden lg:block lg:w-[280px] shrink-0 self-start sticky top-32 max-h-[calc(100vh-10rem)] overflow-y-auto no-scrollbar pb-10'>
+                    <SidebarTerms />
                 </div>
 
                 <div className='w-full flex-1'>
@@ -15,7 +15,7 @@ export default function TermsAndConditionsPage() {
                         Syarat &
                         <span className='text-primary'> Ketentuan</span>
                     </h1>
-                    <TermsContent/>
+                    <TermsContent />
                 </div>
             </div>
         </div>

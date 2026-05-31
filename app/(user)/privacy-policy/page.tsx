@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>
             <div className='mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:px-8'>
-                <div className='hidden lg:block lg:w-70 self-start sticky top-48'>
+                <div className='hidden lg:block lg:w-[280px] shrink-0 self-start sticky top-32 max-h-[calc(100vh-10rem)] overflow-y-auto no-scrollbar pb-10'>
                     <Sidebar />
                 </div>
 
