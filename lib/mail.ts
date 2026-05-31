@@ -16,6 +16,12 @@ interface SendEmailParams {
     newStatus: string;
 }
 
+interface SendContactEmailParams {
+    name: string;
+    email: string;
+    message: string;
+}
+
 const getStatusText = (status: string) => {
     switch (status) {
         case 'VERIFIED': return 'Sedang Diverifikasi Admin';
@@ -77,6 +83,41 @@ export async function sendStatusUpdateEmail({ to, name, reportNumber, title, new
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('[EMAIL SENDER ERROR] Gagal mengirim email:', error);
+        return { success: false, error };
+    }
+}
+
+export async function sendContactEmail({ name, email, message }: SendContactEmailParams) {
+    const htmlTemplate = `
+    <div style="font-family: Poppins; max-width: 600px; margin: 0 auto; border: 1px solid #EAEAED; border-radius: 12px; overflow: hidden;">
+        <div style="background-color: #0A6F66; padding: 20px; text-align: center;">
+            <h2 style="color: #ffffff; margin: 0;">Pesan Baru dari Form Kontak SIPOR-MA</h2>
+        </div>
+        <div style="padding: 30px 20px; background-color: #ffffff;">
+            <p style="font-size: 14px; color: #4B5563;"><strong>Nama Pengirim:</strong> ${name}</p>
+            <p style="font-size: 14px; color: #4B5563;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #0A6F66;">${email}</a></p>
+            <hr style="border: none; border-top: 1px solid #EAEAED; margin: 20px 0;" />
+            <p style="font-size: 14px; color: #4B5563;"><strong>Isi Pesan:</strong></p>
+            <div style="background-color: #F9FAFB; padding: 15px; border-radius: 8px; font-size: 14px; color: #181C1C; white-space: pre-wrap; line-height: 1.6;">
+                ${message}
+            </div>
+        </div>
+    </div>
+    `;
+
+    try {
+        const info = await transporter.sendMail({
+            from: '"SIPOR-MA Contact" <' + process.env.EMAIL_USER + '>',
+            to: process.env.EMAIL_USER, 
+            replyTo: email, 
+            subject: `Pesan Bantuan dari ${name}`,
+            html: htmlTemplate,
+        });
+        
+        console.log('[CONTACT EMAIL] Berhasil terkirim dari:', email);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('[CONTACT EMAIL ERROR] Gagal mengirim pesan:', error);
         return { success: false, error };
     }
 }
