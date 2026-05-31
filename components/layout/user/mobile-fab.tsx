@@ -3,11 +3,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, Camera, LayoutDashboard, MessageCircleQuestion, LayoutGrid } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function MobileFAB() {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
+
+    if (pathname === '/chat-assistant') return null;
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
