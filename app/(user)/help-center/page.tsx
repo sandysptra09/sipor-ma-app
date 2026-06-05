@@ -1,7 +1,12 @@
-"use client";
-
 import CtaBanner from '@/components/customs/landing/banners/cta-banner';
 import HelpCenterTabs from '@/components/customs/help-center/tabs/help-center-tabs';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Pusat Bantuan',
+    description: 'Temukan panduan penggunaan, FAQ, dan informasi lengkap mengenai cara melapor di aplikasi SIPOR-MA.',
+};
 
 export default function HelpCenterPage() {
 

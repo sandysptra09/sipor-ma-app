@@ -1,5 +1,12 @@
 import DashboardContent from "@/components/customs/dashboard/dashboard-content"
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Dashboard',
+    description: 'Pantau status laporan kerusakan fasilitas yang kamu ajukan dan lihat riwayat aktivitas pelaporanmu di Dashboard SIPOR-MA.',
+};
+
 export default function UserDashboardPage() {
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>

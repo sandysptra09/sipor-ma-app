@@ -1,23 +1,20 @@
-'use client';
-
-import { useEffect } from 'react';
-import { toast } from '@heroui/react';
 import Link from 'next/link'
 import LoginForm from '@/components/customs/auth/forms/login-form'
+import LoginToast from '@/components/customs/auth/toast/login-toast';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Login',
+    description: 'Masuk ke akun SIPOR-MA kamu untuk mulai melaporkan kerusakan atau memantau status laporan fasilitas kampus.',
+};
 
 export default function LoginPage() {
 
-    useEffect(() => {
-        if (sessionStorage.getItem('showRegisterToast') === 'true') {
-            toast.success('Registrasi Berhasil!', {
-                description: <span className='text-zinc-600'>Silakan masuk menggunakan akun baru Anda.</span>
-            });
-            sessionStorage.removeItem('showRegisterToast');
-        }
-    }, []);
-
     return (
         <div className='flex w-full flex-col items-center justify-center px-1 md:px-0'>
+
+            <LoginToast />
 
             <div className='mb-8 w-full text-center'>
                 <h2 className='mb-2 text-2xl md:text-3xl font-heading font-bold text-[#181C1C]'>

@@ -3,6 +3,13 @@ import CustomCardContact from '@/components/customs/contact/forms/custom-card-co
 import { TimeField } from '@heroui/react'
 import React from 'react'
 
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+    title: 'Kontak Kami',
+    description: 'Hubungi tim SIPOR-MA jika memiliki pertanyaan atau kendala terkait fasilitas kampus.',
+};
+
 export default function ContactPage() {
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>

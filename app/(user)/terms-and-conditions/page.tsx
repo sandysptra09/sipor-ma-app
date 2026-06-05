@@ -2,6 +2,14 @@ import React from 'react'
 import SidebarTerms from '@/components/customs/terms-and-conditions/sidebar-terms/sidebar-terms'
 import TermsContent from '@/components/customs/terms-and-conditions/main-content-terms/terms-content'
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Syarat & Ketentuan',
+    description: 'Baca syarat dan ketentuan penggunaan layanan platform pelaporan fasilitas SIPOR-MA.',
+};
+
+
 export default function TermsAndConditionsPage() {
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>

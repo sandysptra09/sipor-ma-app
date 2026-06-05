@@ -2,6 +2,13 @@ import React from 'react'
 import Sidebar from '@/components/customs/privacy-policy/sidebar/sidebar'
 import PrivacyContent from '@/components/customs/privacy-policy/main-content/privacy-content'
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Kebijakan Privasi',
+    description: 'Pelajari bagaimana SIPOR-MA mengumpulkan, menggunakan, dan melindungi privasi serta data pribadi kamu.',
+};
+
 export default function PrivacyPolicyPage() {
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>

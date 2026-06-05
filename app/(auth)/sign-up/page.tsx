@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import SignUpForm from '@/components/customs/auth/forms/sign-up-form'
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Daftar Akun',
+    description: 'Buat akun SIPOR-MA sekarang untuk berkontribusi dalam menjaga dan memperbaiki fasilitas lingkungan kampus.',
+};
+
 export default function RegisterPage() {
     return (
         <div className='flex w-full flex-col items-center justify-center px-4 md:px-0'>

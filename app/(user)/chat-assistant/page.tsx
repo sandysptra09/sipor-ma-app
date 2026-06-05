@@ -3,6 +3,13 @@ import prisma from '@/lib/prisma';
 import { UIMessage } from '@ai-sdk/react';
 import ChatbotAiContent from '@/components/customs/chatbot-ai/chatbot-ai-content'
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Asisten AI',
+    description: 'Tanya jawab langsung dengan Asisten AI SIPOR-MA yang siap sedia 24/7 membantu kendala pelaporan fasilitas kampusmu.',
+};
+
 export default async function ChatAssistantPage() {
 
     const session = await auth();
