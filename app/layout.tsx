@@ -15,8 +15,28 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'SIPOR-MA | Lapor Sarana Sat-Set',
-  description: 'Sistem Informasi Pelaporan Sarana Kampus Mahasiswa',
+  title: {
+    default: 'SIPOR-MA | Sistem Pelaporan Fasilitas Kampus',
+    template: '%s | SIPOR-MA',
+  },
+  description: 'Sistem Pelaporan Fasilitas Kampus terintegrasi AI untuk mahasiswa dan staf Sarpras.',
+  keywords: ['SIPOR-MA', 'Pelaporan Kampus', 'Fasilitas', 'Sarpras', 'Sarana Prasarana', 'Analisis Laporan', 'Transparansi',],
+  openGraph: {
+    title: 'SIPOR-MA | Sistem Pelaporan Fasilitas',
+    description: 'Laporkan kerusakan fasilitas kampusmu dengan cepat dan transparan.',
+    url: 'https://siporma-app.vercel.app',
+    siteName: 'SIPOR-MA',
+    images: [
+      {
+        url: '/assets/images/siporma-og.png',
+        width: 1200,
+        height: 630,
+        alt: 'SIPOR-MA Preview Image',
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
