@@ -19,7 +19,7 @@ export default function MobileFAB() {
             id: 'help',
             icon: <MessageCircleQuestion size={20} />,
             label: 'Pusat Bantuan',
-            onClick: () => { router.push('/help-center'); setIsOpen(false); },
+            onClick: () => { router.push('/chat-assistant'); setIsOpen(false); },
             pos: { x: 0, y: -75 }
         },
         {
