@@ -31,6 +31,7 @@ export default function ScanToReportContent() {
             setTimeout(() => {
                 toast.success(`Ruangan ditemukan: ${res.data.data.name}`);
                 setTimeout(() => {
+                    sessionStorage.setItem('isReportingAuthorized', 'true');
                     router.push(`/reporting/${qrText}`);
                 }, 1500);
             }, 100);

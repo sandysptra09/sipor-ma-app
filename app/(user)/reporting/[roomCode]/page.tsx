@@ -1,4 +1,6 @@
 import ReportingContent from "@/components/customs/scan-to-report/reporting-content";
+import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 import { Metadata } from "next";
 
@@ -22,6 +24,18 @@ export default async function ReportingPage({
     params: Promise<{ roomCode: string }>
 }) {
     const resolvedParams = await params;
+
+    const decodedRoomCode = decodeURIComponent(resolvedParams.roomCode);
+
+    const roomExists = await prisma.room.findUnique({
+        where: {
+            code: decodedRoomCode
+        }
+    });
+
+    if (!roomExists) {
+        redirect('/dashboard');
+    }
 
     return (
         <div className='min-h-screen w-full bg-background py-10 md:py-12'>

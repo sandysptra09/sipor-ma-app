@@ -32,7 +32,16 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
 
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+
+        const isAuthorized = sessionStorage.getItem('isReportingAuthorized');
+
+        if (!isAuthorized) {
+            toast.danger('Akses Ditolak', {
+                description: <span className='text-zinc-600'>Anda tidak memiliki izin untuk mengakses halaman ini. Pastikan Anda memindai QR code ruangan dengan benar.</span>
+            });
+            router.push('/dashboard');
+        }
+    }, [router]);
 
     useEffect(() => {
         let timeout1: NodeJS.Timeout;
@@ -95,6 +104,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
                 toast.success(res.data.message || 'Laporan berhasil dikirim!');
 
                 setTimeout(() => {
+                    sessionStorage.removeItem('isReportingAuthorized');
                     router.push('/dashboard');
                 }, 1500);
             }, 100);
