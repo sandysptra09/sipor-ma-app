@@ -25,6 +25,13 @@ export default function ForgotPasswordPage() {
                 <ForgotPasswordForm />
             </div>
 
+            <div className='mt-6 w-full text-center text-sm text-muted-foreground'>
+                Ingat kata sandi Anda?{' '}
+                <Link href='/login' className='font-semibold text-primary transition-all hover:underline'>
+                    Masuk di sini
+                </Link>
+            </div>
+
             <div className='mt-12 w-full text-center text-[10px] font-normal tracking-wider sm:text-xs'>
                 <p className='mb-4 text-[#575858] uppercase tracking-widest'>© 2026 SIPOR-MA. ALL RIGHTS RESERVED.</p>
                 <div className='flex flex-wrap justify-center gap-3 sm:gap-4 text-foreground uppercase'>

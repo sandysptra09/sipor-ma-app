@@ -32,6 +32,13 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
                 <ResetPasswordForm token={token} />
             </div>
 
+            <div className='mt-6 w-full text-center text-sm text-muted-foreground'>
+                Batal mengatur ulang?{' '}
+                <Link href='/login' className='font-semibold text-primary transition-all hover:underline'>
+                    Kembali ke Login
+                </Link>
+            </div>
+
             <div className='mt-12 w-full text-center text-[10px] font-normal tracking-wider sm:text-xs'>
                 <p className='mb-4 text-[#575858] uppercase tracking-widest'>© 2026 SIPOR-MA. ALL RIGHTS RESERVED.</p>
                 <div className='flex flex-wrap justify-center gap-3 sm:gap-4 text-foreground uppercase'>
