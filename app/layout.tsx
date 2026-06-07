@@ -20,7 +20,15 @@ export const metadata: Metadata = {
     template: '%s | SIPOR-MA',
   },
   description: 'Sistem Pelaporan Fasilitas Kampus terintegrasi AI untuk mahasiswa dan staf Sarpras.',
-  keywords: ['SIPOR-MA', 'Pelaporan Kampus', 'Fasilitas', 'Sarpras', 'Sarana Prasarana', 'Analisis Laporan', 'Transparansi',],
+  authors: [
+    { name: 'Sandy Saputra' },
+    { name: 'Mahesa Syawal A' },
+    { name: 'Ihsan Fathin Mohammed' },
+    { name: 'Ikhsanul Richi Fauzi' },
+  ],
+  creator: 'Tim Developer SIPOR-MA',
+  publisher: 'Universitas Pendidikan Indonesia - Program Studi Rekayasa Perangkat Lunak',
+  keywords: ['SIPOR-MA', 'Pelaporan Kampus', 'Fasilitas', 'Sarpras', 'Sarana Prasarana', 'Analisis Laporan Kampus', 'Transparansi Kampus',],
   openGraph: {
     title: 'SIPOR-MA | Sistem Pelaporan Fasilitas',
     description: 'Laporkan kerusakan fasilitas kampusmu dengan cepat dan transparan.',
