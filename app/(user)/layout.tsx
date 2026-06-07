@@ -7,7 +7,7 @@ import MainFooter from "@/components/layout/user/main-footer";
 
 import MobileFAB from "@/components/layout/user/mobile-fab";
 
-import { ToastProvider } from "@heroui/react";
+import { Toast } from "@heroui/react";
 
 export default async function UserLayout({
     children,
@@ -21,7 +21,7 @@ export default async function UserLayout({
 
     return (
         <main>
-            <ToastProvider placement='top' />
+            <Toast.Provider placement='top' className={`z-[9999]`} />
             <StoreInitializer user={session?.user || null} />
             <SmoothScroll>
                 <MainNavbar />

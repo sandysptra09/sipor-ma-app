@@ -1,4 +1,5 @@
 import AuthBanner from '@/components/customs/auth/banners/auth-banner';
+import { Toast } from '@heroui/react';
 
 export default function AuthLayout({
     children,
@@ -10,6 +11,8 @@ export default function AuthLayout({
 
     return (
         <div className='flex h-screen w-full overflow-hidden bg-white'>
+
+            <Toast.Provider placement='top' className='z-[9999]' />
 
             <div className='relative hidden h-full w-full flex-col p-12 lg:flex lg:w-1/2'>
 
