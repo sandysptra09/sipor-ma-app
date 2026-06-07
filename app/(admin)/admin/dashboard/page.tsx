@@ -96,6 +96,8 @@ export default function Page() {
                     fetchRecentActivityData(),
                     fetchTableData(),
                 ]);
+
+                toast.success("Berhasil memuat data dashbaord");
             } catch (error) {
                 console.error(error);
             } finally {

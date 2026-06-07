@@ -8,7 +8,8 @@ import {
 import { getInitialName } from "@/lib/helpers/getInitialName";
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Skeleton } from "@heroui/react"; 
+import { Skeleton } from "@heroui/react";
+import Image from 'next/image';
 
 interface ReportDetailCardProps {
     category: string
@@ -17,7 +18,8 @@ interface ReportDetailCardProps {
     description: string
     location: string
     reporter: string
-    loading?: boolean 
+    profileImg?: string | null
+    loading?: boolean
 }
 
 export function ReportDetailCard({
@@ -27,7 +29,8 @@ export function ReportDetailCard({
     description,
     location,
     reporter,
-    loading = false, 
+    profileImg,
+    loading = false,
 }: ReportDetailCardProps) {
 
     if (loading) {
@@ -81,9 +84,20 @@ export function ReportDetailCard({
                     </span>
                     <p className='order-first md:order-last text-foreground/40'>Diajukan: {formattedSubmittedAt}</p>
                 </div>
-                <CardAction className='uppercase p-2.5 rounded-xl bg-foreground/20 font-semibold border-2 text-xs'>
-                    {reporterInitial ? getInitialName(reporterInitial) : '-'}
-                </CardAction>
+                <div className="relative h-10 w-10 overflow-hidden rounded-lg border-2 border-foreground/10 bg-foreground/20 flex items-center justify-center">
+                    {profileImg ? (
+                        <Image
+                            src={profileImg}
+                            alt="Profile"
+                            fill
+                            className="object-cover"
+                        />
+                    ) : (
+                        <span className="text-sm font-bold text-foreground/60">
+                            {reporterInitial ? getInitialName(reporterInitial) : '-'}
+                        </span>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className='p-0 gap-3'>
                 <p className='font-semibold text-lg font-sans'>Deskripsi Keluhan</p>

@@ -94,7 +94,6 @@ export default function AdminNotification() {
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
     const displayedNotifications = notifications.slice(0, 4);
-    console.log(notifications);
     if (isNotificationPage) {
         return (
             <div

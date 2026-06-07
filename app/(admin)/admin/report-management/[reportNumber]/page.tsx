@@ -40,6 +40,7 @@ export default function ReportDetailPage() {
             const res = await api.get(`/admin/reports/${params.reportNumber}`);
             setReportDetail(res?.data?.data);
             toast.success(res?.data?.message ?? "Detail laporan berhasil dimuat")
+            console.log(res?.data?.data);
         } catch (error) {
             console.error('Gagal mengambil data detail laporan:', error);
             toast.danger("Detail laporan gagal dimuat")
@@ -120,6 +121,7 @@ export default function ReportDetailPage() {
                             ? 'Mahasiswa'
                             : 'Admin'
                             } - ${reportDetail?.user?.nim_nip || '-'})`}
+                        profileImg={reportDetail?.user?.image}
                     />
                     <ReportLogCard loading={loading} logs={reportDetail?.logs} />
                 </div>
