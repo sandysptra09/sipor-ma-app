@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
-import { Prisma, Status } from '@/lib/generated/prisma/client';
+import { Prisma, Status, Priority } from '@/lib/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
     try {
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
         const building = searchParams.get('building') || '';
         const status = searchParams.get('status') || '';
         const category = searchParams.get('category') || '';
+        const priority = searchParams.get('priority') || '';
 
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
                       }
                     : {},
 
-                // filter keyword baru
+                // filter keyword
                 keyword
                     ? {
                           OR: [
@@ -88,6 +89,12 @@ export async function GET(request: NextRequest) {
                 status
                     ? {
                           status: status as Status,
+                      }
+                    : {},
+
+                priority
+                    ? {
+                          priority: priority as Priority,
                       }
                     : {},
 

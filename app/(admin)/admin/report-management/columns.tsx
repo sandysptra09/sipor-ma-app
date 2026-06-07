@@ -42,6 +42,26 @@ export const columns = [
         )
     },
     {
+        id: "priority",
+        name: "PRIORITAS",
+        width: "120px",
+        render: (item: any) => {
+            const priorityConfig: any = {
+                HIGH: { color: "text-red-600 bg-red-500/20", label: "TINGGI" },
+                MEDIUM: { color: "text-amber-600 bg-amber-500/20", label: "SEDANG" },
+                LOW: { color: "text-emerald-600 bg-emerald-500/20", label: "RENDAH" },
+            };
+
+            const current = priorityConfig[item.priority?.toUpperCase()] || priorityConfig.MEDIUM;
+
+            return (
+                <Chip size="sm" className={`font-semibold text-[10px] px-2.5 py-0.5 rounded-md ${current.color}`}>
+                    {current.label}
+                </Chip>
+            );
+        }
+    },
+    {
         id: "status",
         name: "STATUS",
         width: "140px",

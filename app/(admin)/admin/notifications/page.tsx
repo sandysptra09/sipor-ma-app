@@ -58,7 +58,7 @@ export default function AdminNotificationsPage() {
     };
 
     return (
-        <div className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-6'>
             <TitlePage title='Notifikasi' desc='Pembaruan dan Pemberitahuan Laporan terbaru yang masuk' />
 
             {isLoading ? (

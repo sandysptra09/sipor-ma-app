@@ -135,8 +135,8 @@ model Notification {
   isRead       Boolean  @default(false)
   userId       String
   reportId     String?
-  reportNumber String?
   createdAt    DateTime @default(now())
+  reportNumber String?
   report       Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -159,6 +159,16 @@ model ActivityLog {
   @@index([userId])
   @@index([reportId])
   @@index([createdAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, token])
 }
 
 enum Role {
@@ -196,14 +206,4 @@ enum ActivityLog_type {
   REPORT_CANCELED
   ROOM_UPDATED
   PROFILE_UPDATED
-}
-
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
-
-  @@unique([email, token])
 }

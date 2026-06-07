@@ -56,7 +56,7 @@ export default function SummaryReportByCategoryCard({ className }: SummaryReport
     }, []);
 
   return (
-    <Card className={`p-8 rounded-lg shadow-md ring-0 ${className}`}>
+    <Card className={`p-8 rounded-lg shadow-sm ring-0 ${className}`}>
       <div className='flex flex-row items-center justify-between mb-8'>
         <div className='flex flex-col'>
           <h3 className='text-lg font-semibold text-foreground'>Kategori Kerusakan</h3>

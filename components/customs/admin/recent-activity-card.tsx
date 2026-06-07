@@ -28,7 +28,7 @@ export default function RecentActivityCard({
 }: RecentActivityCardProps) {
     
     return (
-        <Card className={`p-8 rounded-lg shadow-md ${className}`}>
+        <Card className={`p-8 rounded-lg shadow-sm ${className}`}>
             <Card.Header>
                 <Card.Title className='text-lg font-bold font-heading'>Aktivitas Terbaru</Card.Title>
             </Card.Header>
