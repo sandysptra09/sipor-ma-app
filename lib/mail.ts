@@ -33,6 +33,12 @@ const getStatusText = (status: string) => {
     }
 };
 
+interface SendPasswordResetParams {
+    to: string;
+    name: string;
+    token: string;
+}
+
 export async function sendStatusUpdateEmail({ to, name, reportNumber, title, newStatus }: SendEmailParams) {
     const statusText = getStatusText(newStatus);
 
@@ -118,6 +124,57 @@ export async function sendContactEmail({ name, email, message }: SendContactEmai
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('[CONTACT EMAIL ERROR] Gagal mengirim pesan:', error);
+        return { success: false, error };
+    }
+}
+
+export async function sendPasswordResetEmail({ to, name, token }: SendPasswordResetParams) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+    const resetLink = `${appUrl}/reset-password?token=${token}`;
+
+    const htmlTemplate = `
+    <div style="font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #EAEAED; border-radius: 12px; overflow: hidden;">
+        <div style="background-color: #0A6F66; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 1px;">SIPOR-MA</h1>
+            <p style="color: #A7E9D1; margin: 5px 0 0 0; font-size: 14px;">Keamanan Akun</p>
+        </div>
+        <div style="padding: 30px 20px; background-color: #ffffff;">
+            <p style="font-size: 16px; color: #181C1C;">Halo, <strong>${name}</strong>!</p>
+            <p style="font-size: 15px; color: #4B5563; line-height: 1.5;">
+                Kami menerima permintaan untuk mengatur ulang kata sandi akun SIPOR-MA Anda. Silakan klik tombol di bawah ini untuk membuat kata sandi baru Anda.
+            </p>
+            
+            <div style="text-align: center; margin-top: 25px; margin-bottom: 25px;">
+                <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #0A6F66; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px;">Reset Kata Sandi</a>
+            </div>
+
+            <p style="font-size: 13px; color: #EF4444; line-height: 1.5; text-align: center; font-style: italic;">
+                *Tautan ini hanya berlaku selama 1 jam.
+            </p>
+            
+            <p style="font-size: 14px; color: #4B5563; line-height: 1.5;">
+                Jika Anda tidak pernah merasa meminta pengaturan ulang kata sandi ini, abaikan saja email ini. Akun Anda akan tetap aman.
+            </p>
+        </div>
+        <div style="background-color: #F9FAFB; padding: 15px; text-align: center; border-top: 1px solid #EAEAED;">
+            <p style="font-size: 12px; color: #9CA3AF; margin: 0;">Email ini dibuat otomatis oleh sistem SIPOR-MA.<br/>Mohon tidak membalas email ini.</p>
+        </div>
+    </div>
+    `;
+
+    try {
+        const info = await transporter.sendMail({
+            from: '"SIPOR-MA Security" <' + process.env.EMAIL_USER + '>',
+            to: to,
+            subject: 'Reset Kata Sandi Akun SIPOR-MA',
+            html: htmlTemplate,
+        });
+
+        console.log('[RESET EMAIL] Berhasil terkirim ke:', to);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('[RESET EMAIL ERROR] Gagal mengirim email:', error);
         return { success: false, error };
     }
 }
