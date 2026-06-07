@@ -38,7 +38,7 @@ export default function ReportDetailPage() {
         setLoading(true);
         try {
             const res = await api.get(`/admin/reports/${params.reportNumber}`);
-            setReportDetail(res?.data?.data); 
+            setReportDetail(res?.data?.data);
             toast.success(res?.data?.message ?? "Detail laporan berhasil dimuat")
         } catch (error) {
             console.error('Gagal mengambil data detail laporan:', error);
@@ -76,7 +76,7 @@ export default function ReportDetailPage() {
                 imageUrl: imageUrl
             };
 
-            const res =  await api.patch(`/admin/reports/${params.reportNumber}/update-status`, payload, {
+            const res = await api.patch(`/admin/reports/${params.reportNumber}/update-status`, payload, {
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -187,7 +187,7 @@ export default function ReportDetailPage() {
             {/* Modals */}
             <ConfirmationModal
                 open={modal === 'verify'}
-                onClose={() => setModal(null)}
+                onClose={() => !isUpdating && setModal(null)}
                 onConfirm={() => handleUpdateStatus('VERIFIED')}
                 title="Verifikasi Laporan"
                 description="Pastikan data pelapor serta foto valid, anda yakin untuk verifikasi laporan ini?"
@@ -198,7 +198,7 @@ export default function ReportDetailPage() {
 
             <ConfirmationModal
                 open={modal === 'process'}
-                onClose={() => setModal(null)}
+                onClose={() => !isUpdating && setModal(null)}
                 onConfirm={() => handleUpdateStatus('IN_PROGRESS')}
                 title="Proses Laporan"
                 description="Apakah anda yakin ingin mengubah status laporan menjadi diproses?"
@@ -209,7 +209,7 @@ export default function ReportDetailPage() {
 
             <RejectionModal
                 open={modal === 'rejected'}
-                onClose={() => setModal(null)}
+                onClose={() => !isUpdating && setModal(null)}
                 onConfirm={(message) => handleUpdateStatus('REJECTED', message)}
             />
 
