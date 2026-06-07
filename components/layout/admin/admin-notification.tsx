@@ -17,6 +17,7 @@ interface Notification {
     title: string;
     message: string;
     isRead: boolean;
+    reportNumber: string;
     createdAt: string;
 }
 
@@ -73,9 +74,14 @@ export default function AdminNotification() {
             channel.bind('new-notification', (newNotif: Notification) => {
                 setNotifications((prev) => [newNotif, ...prev]);
 
-                toast.info(newNotif.title, {
-                    description: <span className='text-foreground'>{newNotif.message}</span>,
-                });
+                toast.info(
+                    <span className="font-bold text-primary">
+                        {newNotif.title}
+                    </span>,
+                    {
+                        description: <span className='text-foreground'>{newNotif.message}</span>,
+                    }
+                );
             });
 
             return () => {
@@ -162,8 +168,8 @@ export default function AdminNotification() {
                                     textValue={notif.title}
                                     className={`mb-1 min-h-fit ${!notif.isRead ? 'bg-primary/5' : ''}`}
                                 >
-                                    <Link onClick={() => handleNotificationClick(notif.id, notif.isRead)} href={`/admin/report-management/${encodeURIComponent(notif.report.reportNumber)}`} className='flex flex-col gap-1 py-1'>
-                                        <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold'}`}>
+                                    <Link onClick={() => handleNotificationClick(notif.id, notif.isRead)} href={`/admin/report-management/${notif?.reportNumber ? encodeURIComponent(notif.reportNumber) : encodeURIComponent(notif.report.reportNumber)}`} className='flex flex-col gap-1 py-1'>
+                                        <p className={`text-sm ${!notif.isRead ? 'font-bold text-primary' : 'font-semibold text-primary'}`}>
                                             {notif.title}
                                         </p>
                                         <p className='whitespace-normal text-xs text-muted-foreground leading-relaxed'>

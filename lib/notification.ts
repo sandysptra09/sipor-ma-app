@@ -17,6 +17,7 @@ export async function sendNotification({ userId, title, message, reportId, repor
                 title,
                 message,
                 reportId,
+                reportNumber
             },
         });
 
