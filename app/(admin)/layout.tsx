@@ -20,7 +20,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "next-auth/react";
 import AdminNotification from "@/components/layout/admin/admin-notification";
-import { ToastProvider } from '@heroui/react';
+import { Toast } from '@heroui/react';
 
 export default function AdminLayout({
     children,
@@ -56,10 +56,10 @@ export default function AdminLayout({
         <>
             <SidebarProvider>
 
-                <ToastProvider placement='top end' />
+                <Toast.Provider placement='top end' />
 
                 <AppSidebar />
-                <SidebarInset className="bg-white/80">
+                <SidebarInset className="bg-white/80 w-full min-w-0">
                     <header className="sticky z-50 top-0 flex h-16 shrink-0 justify-end items-center gap-4 px-4 bg-white [box-shadow:0_4px_2px_-2px_rgba(0,0,0,0.08)]">
 
                         <AdminNotification />
@@ -76,7 +76,7 @@ export default function AdminLayout({
                             </div>
                         </Link>
                     </header>
-                    <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm">
+                    <div className="flex flex-1 flex-col gap-4 p-4 inset-shadow-sm ">
                         <div className="flex gap-2 items-center" >
                             <SidebarTrigger className="-ml-1 hidden md:flex" />
                             <Separator
