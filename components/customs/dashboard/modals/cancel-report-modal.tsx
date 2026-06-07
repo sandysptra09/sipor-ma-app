@@ -59,7 +59,7 @@ export default function CancelReportModal({ isOpen, onClose, reportId, onSuccess
             <Modal.Backdrop isOpen={isOpen} onOpenChange={(open) => {
                 if (!open && !isDeleting) onClose();
             }}>
-                <Modal.Container>
+                <Modal.Container placement='center'>
                     <Modal.Dialog className="overflow-hidden sm:max-w-112.5 p-0 rounded-2xl shadow-xl border-none">
 
                         <Modal.Header className="bg-[#FF3B30] text-white flex flex-row items-center gap-3 p-4 px-5">

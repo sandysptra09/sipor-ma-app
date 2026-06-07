@@ -19,6 +19,9 @@ interface ReportingFormProps {
 
 export default function ReportingForm({ roomCode, fullLocation, isLoadingLocation }: ReportingFormProps) {
     const router = useRouter();
+
+    const [isMounted, setIsMounted] = useState(false);
+
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -26,6 +29,10 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
     const [loadingStep, setLoadingStep] = useState(1);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         let timeout1: NodeJS.Timeout;
@@ -119,21 +126,21 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
             case 1:
                 return (
                     <span className='flex items-center gap-2 animate-pulse'>
-                        <Bot size={18} />
-                        AI sedang menganalisa foto bukti...
+                        <Bot size={18} className='shrink-0' />
+                        AI menganalisa foto...
                     </span>
                 );
             case 2:
                 return (
                     <span className='flex items-center gap-2 animate-pulse'>
-                        <Sparkles size={18} />
+                        <Sparkles size={18} className='shrink-0' />
                         Menentukan kategori & prioritas ...
                     </span>
                 );
             case 3:
                 return (
                     <span className='flex items-center gap-2 animate-pulse'>
-                        <Rocket size={18} />
+                        <Rocket size={18} className='shrink-0' />
                         Menyelesaikan laporan...
                     </span>
                 );
@@ -158,7 +165,7 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
 
             <DescriptionTextarea value={description} onChange={setDescription} />
 
-            <div className='flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 mt-2 border-t border-zinc-200'>
+            <div className='flex flex-col xl:flex-row xl:items-center justify-between gap-4 pt-4 mt-2 border-t border-zinc-200'>
 
                 <div className='flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start'>
                     <ShieldCheck size={20} className='fill-[#0A6F66] text-white' />
@@ -167,26 +174,33 @@ export default function ReportingForm({ roomCode, fullLocation, isLoadingLocatio
                     </span>
                 </div>
 
-                <div className='flex items-center gap-3 w-full sm:w-auto justify-end'>
-                    <Button
-                        variant='ghost'
-                        className='font-bold text-[#181C1C] hover:bg-zinc-100 w-full rounded-md sm:w-auto p-6 '
-                        isDisabled={isSubmitting}
-                    >
-                        Batal
-                    </Button>
+                {isMounted ? (
+                    <div className='flex items-center gap-3 w-full sm:w-auto justify-end'>
+                        {!isSubmitting && (
+                            <Button
+                                variant='ghost'
+                                className='font-bold text-[#181C1C] hover:bg-zinc-100 w-full sm:w-auto p-6 rounded-md'
+                            >
+                                Batal
+                            </Button>
+                        )}
 
-                    <Button
-                        className={`font-bold text-sm transition-all duration-500 w-full rounded-md sm:w-auto p-6 ${isSubmitting
-                            ? 'bg-[#0A6F66] text-white'
-                            : 'bg-[#0A6F66] text-white hover:bg-[#07534c]'
-                            }`}
-                        onPress={handleOpenConfirmation}
-                        isDisabled={isSubmitting || !imageUrl}
-                    >
-                        {isSubmitting ? renderLoadingContent() : 'Kirim Laporan'}
-                    </Button>
-                </div>
+                        <Button
+                            className={`font-bold text-sm transition-all duration-500 w-full rounded-md sm:w-auto p-6 ${isSubmitting
+                                ? 'bg-[#0A6F66] text-white'
+                                : 'bg-[#0A6F66] text-white hover:bg-[#07534c]'
+                                }`}
+                            onPress={handleOpenConfirmation}
+                            isDisabled={isSubmitting || !imageUrl}
+                        >
+                            {isSubmitting ? renderLoadingContent() : 'Kirim Laporan'}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className='flex items-center gap-3 w-full sm:w-auto justify-end'>
+                        <div className="h-12 w-full sm:w-32.5 bg-zinc-100 rounded-md animate-pulse"></div>
+                    </div>
+                )}
             </div>
 
             <ConfirmationModal
