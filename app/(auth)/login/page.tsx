@@ -31,7 +31,7 @@ export default function LoginPage() {
 
             <div className='mt-12 w-full text-center text-[10px] font-normal tracking-wider sm:text-xs'>
                 <p className='mb-4 text-[#575858] uppercase tracking-widest'>© 2026 SIPOR-MA. ALL RIGHTS RESERVED.</p>
-                <div className='flex flex-wrap justify-center gap-4 gap-3 sm:gap-4 text-foreground uppercase'>
+                <div className='flex flex-wrap justify-center gap-3 sm:gap-4 text-foreground uppercase'>
                     <Link href='/privacy-policy' className='transition-colors hover:text-[#0f9d85]'>Kebijakan Privasi</Link>
                     <Link href='/terms-and-conditions' className='transition-colors hover:text-[#0f9d85]'>Ketentuan Layanan</Link>
                     <Link href='/help-center' className='transition-colors hover:text-[#0f9d85]'>Pusat Bantuan</Link>
