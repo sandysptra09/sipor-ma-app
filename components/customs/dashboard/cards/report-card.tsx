@@ -5,6 +5,7 @@ import { Card, Chip, ProgressBar } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export type ReportStatus = 'PENDING' | 'PROSES' | 'SELESAI' | 'DITOLAK';
 
@@ -39,6 +40,8 @@ export default function ReportCard({
     roomCode,
     onCancelClick,
 }: ReportCardProps) {
+
+    const router = useRouter();
 
     const statusConfig = {
         PENDING: {
@@ -83,7 +86,10 @@ export default function ReportCard({
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5, delay }}
         >
-            <Card className='w-full bg-white border-none rounded-2xl'>
+            <Card
+                onClick={() => router.push(`/dashboard/report-detail/${cleanReportId}`)}
+                className='w-full bg-white border-none rounded-2xl cursor-pointer transition-all duration-200 hover:bg-zinc-50 hover:shadow-sm'
+            >
 
                 <Card.Content className='p-2'>
 
@@ -146,7 +152,10 @@ export default function ReportCard({
 
                         {actionText === 'Batalkan Laporan' ? (
                             <div
-                                onClick={() => onCancelClick && onCancelClick(id)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (onCancelClick) onCancelClick(id);
+                                }}
                                 className={`flex items-center gap-2 text-[12px] md:text-[13px] cursor-pointer ${actionTextColor} hover:opacity-70 transition-opacity`}
                             >
                                 {actionIcon}
