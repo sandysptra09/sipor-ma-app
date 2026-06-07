@@ -5,15 +5,25 @@ import SummaryCardReport from "@/components/customs/admin/summary-card-report";
 import RecentActivityCard from "@/components/customs/admin/recent-activity-card";
 import SummaryReportByCategoryCard from "@/components/customs/admin/summary-report-by-category-card";
 import { CustomTableReport } from "@/components/customs/admin/custom-table-report";
-import { BadgeCheck, Clock, MapPin, TrendingUp, Eye } from "lucide-react";
+import { BadgeCheck, Clock, TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
 import { api } from "@/lib/axios";
 import { columns } from "./columns";
 import { toast } from "@heroui/react";
 
 interface DashboardStatistic {
-    incoming: number;
-    inProgress: number;
-    completed: number;
+    incoming: {
+        count: number;
+        trend: number;
+        pending: number;
+    };
+    inProgress: {
+        count: number;
+        highPriority: number;
+    };
+    completed: {
+        count: number;
+        trend: number;
+    };
 }
 
 export default function Page() {
@@ -37,9 +47,7 @@ export default function Page() {
             setData(json);
         } catch (error) {
             console.error('Gagal mengambil statistik', error);
-            toast.danger("Gagal memuat statistik dashboard", {
-                description: "Terjadi kesalahan saat mengambil data statistik."
-            });
+            toast.danger("Gagal memuat statistik dashboard");
         } finally {
             setIsLoading(false);
         }
@@ -57,7 +65,6 @@ export default function Page() {
         }
     }
 
-
     const fetchTableData = async () => {
         try {
             const params = new URLSearchParams();
@@ -69,7 +76,6 @@ export default function Page() {
 
             setReportData(data);
             setTotalRecords(pagination.totalData);
-
         } catch (error) {
             console.error('Gagal mengambil data laporan untuk tabel:', error);
             toast.danger("Gagal memuat data laporan");
@@ -78,7 +84,6 @@ export default function Page() {
         }
     };
 
-    // fetch intial data
     useEffect(() => {
         const loadDashboard = async () => {
             try {
@@ -91,15 +96,8 @@ export default function Page() {
                     fetchRecentActivityData(),
                     fetchTableData(),
                 ]);
-
-                toast.success("Dashboard berhasil dimuat");
             } catch (error) {
                 console.error(error);
-
-                toast.danger("Gagal memuat dashboard", {
-                    description:
-                        "Terjadi kesalahan saat mengambil data dashboard.",
-                });
             } finally {
                 setIsLoading(false);
                 setRecentActivityLoading(false);
@@ -120,29 +118,44 @@ export default function Page() {
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
                 title={"Laporan Masuk"}
-                subTitle="Testing"
-                count={data?.incoming || 0}
+                subTitle="Bulan Ini"
+                count={data?.incoming?.count || 0}
                 type="incoming"
                 loading={isLoading}
-                description={<><TrendingUp size={14} /> +12% dari bulan lalu</>}
+                description={
+                    <span className={(data?.incoming?.trend ?? 0) > 0 ? "text-red-500 flex items-center gap-1" : "text-emerald-500 flex items-center gap-1"}>
+                        {(data?.incoming?.trend ?? 0) >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                        {(data?.incoming?.trend ?? 0) > 0 ? '+' : ''}{data?.incoming?.trend ?? 0}% dari bulan lalu
+                    </span>
+                }
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
                 title={"Sedang Dikerjakan"}
-                subTitle="Testing"
-                count={data?.inProgress || 0}
+                subTitle="Total Keseluruhan"
+                count={data?.inProgress?.count || 0}
                 type="in-progress"
                 loading={isLoading}
-                description={<><Clock size={14} /> Estimasi selesai: 3 hari</>}
+                description={
+                    <span className={(data?.inProgress?.highPriority ?? 0) > 0 ? "text-amber-600 flex items-center gap-1" : "text-gray-500 flex items-center gap-1"}>
+                        {(data?.inProgress?.highPriority ?? 0) > 0 ? <AlertCircle size={14} /> : <Clock size={14} />}
+                        {data?.inProgress?.highPriority ?? 0} Prioritas Tinggi
+                    </span>
+                }
             />
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"
                 title={"Selesai Bulan Ini"}
-                subTitle="Testing"
-                count={data?.completed || 0}
+                subTitle="Kinerja Penyelesaian"
+                count={data?.completed?.count || 0}
                 type="completed"
                 loading={isLoading}
-                description={<><BadgeCheck size={14} /> 12.4% Tingkat Kepuasan</>}
+                description={
+                    <span className={(data?.completed?.trend ?? 0) < 0 ? "text-red-500 flex items-center gap-1" : "text-emerald-500 flex items-center gap-1"}>
+                        <BadgeCheck size={14} />
+                        {(data?.completed?.trend ?? 0) > 0 ? '+' : ''}{data?.completed?.trend ?? 0}% performa vs bulan lalu
+                    </span>
+                }
             />
 
             {/* Row 2: Charts & Activities */}
@@ -170,7 +183,6 @@ export default function Page() {
                     }}
                 />
             </div>
-
         </div>
     );
 }
