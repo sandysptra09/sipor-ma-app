@@ -85,11 +85,11 @@ export function ReportDetailCard({
                     {reporterInitial ? getInitialName(reporterInitial) : '-'}
                 </CardAction>
             </CardHeader>
-            <CardContent className='p-0 gap-3 mt-6'>
+            <CardContent className='p-0 gap-3'>
                 <p className='font-semibold text-lg font-sans'>Deskripsi Keluhan</p>
                 <p className='leading-6.5'>{description || '-'}</p>
             </CardContent>
-            <CardFooter className='bg-foreground/5 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start rounded-[8px] mt-6'>
+            <CardFooter className='bg-foreground/5 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start rounded-[8px]'>
                 <div className='flex flex-col gap-1'>
                     <p className='uppercase text-[10px] tracking-[1px] font-semibold text-foreground/40'>Lokasi Spesifik</p>
                     <p className='text-[16px] leading-6 text-[#181C1C] font-medium'>{location || '-'}</p>
