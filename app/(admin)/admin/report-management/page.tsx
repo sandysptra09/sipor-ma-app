@@ -24,14 +24,16 @@ export default function ReportManagementPage() {
     const [endDate, setEndDate] = useState<Date>();
     const [selectedGedung, setSelectedGedung] = useState<string>("");
     const [selectedStatus, setSelectedStatus] = useState<string>("");
-    const [searchQuery, setSearchQuery] = useState<string>(""); 
+    const [selectedPriority, setSelectedPriority] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>("");
 
     const handleReset = () => {
         setStartDate(undefined);
         setEndDate(undefined);
         setSelectedGedung("");
         setSelectedStatus("");
-        setSearchQuery(""); 
+        setSelectedPriority("");
+        setSearchQuery("");
         setCurrentPage(1);
         setRefetch(prev => prev + 1);
     };
@@ -42,7 +44,7 @@ export default function ReportManagementPage() {
     };
 
     const fetchReportsData = async () => {
-        setLoading(true); 
+        setLoading(true);
         try {
             const params = new URLSearchParams();
 
@@ -57,6 +59,9 @@ export default function ReportManagementPage() {
             }
             if (selectedStatus) {
                 params.append('status', selectedStatus.toUpperCase());
+            }
+            if (selectedPriority) {
+                params.append('priority', selectedPriority.toUpperCase());
             }
             if (startDate) {
                 params.append('startDate', startDate.toISOString());
@@ -113,12 +118,14 @@ export default function ReportManagementPage() {
                 endDate={endDate}
                 selectedGedung={selectedGedung}
                 selectedStatus={selectedStatus}
-                searchQuery={searchQuery} 
-                onSearchChange={setSearchQuery} 
+                selectedPriority={selectedPriority}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onGedungChange={setSelectedGedung}
                 onStatusChange={setSelectedStatus}
+                onPriorityChange={setSelectedPriority}
                 onFilter={handleFilter}
                 onReset={handleReset}
             />

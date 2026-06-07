@@ -16,11 +16,13 @@ interface ReportFilterProps {
     endDate: Date | undefined;
     selectedGedung: string;
     selectedStatus: string;
+    selectedPriority: string; 
     searchQuery: string;
     onStartDateChange: (date: Date | undefined) => void;
     onEndDateChange: (date: Date | undefined) => void;
     onGedungChange: (value: string) => void;
     onStatusChange: (value: string) => void;
+    onPriorityChange: (value: string) => void; 
     onSearchChange: (value: string) => void;
     onFilter: () => void;
     onReset: () => void;
@@ -33,29 +35,27 @@ export function ReportFilter({
     endDate,
     selectedGedung,
     selectedStatus,
+    selectedPriority,
     searchQuery,
     onStartDateChange,
     onEndDateChange,
     onGedungChange,
     onStatusChange,
+    onPriorityChange,
     onSearchChange,
     onFilter,
     onReset,
 }: ReportFilterProps) {
     return (
-        <div className='flex flex-col gap-4 p-4 bg-background rounded-lg'>
+        <div className='flex flex-col gap-4 p-4 rounded-lg'>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full">
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
-
-                {/* Search */}
-                <div className="flex flex-col gap-2 md:col-span-12 lg:col-span-6">
-                    <Label className="font-semibold text-primary text-sm">
+                <div className="flex flex-col gap-2 col-span-2 lg:col-span-1">
+                    <Label className="font-semibold text-foreground text-sm">
                         Cari Laporan
                     </Label>
-
                     <div className="relative w-full">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/60" />
-
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground" />
                         <input
                             type="text"
                             placeholder="Cari berdasarkan nomor, judul, atau deskripsi..."
@@ -64,17 +64,16 @@ export function ReportFilter({
                             disabled={loading}
                             className={cn(
                                 "w-full pl-10 pr-10 py-2 text-sm font-medium rounded-md",
-                                "bg-[#e6f4f4] border-none focus:outline-none focus:ring-2 focus:ring-primary",
-                                "text-primary placeholder-primary/50 transition-all",
+                                "bg-[#64748B]/10 border-none focus:outline-none focus:ring-2 focus:ring-[#64748B]/40",
+                                "text-[#181C1C] placeholder-[#64748B]/60 transition-all",
                                 loading && "opacity-50 cursor-not-allowed"
                             )}
                         />
-
                         {searchQuery && (
                             <button
                                 onClick={() => onSearchChange("")}
                                 disabled={loading}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary/60 hover:text-primary transition-colors"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground/70 hover:text-foreground transition-colors"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -82,21 +81,20 @@ export function ReportFilter({
                     </div>
                 </div>
 
-                {/* Start Date */}
-                <div className="flex flex-col gap-2 md:col-span-6 lg:col-span-3">
-                    <Label className="font-semibold text-primary text-sm">Tanggal Awal</Label>
+                <div className="flex flex-col gap-2">
+                    <Label className="font-semibold text-foreground text-sm">Tanggal Awal</Label>
                     <Popover modal={!loading}>
                         <PopoverTrigger asChild>
                             <Button
                                 disabled={loading}
                                 variant="outline"
                                 className={cn(
-                                    "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#e6f4f4] hover:bg-[#d1eded] transition-colors rounded-md text-sm",
-                                    !startDate && "text-primary/70"
+                                    "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#64748B]/10 hover:bg-[#64748B]/20 transition-colors rounded-md text-sm",
+                                    !startDate ? "text-foreground/70" : "text-foreground"
                                 )}
                             >
-                                <CalendarIcon className="h-5 w-5 text-primary flex-shrink-0" />
-                                <span className="text-primary tracking-wide truncate">
+                                <CalendarIcon className="h-5 w-5 text-foreground flex-shrink-0" />
+                                <span className="tracking-wide truncate">
                                     {startDate ? format(startDate, "dd/MM/yyyy") : "Pilih Tanggal"}
                                 </span>
                             </Button>
@@ -116,21 +114,20 @@ export function ReportFilter({
                     </Popover>
                 </div>
 
-                {/* End Date */}
-                <div className="flex flex-col gap-2 md:col-span-6 lg:col-span-3">
-                    <Label className="font-semibold text-primary text-sm">Tanggal Akhir</Label>
+                <div className="flex flex-col gap-2">
+                    <Label className="font-semibold text-foreground text-sm">Tanggal Akhir</Label>
                     <Popover modal={!loading}>
                         <PopoverTrigger asChild>
                             <Button
                                 disabled={loading}
                                 variant="outline"
                                 className={cn(
-                                    "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#e6f4f4] hover:bg-[#d1eded] transition-colors rounded-md text-sm",
-                                    !endDate && "text-primary/70"
+                                    "w-full justify-start text-left font-semibold p-2.5 gap-2 border-none bg-[#64748B]/10 hover:bg-[#64748B]/20 transition-colors rounded-md text-sm",
+                                    !endDate ? "text-foreground/70" : "text-[#181C1C]"
                                 )}
                             >
-                                <CalendarIcon className="h-5 w-5 text-primary flex-shrink-0" />
-                                <span className="text-primary tracking-wide truncate">
+                                <CalendarIcon className="h-5 w-5 text-foreground flex-shrink-0" />
+                                <span className="tracking-wide truncate">
                                     {endDate ? format(endDate, "dd/MM/yyyy") : "Pilih Tanggal"}
                                 </span>
                             </Button>
@@ -150,10 +147,8 @@ export function ReportFilter({
                     </Popover>
                 </div>
 
-
-                {/* Gedung */}
-                <div className="flex flex-col gap-2 md:col-span-6 lg:col-span-5">
-                    <Label className='font-semibold text-primary text-sm'>Gedung</Label>
+                <div className="flex flex-col gap-2">
+                    <Label className='font-semibold text-foreground text-sm'>Gedung</Label>
                     <Select
                         isDisabled={loading}
                         className="w-full"
@@ -161,9 +156,9 @@ export function ReportFilter({
                         selectedKey={selectedGedung}
                         onSelectionChange={(key) => onGedungChange(key as string)}
                     >
-                        <Select.Trigger className="bg-[#e6f4f4] hover:bg-[#d1eded] border-none shadow-none rounded-md transition-colors px-3 py-2.5 text-sm">
-                            <Select.Value className="text-primary font-semibold tracking-wide" />
-                            <Select.Indicator className="text-primary" />
+                        <Select.Trigger className="bg-[#64748B]/10 hover:bg-[#64748B]/20 border-none shadow-none rounded-md transition-colors px-3 py-2.5 text-sm">
+                            <Select.Value className="text-foreground/70 hover:text-foreground font-semibold tracking-wide" />
+                            <Select.Indicator className="text-foreground/70 hover:text-foreground" />
                         </Select.Trigger>
                         <Select.Popover className="rounded-md shadow-2xl border border-slate-200">
                             <ListBox>
@@ -171,7 +166,7 @@ export function ReportFilter({
                                     <ListBox.Item
                                         key={item.name}
                                         id={item.name}
-                                        className="rounded-md font-semibold text-primary text-sm data-[focused=true]:bg-[#e6f4f4] data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
+                                        className="rounded-md font-semibold text-foreground text-sm data-[focused=true]:bg-[#64748B]/10 data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
                                     >
                                         {item.label}
                                         <ListBox.ItemIndicator />
@@ -182,9 +177,8 @@ export function ReportFilter({
                     </Select>
                 </div>
 
-                {/* Status */}
-                <div className="flex flex-col gap-2 md:col-span-6 lg:col-span-4">
-                    <Label className='font-semibold text-primary text-sm'>Status</Label>
+                <div className="flex flex-col gap-2">
+                    <Label className='font-semibold text-foreground text-sm'>Status</Label>
                     <Select
                         isDisabled={loading}
                         className="w-full"
@@ -192,9 +186,9 @@ export function ReportFilter({
                         selectedKey={selectedStatus}
                         onSelectionChange={(key) => onStatusChange(key as string)}
                     >
-                        <Select.Trigger className="bg-[#e6f4f4] hover:bg-[#d1eded] border-none shadow-none rounded-md transition-colors px-3 py-2.5 text-sm">
-                            <Select.Value className="text-primary font-semibold tracking-wide" />
-                            <Select.Indicator className="text-primary" />
+                        <Select.Trigger className="bg-[#64748B]/10 hover:bg-[#64748B]/20 border-none shadow-none rounded-md transition-colors px-3 py-2.5 text-sm">
+                            <Select.Value className="text-foreground/70 hover:text-foreground font-semibold tracking-wide" />
+                            <Select.Indicator className="text-foreground/70 hover:text-foreground" />
                         </Select.Trigger>
                         <Select.Popover className="rounded-md shadow-2xl border border-slate-200">
                             <ListBox>
@@ -209,7 +203,7 @@ export function ReportFilter({
                                     <ListBox.Item
                                         key={item.id}
                                         id={item.id}
-                                        className="rounded-md font-semibold text-primary text-sm data-[focused=true]:bg-[#e6f4f4] data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
+                                        className="rounded-md font-semibold text-foreground text-sm data-[focused=true]:bg-[#64748B]/10 data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
                                     >
                                         {item.label} <ListBox.ItemIndicator />
                                     </ListBox.Item>
@@ -219,31 +213,58 @@ export function ReportFilter({
                     </Select>
                 </div>
 
-                {/* Buttons */}
-                <div className='flex flex-col gap-2 md:col-span-12 lg:col-span-3 justify-end'>
-                    <Label className="font-semibold text-transparent text-sm hidden lg:block select-none">
-                        Aksi
-                    </Label>
-                    <div className="flex flex-row gap-2 justify-end w-full">
-                        <Button
-                            disabled={loading}
-                            onClick={onReset}
-                            className='font-semibold flex-1 md:flex-none text-primary border-2 border-primary bg-background hover:bg-primary/10 px-4 py-2.5 text-sm gap-2 w-full md:w-auto'
-                        >
-                            <FunnelX size={18} />
-                            Reset
-                        </Button>
-                        <Button 
-                            disabled={loading} 
-                            onClick={onFilter} 
-                            className='font-semibold flex-1 md:flex-none px-4 py-2.5 text-sm gap-2 w-full md:w-auto'
-                        >
-                            <Funnel size={18} />
-                            Filter
-                        </Button>
-                    </div>
+                <div className="flex flex-col gap-2 col-span-2 lg:col-span-1">
+                    <Label className='font-semibold text-foreground text-sm'>Prioritas</Label>
+                    <Select
+                        isDisabled={loading}
+                        className="w-full"
+                        placeholder="Pilih Prioritas"
+                        selectedKey={selectedPriority}
+                        onSelectionChange={(key) => onPriorityChange(key as string)}
+                    >
+                        <Select.Trigger className="bg-[#64748B]/10 hover:bg-[#64748B]/20 border-none shadow-none rounded-md transition-colors px-3 py-2.5 text-sm">
+                            <Select.Value className="text-foreground/70 hover:text-foreground font-semibold tracking-wide" />
+                            <Select.Indicator className="text-foreground/70 hover:text-foreground" />
+                        </Select.Trigger>
+                        <Select.Popover className="rounded-md shadow-2xl border border-slate-200">
+                            <ListBox>
+                                {[
+                                    { id: "LOW", label: "Rendah" },
+                                    { id: "MEDIUM", label: "Sedang" },
+                                    { id: "HIGH", label: "Tinggi" },
+                                ].map((item) => (
+                                    <ListBox.Item
+                                        key={item.id}
+                                        id={item.id}
+                                        className="rounded-md font-semibold text-foreground text-sm data-[focused=true]:bg-[#64748B]/10 data-[selected=true]:bg-[#0d9488] data-[selected=true]:text-white"
+                                    >
+                                        {item.label} <ListBox.ItemIndicator />
+                                    </ListBox.Item>
+                                ))}
+                            </ListBox>
+                        </Select.Popover>
+                    </Select>
                 </div>
-                
+
+                <div className='col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-3 justify-end w-full mt-2'>
+                    <Button
+                        disabled={loading}
+                        onClick={onReset}
+                        className='font-semibold w-full sm:w-32 text-primary border-2 border-primary bg-background hover:bg-primary/10 px-4 py-2.5 text-sm gap-2'
+                    >
+                        <FunnelX size={18} />
+                        Reset
+                    </Button>
+                    <Button
+                        disabled={loading}
+                        onClick={onFilter}
+                        className='cursor-pointer font-semibold w-full sm:w-32 px-4 py-2.5 text-sm gap-2 bg-[#0d9488] hover:bg-[#0f766e]'
+                    >
+                        <Funnel size={18} />
+                        Filter
+                    </Button>
+                </div>
+
             </div>
         </div>
     );
