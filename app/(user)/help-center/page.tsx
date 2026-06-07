@@ -1,5 +1,7 @@
 import CtaBanner from '@/components/customs/landing/banners/cta-banner';
 import HelpCenterTabs from '@/components/customs/help-center/tabs/help-center-tabs';
+import HelpCenterSearch from '@/components/customs/help-center/help-center-search';
+import { Suspense } from 'react';
 
 import { Metadata } from 'next';
 
@@ -29,23 +31,9 @@ export default function HelpCenterPage() {
                         </p>
                     </div>
 
-                    <div className="w-full max-w-2xl relative mt-2">
-                        <input
-                            type="text"
-                            placeholder="Cari topik bantuan atau kata kunci..."
-                            className="w-full rounded-xl border bg-card px-4 py-3 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
-                        />
-
-                        <svg
-                            className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
-                        </svg>
-                    </div>
+                    <Suspense fallback={<div className="w-full max-w-2xl relative mt-2 h-12 bg-gray-100 rounded-xl animate-pulse"></div>}>
+                        <HelpCenterSearch />
+                    </Suspense>
 
                     <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-center">
                         <span className="text-gray-400 font-medium">

@@ -2,6 +2,7 @@
 
 import { Tabs, Accordion } from '@heroui/react';
 import { User, Settings, Megaphone, ChevronDown } from "lucide-react";
+import { useSearchParams } from 'next/navigation';
 
 const faqData = {
     reporting: [
@@ -73,6 +74,21 @@ const faqData = {
 };
 
 export default function HelpCenterTabs() {
+    const searchParams = useSearchParams();
+    const query = searchParams.get('q')?.toLowerCase() || '';
+
+    const filterFaq = (faqs: any[]) => {
+        if (!query) return faqs;
+        return faqs.filter(faq => 
+            faq.title.toLowerCase().includes(query) || 
+            faq.content.toLowerCase().includes(query)
+        );
+    };
+
+    const reportingFaq = filterFaq(faqData.reporting);
+    const maintenanceFaq = filterFaq(faqData.maintenance);
+    const accountFaq = filterFaq(faqData.account);
+
     return (
         <div className='w-full bg-card py-8 lg:py-12'>
             <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8'>
@@ -119,7 +135,7 @@ export default function HelpCenterTabs() {
 
                     <Tabs.Panel id="reporting" className='w-full max-w-4xl mx-auto mt-8 transition-all'>
                         <Accordion className="w-full border border-primary/20 rounded-xl overflow-hidden" variant="surface">
-                            {faqData.reporting.map((item, index) => (
+                            {reportingFaq.length > 0 ? reportingFaq.map((item, index) => (
                                 <Accordion.Item key={index}>
                                     <Accordion.Heading>
                                         <Accordion.Trigger className='text-primary font-semibold px-5 py-4 text-left text-sm sm:text-base'>
@@ -133,13 +149,13 @@ export default function HelpCenterTabs() {
                                         </Accordion.Body>
                                     </Accordion.Panel>
                                 </Accordion.Item>
-                            ))}
+                            )) : <div className="p-4 text-center text-gray-500">Tidak ada hasil ditemukan.</div>}
                         </Accordion>
                     </Tabs.Panel>
 
                     <Tabs.Panel id="maintenance" className='w-full max-w-4xl mx-auto mt-8 transition-all'>
                         <Accordion className="w-full border border-primary/20 rounded-xl overflow-hidden" variant="surface">
-                            {faqData.maintenance.map((item, index) => (
+                            {maintenanceFaq.length > 0 ? maintenanceFaq.map((item, index) => (
                                 <Accordion.Item key={index}>
                                     <Accordion.Heading>
                                         <Accordion.Trigger className='text-primary font-semibold px-5 py-4 text-left text-sm sm:text-base'>
@@ -153,13 +169,13 @@ export default function HelpCenterTabs() {
                                         </Accordion.Body>
                                     </Accordion.Panel>
                                 </Accordion.Item>
-                            ))}
+                            )) : <div className="p-4 text-center text-gray-500">Tidak ada hasil ditemukan.</div>}
                         </Accordion>
                     </Tabs.Panel>
 
                     <Tabs.Panel id="account" className='w-full max-w-4xl mx-auto mt-8 transition-all'>
                         <Accordion className="w-full border border-primary/20 rounded-xl overflow-hidden" variant="surface">
-                            {faqData.account.map((item, index) => (
+                            {accountFaq.length > 0 ? accountFaq.map((item, index) => (
                                 <Accordion.Item key={index}>
                                     <Accordion.Heading>
                                         <Accordion.Trigger className='text-primary font-semibold px-5 py-4 text-left text-sm sm:text-base'>
@@ -173,7 +189,7 @@ export default function HelpCenterTabs() {
                                         </Accordion.Body>
                                     </Accordion.Panel>
                                 </Accordion.Item>
-                            ))}
+                            )) : <div className="p-4 text-center text-gray-500">Tidak ada hasil ditemukan.</div>}
                         </Accordion>
                     </Tabs.Panel>
 
