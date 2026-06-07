@@ -42,6 +42,7 @@ export async function GET(
                         name: true,
                         nim_nip: true,
                         role:true,
+                        image:true
                     },
                 },
 
