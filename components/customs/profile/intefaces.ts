@@ -40,7 +40,7 @@ export interface UserProfileData {
 }
 
 export interface StatisticData{
-    totalReports: number |null;
-    totalResolved: number |null;
-    totalInProgress: number |null;
+    total: number |null;
+    selesai: number |null;
+    proses: number |null;
 } 
