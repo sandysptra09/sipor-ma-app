@@ -115,7 +115,7 @@ export default function Page() {
     }, [currentPage, rowsPerPage]);
 
     return (
-        <div className="grid grid-cols-6 gap-[20px]">
+        <div className="grid grid-cols-6 gap-6">
             {/* Row 1: Summary Cards */}
             <SummaryCardReport
                 className="col-span-6 md:col-span-2"

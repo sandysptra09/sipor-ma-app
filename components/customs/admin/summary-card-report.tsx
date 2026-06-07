@@ -38,7 +38,7 @@ export default function SummaryCardReport({ className, title, count, type, loadi
   }[type];
 
   return (
-    <Card className={`rounded-lg shadow-md ring-0 p-5 ${type === 'in-progress' && !loading ? 'border-l-4 border-[#FBBF24]' : ""}  ${className ? className : ''}`}>
+    <Card className={`rounded-lg shadow-sm ring-0 p-5 ${type === 'in-progress' && !loading ? 'border-l-4 border-[#FBBF24]' : ""}  ${className ? className : ''}`}>
       <div className="flex justify-between items-start gap-4">
         
         {loading ? (

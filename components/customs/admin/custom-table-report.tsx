@@ -70,7 +70,7 @@ export function CustomTableReport({
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md ring-0 overflow-hidden">
+    <div className="w-full bg-white rounded-lg shadow-sm ring-0 overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-[#F8FAFA]">
