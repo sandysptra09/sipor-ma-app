@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Card, TextField, Label, Input, Button, toast } from '@heroui/react';
 import { api } from '@/lib/axios';
-import { AxiosError } from 'axios'; 
+import { AxiosError } from 'axios';
+import { Eye, EyeOff } from 'lucide-react'; 
 
 export default function SecurityForm() {
     const [formData, setFormData] = useState({
@@ -13,6 +14,10 @@ export default function SecurityForm() {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -24,73 +29,45 @@ export default function SecurityForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validasi konfirmasi password
         if (formData.newPassword !== formData.confirmPassword) {
-            toast.warning(
-                'Password baru dan konfirmasi tidak cocok!'
-            );
+            toast.warning('Password baru dan konfirmasi tidak cocok!');
             return;
         }
 
-        // Validasi minimal karakter
         if (formData.newPassword.length < 8) {
-            toast.warning(
-                'Password baru minimal 8 karakter!'
-            );
+            toast.warning('Password baru minimal 8 karakter!');
             return;
         }
 
         setIsLoading(true);
 
         try {
+            await new Promise((res) => setTimeout(res, 800));
 
-            // Optional delay UX
-            await new Promise((res) =>
-                setTimeout(res, 800)
-            );
+            const response = await api.patch('/users/me/password', {
+                oldPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+            });
 
-            const response = await api.patch(
-                '/users/me/password',
-                {
-                    oldPassword: formData.currentPassword,
-                    newPassword: formData.newPassword,
-                }
-            );
-
-            // Reset form
             setFormData({
                 currentPassword: '',
                 newPassword: '',
                 confirmPassword: '',
             });
 
-            // Toast success
-            toast.success(
-                response.data.message ||
-                'Password berhasil diubah!'
-            );
+            setShowCurrent(false);
+            setShowNew(false);
+            setShowConfirm(false);
 
+            toast.success(response.data.message || 'Password berhasil diubah!');
         } catch (error: unknown) {
-
             if (error instanceof AxiosError) {
-
-                toast.danger(
-                    error.response?.data?.message ||
-                    'Terjadi kesalahan pada server'
-                );
-
+                toast.danger(error.response?.data?.message || 'Terjadi kesalahan pada server');
             } else {
-
-                toast.danger(
-                    'Gagal terhubung ke server. Coba lagi.'
-                );
-
+                toast.danger('Gagal terhubung ke server. Coba lagi.');
             }
-
         } finally {
-
             setIsLoading(false);
-
         }
     };
 
@@ -105,41 +82,68 @@ export default function SecurityForm() {
 
                     <TextField className='w-full flex flex-col gap-1.5' name='currentPassword'>
                         <Label className='text-xs font-bold text-muted-foreground uppercase tracking-wider'>Password Saat Ini</Label>
-                        <Input
-                            type='password'
-                            name='currentPassword'
-                            value={formData.currentPassword}
-                            onChange={handleChange}
-                            required
-                            placeholder='••••••••'
-                            className='bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors'
-                        />
+                        <div className="relative w-full">
+                            <Input
+                                type={showCurrent ? 'text' : 'password'}
+                                name='currentPassword'
+                                value={formData.currentPassword}
+                                onChange={handleChange}
+                                required
+                                placeholder='••••••••'
+                                className='w-full bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors pr-10'
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrent(!showCurrent)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 focus:outline-none"
+                            >
+                                {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </TextField>
 
                     <TextField className='w-full flex flex-col gap-1.5' name='newPassword'>
                         <Label className='text-xs font-bold text-muted-foreground uppercase tracking-wider'>Password Baru</Label>
-                        <Input
-                            type='password'
-                            name='newPassword'
-                            value={formData.newPassword}
-                            onChange={handleChange}
-                            required
-                            placeholder='Minimal 8 karakter'
-                            className='bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors'
-                        />
+                        <div className="relative w-full">
+                            <Input
+                                type={showNew ? 'text' : 'password'}
+                                name='newPassword'
+                                value={formData.newPassword}
+                                onChange={handleChange}
+                                required
+                                placeholder='Minimal 8 karakter'
+                                className='w-full bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors pr-10'
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNew(!showNew)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 focus:outline-none"
+                            >
+                                {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </TextField>
 
                     <TextField className='w-full flex flex-col gap-1.5' name='confirmPassword'>
                         <Label className='text-xs font-bold text-muted-foreground uppercase tracking-wider'>Konfirmasi Password</Label>
-                        <Input
-                            type='password'
-                            name='confirmPassword'
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            placeholder='Ulangi password baru'
-                            className='bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors'
-                        />
+                        <div className="relative w-full">
+                            <Input
+                                type={showConfirm ? 'text' : 'password'}
+                                name='confirmPassword'
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                                placeholder='Ulangi password baru'
+                                className='w-full bg-zinc-50 border border-zinc-200 text-foreground font-medium px-4 h-11 rounded-lg shadow-none focus-within:border-2 focus-within:border-[#0A6F66] transition-colors pr-10'
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirm(!showConfirm)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 focus:outline-none"
+                            >
+                                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </TextField>
 
                     <Button

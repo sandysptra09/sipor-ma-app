@@ -12,25 +12,34 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/axios';
 import { StatisticData, UserProfileData } from './intefaces';
 import ImageUploadModal from './modals/image-upload-modal';
+import { useUserStore } from '@/store/useUserStore';
 
 export default function ProfileContent() {
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const userId = useUserStore((state) => state.user?.id);
+    const [hasHydrated, setHasHydrated] = useState(false);
+
+    const [loading, setLoading] = useState<boolean>(true); 
     const [userData, setUserData] = useState<UserProfileData>();
     const [statisticData, setStatisticData] = useState<StatisticData>();
     const [openUpload, setOpenUpload] = useState<boolean>(false);
 
     useEffect(() => {
-        setLoading(true)
+        setHasHydrated(true);
+    }, []);
+
+    useEffect(() => {
+        if (!hasHydrated || !userId) return;
+
         const fetchDetailProfile = async () => {
+            setLoading(true);
             try {
                 const res = await api.get(`/users/me`);
                 const data = res.data.data;
 
-                const resStatistic = await api.get(`/dashboard`);
+                const resStatistic = await api.get(`/dashboard/statistic?userId=${userId}`);
 
-                setStatisticData(resStatistic.data.data);
-                console.log(resStatistic.data.data);
+                setStatisticData(resStatistic.data);
                 setUserData(data);
             } catch (error) {
                 console.error('Gagal mengambil data user:', error);
@@ -40,8 +49,11 @@ export default function ProfileContent() {
         };
 
         fetchDetailProfile();
-    }, []);
+    }, [hasHydrated, userId]); 
 
+    if (!hasHydrated) {
+        return null;
+    }
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -63,21 +75,21 @@ export default function ProfileContent() {
                 <StatCard
                     isLoading={loading}
                     title='Laporan'
-                    value={statisticData?.totalReports ?? 0}
+                    value={statisticData?.total ?? 0}
                     subtitle='Total Laporan Diajukan'
                     icon={<FileText size={20} className='text-[#0A6F66]' />}
                 />
                 <StatCard
                     isLoading={loading}
                     title='Selesai'
-                    value={statisticData?.totalResolved ?? 0}
+                    value={statisticData?.selesai ?? 0}
                     subtitle='Total Laporan Selesai'
                     icon={<CheckCircle2 size={20} className='text-[#0A6F66]' />}
                 />
                 <StatCard
                     isLoading={loading}
                     title='Status'
-                    value={statisticData?.totalInProgress ?? 0}
+                    value={statisticData?.proses ?? 0}
                     subtitle='Total Laporan Diproses'
                     icon={<RefreshCcw size={20} className='text-[#0A6F66]' />}
                 />
