@@ -12,7 +12,7 @@ const publicRoutes = [
     '/contact'
 ];
 
-const authRoutes = ['/login', '/sign-up', '/register'];
+const authRoutes = ['/login', '/sign-up', '/forget-password', '/reset-password'];
 
 export default auth((req) => {
     const { nextUrl } = req;
