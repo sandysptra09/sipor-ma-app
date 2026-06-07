@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'SIPOR-MA | Sistem Pelaporan Fasilitas',
     description: 'Laporkan kerusakan fasilitas kampusmu dengan cepat dan transparan.',
-    url: 'https://sipor-ma.vercel.app',
+    url: 'https://www.sipor-ma.web.id/',
     siteName: 'SIPOR-MA',
     images: [
       {
