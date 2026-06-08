@@ -39,7 +39,7 @@ export default function ChartStatistic() {
             <div className='space-y-1'>
                 <h2 className='text-xl font-semibold tracking-tight'>Statistik Laporan Bulanan</h2>
                 <p className='text-sm text-gray-500 dark:text-gray-400'>
-                    Menampilkan perbandingan laporan masuk dan selesai dari Januari - Juni 2026.
+                    Menampilkan perbandingan laporan masuk dan selesai dari Januari - Agustus 2026.
                 </p>
             </div>
 
