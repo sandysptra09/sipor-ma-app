@@ -9,6 +9,7 @@ import { BadgeCheck, Clock, TrendingUp, TrendingDown, AlertCircle } from "lucide
 import { api } from "@/lib/axios";
 import { columns } from "./columns";
 import { toast } from "@heroui/react";
+import ChartStatistic from "@/components/customs/admin/chart-statistic";
 
 interface DashboardStatistic {
     incoming: {
@@ -160,7 +161,10 @@ export default function Page() {
                 }
             />
 
-            {/* Row 2: Charts & Activities */}
+            <div className='col-span-6'>
+                <ChartStatistic />
+            </div>
+
             <RecentActivityCard
                 className='col-span-6 md:col-span-3'
                 data={recentActivity}
@@ -185,6 +189,7 @@ export default function Page() {
                     }}
                 />
             </div>
+
         </div>
     );
 }
