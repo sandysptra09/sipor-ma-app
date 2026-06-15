@@ -10,6 +10,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/chart'
+import { Skeleton } from '@heroui/react'
 
 const chartData = [
     { month: 'Januari', incoming: 45, completed: 30 },
@@ -33,9 +34,26 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export default function ChartStatistic() {
+interface ChartStatisticProps {
+    loading?: boolean;
+}
+
+export default function ChartStatistic({ loading }: ChartStatisticProps) {
+
+    if (loading) {
+        return (
+            <div className='flex flex-col gap-4 p-6 bg-white border rounded-xl shadow-sm w-full'>
+                <div className='space-y-2'>
+                    <Skeleton className="h-6 w-62.5 rounded-lg" />
+                    <Skeleton className="h-4 w-87.5 max-w-full rounded-lg" />
+                </div>
+                <Skeleton className="min-h-87.5 w-full mt-4 rounded-xl" />
+            </div>
+        )
+    }
+
     return (
-        <div className='flex flex-col gap-4 p-6 bg-white border rounded-xl shadow-sm dark:bg-zinc-900 dark:border-zinc-800'>
+        <div className='flex flex-col gap-4 p-6 bg-white border rounded-xl shadow-sm'>
             <div className='space-y-1'>
                 <h2 className='text-xl font-semibold tracking-tight'>Statistik Laporan Bulanan</h2>
                 <p className='text-sm text-gray-500 dark:text-gray-400'>

@@ -162,7 +162,7 @@ export default function Page() {
             />
 
             <div className='col-span-6'>
-                <ChartStatistic />
+                <ChartStatistic loading={isLoading} />
             </div>
 
             <RecentActivityCard
