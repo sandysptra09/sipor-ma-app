@@ -34,6 +34,7 @@ export default function MainNavbar() {
             name: user ? 'Dashboard' : 'Beranda',
             href: user ? '/dashboard' : '/'
         },
+        ...(user ? [{ name: 'Lapor Kerusakan', href: '/scan' }] : []),
         { name: 'Pusat Bantuan', href: '/help-center' },
     ];
 
