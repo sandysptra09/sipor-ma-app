@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Camera, LayoutDashboard, MessageCircleQuestion, LayoutGrid } from 'lucide-react';
+import { Plus, X, Camera, LayoutDashboard, Bot, LayoutGrid } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function MobileFAB() {
@@ -17,7 +17,7 @@ export default function MobileFAB() {
     const menuItems = [
         {
             id: 'help',
-            icon: <MessageCircleQuestion size={20} />,
+            icon: <Bot size={20} />,
             label: 'Pusat Bantuan',
             onClick: () => { router.push('/chat-assistant'); setIsOpen(false); },
             pos: { x: 0, y: -75 }
@@ -68,7 +68,7 @@ export default function MobileFAB() {
                                 delay: index * 0.05
                             }}
                             onClick={item.onClick}
-                            className='absolute flex items-center justify-center w-12 h-12 rounded-full bg-[#0A6F66] text-white shadow-lg border-2 border-white/20 hover:bg-[#085a53] transition-colors'
+                            className='absolute flex items-center justify-center w-12 h-12 rounded-full bg-[#0A6F66] text-white shadow-lg border-2 border-white/20 hover:bg-[#085a53] transition-colors cursor-pointer'
                             aria-label={item.label}
                         >
                             {item.icon}
@@ -78,7 +78,7 @@ export default function MobileFAB() {
 
                 <motion.button
                     onClick={toggleMenu}
-                    className={`relative z-10 flex items-center justify-center w-14 h-14 rounded-full text-white shadow-xl transition-colors ${isOpen ? 'bg-[#A7E9D1] text-[#0A6F66]' : 'bg-[#0A6F66]'}`}
+                    className={`relative z-10 flex items-center justify-center w-14 h-14 rounded-full text-white shadow-xl transition-colors cursor-pointer ${isOpen ? 'bg-[#A7E9D1] text-[#0A6F66]' : 'bg-[#0A6F66]'}`}
                     whileTap={{ scale: 0.9 }}
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
