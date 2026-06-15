@@ -15,6 +15,7 @@ import { LuFileText } from 'react-icons/lu';
 import { TbRosetteDiscountCheckFilled } from 'react-icons/tb';
 import { MdOutlineEngineering } from 'react-icons/md';
 import CancelReportModal from './modals/cancel-report-modal';
+import ScanShortcutWidget from './widgets/scan-shortcut-widget';
 
 export default function DashboardContent() {
 
@@ -329,6 +330,10 @@ export default function DashboardContent() {
 
                     <div className='order-2 w-full'>
                         <StatWidget />
+                    </div>
+
+                    <div className='order-[2.5] w-full'>
+                        <ScanShortcutWidget loading={isLoading} />
                     </div>
 
                     <div className='order-4 w-full'>
