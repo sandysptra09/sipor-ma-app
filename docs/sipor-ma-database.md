@@ -14,10 +14,16 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  image         String?
   emailVerified DateTime? // Status verifikasi email (NextAuth)
   image         String?
   nim_nip       String?   @unique
   role          Role      @default(STUDENT)
+  password      String?
+  enrollmentYear Int?
+  faculty        String?
+  studyProgram   String?
+  campusEmail    String?        @unique
 
   // Relations
   accounts      Account[]     // Relasi ke OAuth Provider (Google, dll)
@@ -26,6 +32,7 @@ model User {
   shifts        Shift[]       // Jadwal piket Admin
   chatSessions  ChatSession[] // Riwayat chatbot
   notifications Notification[]// Notifikasi Real-time
+  activityLogs   ActivityLog[] // Activity Log History
 
   createdAt     DateTime  @default(now())
 }
@@ -47,6 +54,17 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, token])
 }
 
 enum Role {
@@ -81,6 +99,11 @@ model Report {
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  rejectionReason String?        @db.Text
+  resolvedNote    String?        @db.Text
+
+  @@index([adminId], map: "Report_adminId_fkey")
+  @@index([userId], map: "Report_userId_fkey")
 }
 
 enum Status {
@@ -89,6 +112,7 @@ enum Status {
   IN_PROGRESS  // Sedang dalam perbaikan
   RESOLVED     // Selesai diperbaiki
   REJECTED     // Ditolak (Prank/NSFW/Data tidak valid)
+  CANCELED     // Dibatalkan
 }
 
 enum Priority {
@@ -105,21 +129,54 @@ model AuditLog {
   status    String   // Status pada saat log dicatat
   note      String?  // Pesan/Catatan Admin (e.g. "Sparepart telah dipesan")
   createdAt DateTime @default(now())
+
+  @@index([reportId], map: "AuditLog_reportId_fkey")
+}
+
+model ActivityLog {
+  id          String           @id @default(cuid())
+  userId      String
+  reportId    String?
+  title       String
+  description String?          @db.Text
+  type        ActivityLog_type
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  report      Report?          @relation(fields: [reportId], references: [id])
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([reportId])
+  @@index([createdAt])
+}
+
+enum ActivityLog_type {
+  REPORT_CREATED
+  REPORT_UPDATED
+  REPORT_IN_PROGRESS
+  REPORT_VERIFIED
+  REPORT_REJECTED
+  REPORT_RESOLVED
+  REPORT_CANCELED
+  ROOM_UPDATED
+  PROFILE_UPDATED
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  title     String
-  message   String   @db.Text
-  isRead    Boolean  @default(false)
+  id           String   @id @default(cuid())
+  title        String
+  message      String   @db.Text
+  isRead       Boolean  @default(false)
+  userId       String
+  reportId     String?
+  createdAt    DateTime @default(now())
+  reportNumber String?
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  report       Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  reportId  String?
-  report    Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
+  @@index([reportId], map: "Notification_reportId_fkey")
+  @@index([userId], map: "Notification_userId_fkey")
 }
 
 // 4. Room: Master Data untuk QR Integration
@@ -142,11 +199,13 @@ model Shift {
 
 // 6. AI Chatbot History
 model ChatSession {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
-  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
   messages  Message[]
-  createdAt DateTime  @default(now())
+
+  @@index([userId], map: "ChatSession_userId_fkey")
 }
 
 model Message {
@@ -156,6 +215,8 @@ model Message {
   role      MessageRole // USER atau ASSISTANT
   content   String      @db.Text
   createdAt DateTime    @default(now())
+
+  @@index([sessionId], map: "Message_sessionId_fkey")
 }
 
 enum MessageRole {
@@ -177,6 +238,7 @@ Untuk menjaga integritas data, SIPOR-MA menerapkan beberapa tipe relasi database
 - **`User` ↔ `Notification`**: Satu pengguna memiliki banyak notifikasi masuk.
 - **`User` ↔ `ChatSession`**: Satu pengguna dapat memulai banyak sesi percakapan dengan AI Chatbot.
 - **`Report` ↔ `AuditLog`**: Satu laporan memiliki banyak catatan riwayat (`AuditLog`) yang mencatat setiap perubahan status dari awal sampai selesai.
+- **`Report` ↔ `ActivityLog`**: Satu laporan dapat menjadi sumber dari banyak log aktivitas pelapor.
 - **`ChatSession` ↔ `Message`**: Satu sesi percakapan berisi banyak pesan (`Message`), baik dari pengguna maupun dari asisten AI.
 
 ### **2. Many-to-One (N:1)**
